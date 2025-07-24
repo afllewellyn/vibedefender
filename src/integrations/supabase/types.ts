@@ -47,6 +47,207 @@ export type Database = {
         }
         Relationships: []
       }
+      projects: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+          url: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+          url: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+          url?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      scan_findings: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          element_selector: string | null
+          id: string
+          impact_score: number | null
+          recommendation: string | null
+          scan_id: string
+          severity: string
+          title: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          element_selector?: string | null
+          id?: string
+          impact_score?: number | null
+          recommendation?: string | null
+          scan_id: string
+          severity: string
+          title: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          element_selector?: string | null
+          id?: string
+          impact_score?: number | null
+          recommendation?: string | null
+          scan_id?: string
+          severity?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scan_findings_scan_id_fkey"
+            columns: ["scan_id"]
+            isOneToOne: false
+            referencedRelation: "scans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scans: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          error_message: string | null
+          grade: string | null
+          id: string
+          project_id: string | null
+          score: number | null
+          started_at: string | null
+          status: string
+          updated_at: string
+          url: string
+          user_id: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          error_message?: string | null
+          grade?: string | null
+          id?: string
+          project_id?: string | null
+          score?: number | null
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+          url: string
+          user_id?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          error_message?: string | null
+          grade?: string | null
+          id?: string
+          project_id?: string | null
+          score?: number | null
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+          url?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scans_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscription_plans: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          max_projects: number
+          max_scans_per_month: number
+          name: string
+          price_per_month: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          max_projects?: number
+          max_scans_per_month?: number
+          name: string
+          price_per_month?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          max_projects?: number
+          max_scans_per_month?: number
+          name?: string
+          price_per_month?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      usage_tracking: {
+        Row: {
+          created_at: string
+          id: string
+          month_year: string
+          scans_used: number
+          subscription_plan_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          month_year?: string
+          scans_used?: number
+          subscription_plan_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          month_year?: string
+          scans_used?: number
+          subscription_plan_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "usage_tracking_subscription_plan_id_fkey"
+            columns: ["subscription_plan_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
