@@ -4,8 +4,8 @@ const Footer = () => {
   return <footer className="border-t bg-blue-950">
       <div className="container mx-auto px-4 py-8 bg-blue-950">
         <div className="grid md:grid-cols-4 gap-8">
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
+          <div className="space-y-4 bg-blue-950">
+            <div className="flex items-center gap-2 text-slate-50">
               <Shield className="h-6 w-6" />
               <span className="font-bold text-lg">VibeSecure</span>
             </div>
