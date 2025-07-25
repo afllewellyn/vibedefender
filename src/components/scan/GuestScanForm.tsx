@@ -71,6 +71,19 @@ export const GuestScanForm = ({ onScanCreated }: GuestScanFormProps) => {
         throw error;
       }
 
+      // Trigger the security scan
+      try {
+        const { error: scanError } = await supabase.functions.invoke('security-scan', {
+          body: { scanId: scan.id }
+        });
+
+        if (scanError) {
+          console.error('Error starting scan:', scanError);
+        }
+      } catch (scanInvokeError) {
+        console.error('Error invoking scan function:', scanInvokeError);
+      }
+
       toast({
         title: "Scan Started",
         description: "Your security scan has been initiated.",
