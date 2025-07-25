@@ -1,10 +1,8 @@
 import { Link } from 'react-router-dom';
 import { Shield } from 'lucide-react';
-
 const Footer = () => {
-  return (
-    <footer className="bg-background border-t">
-      <div className="container mx-auto px-4 py-8">
+  return <footer className="border-t bg-blue-950">
+      <div className="container mx-auto px-4 py-8 bg-blue-950">
         <div className="grid md:grid-cols-4 gap-8">
           <div className="space-y-4">
             <div className="flex items-center gap-2">
@@ -74,8 +72,6 @@ const Footer = () => {
           <p>&copy; 2025 VibeSecure. All rights reserved.</p>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
-
 export default Footer;
