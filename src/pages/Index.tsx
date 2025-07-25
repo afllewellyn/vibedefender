@@ -43,8 +43,7 @@ const Index = () => {
           <h2 className="text-4xl font-bold mb-6 text-foreground">Security scan your vibe-coded web app in 60 seconds</h2>
           
           <p className="text-xl text-muted-foreground mb-12 max-w-3xl mx-auto">
-            Comprehensive website security scanning and monitoring. Get detailed security reports
-            and actionable recommendations to protect your online presence.
+            Building apps and websites with AI is great, but it's easy to miss common security errors if you don't make it a priority in your prompts. Get detailed security reports and actionable recommendations to protect your site.
           </p>
           
           {/* Main CTA - Guest Scan Form */}
