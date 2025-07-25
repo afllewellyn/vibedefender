@@ -1,12 +1,15 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
+import { GuestScanForm } from '@/components/scan/GuestScanForm';
+import { ScanResults } from '@/components/scan/ScanResults';
 
 const Index = () => {
   const { user, isLoading } = useAuth();
   const navigate = useNavigate();
+  const [activeScanId, setActiveScanId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isLoading && user) {
@@ -29,7 +32,7 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <div className="flex flex-col items-center justify-center min-h-screen p-4">
-        <div className="text-center max-w-4xl mx-auto">
+        <div className="text-center max-w-6xl mx-auto">
           <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
             VibeSecure
           </h1>
@@ -37,6 +40,20 @@ const Index = () => {
             Comprehensive security scanning to protect your digital assets. 
             Detect vulnerabilities before they become threats.
           </p>
+          
+          {/* Guest Scan Section */}
+          {!activeScanId ? (
+            <div className="mb-12">
+              <GuestScanForm onScanCreated={setActiveScanId} />
+            </div>
+          ) : (
+            <div className="mb-12">
+              <ScanResults 
+                scanId={activeScanId} 
+                onCreateAccount={() => navigate('/auth')}
+              />
+            </div>
+          )}
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <Button 

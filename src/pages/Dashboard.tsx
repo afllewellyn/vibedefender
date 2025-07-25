@@ -84,7 +84,7 @@ const Dashboard = () => {
             </CardContent>
           </Card>
           
-          <Card className="hover:shadow-md transition-shadow">
+          <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate('/projects')}>
             <CardHeader>
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-lg bg-secondary/10 flex items-center justify-center">
@@ -99,13 +99,13 @@ const Dashboard = () => {
               </div>
             </CardHeader>
             <CardContent>
-              <Button className="w-full" variant="secondary">
+              <Button className="w-full" variant="secondary" onClick={(e) => { e.stopPropagation(); navigate('/projects'); }}>
                 Start New Scan
               </Button>
             </CardContent>
           </Card>
           
-          <Card className="hover:shadow-md transition-shadow">
+          <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate('/scans')}>
             <CardHeader>
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center">
@@ -120,7 +120,7 @@ const Dashboard = () => {
               </div>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" className="w-full" onClick={(e) => { e.stopPropagation(); navigate('/scans'); }}>
                 View History
               </Button>
             </CardContent>
