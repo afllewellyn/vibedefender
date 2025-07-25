@@ -73,10 +73,11 @@ export const GuestScanForm = ({ onScanCreated }: GuestScanFormProps) => {
 
       toast({
         title: "Scan Started",
-        description: "Your security scan has been initiated. This may take a few minutes.",
+        description: "Your security scan has been initiated.",
       });
 
-      onScanCreated(scan.id);
+      // Navigate to scan progress page
+      window.location.href = `/scan/${scan.id}`;
       setUrl('');
     } catch (error) {
       console.error('Scan creation error:', error);

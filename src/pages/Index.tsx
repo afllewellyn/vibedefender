@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
+import { Shield, Zap, BarChart3, ArrowRight } from 'lucide-react';
 import { GuestScanForm } from '@/components/scan/GuestScanForm';
 import { ScanResults } from '@/components/scan/ScanResults';
+import Footer from '@/components/layout/Footer';
 
 const Index = () => {
   const { user, isLoading } = useAuth();
@@ -29,86 +31,94 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <div className="flex flex-col items-center justify-center min-h-screen p-4">
-        <div className="text-center max-w-6xl mx-auto">
-          <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-            VibeSecure
-          </h1>
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/50">
+      <div className="container mx-auto px-4 py-16">
+        <div className="text-center mb-16">
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <Shield className="h-12 w-12 text-primary" />
+            <h1 className="text-5xl font-bold">VibeSecure</h1>
+          </div>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Comprehensive security scanning to protect your digital assets. 
-            Detect vulnerabilities before they become threats.
+            Comprehensive website security scanning and monitoring. Get detailed security reports
+            and actionable recommendations to protect your online presence.
           </p>
           
-          {/* Guest Scan Section */}
-          {!activeScanId ? (
-            <div className="mb-12">
-              <GuestScanForm onScanCreated={setActiveScanId} />
-            </div>
-          ) : (
-            <div className="mb-12">
-              <ScanResults 
-                scanId={activeScanId} 
-                onCreateAccount={() => navigate('/auth')}
-              />
-            </div>
-          )}
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Button 
-              size="lg" 
-              onClick={() => navigate('/auth')}
-              className="px-8 py-3"
-            >
-              Get Started
-            </Button>
-            <Button 
-              variant="outline" 
-              size="lg"
-              onClick={() => navigate('/auth')}
-              className="px-8 py-3"
-            >
-              Sign In
-            </Button>
+          {/* Guest Scan Form */}
+          <div className="max-w-md mx-auto mb-8">
+            <GuestScanForm onScanCreated={setActiveScanId} />
           </div>
 
-          <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Quick Scanning</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>
-                  Fast and efficient vulnerability detection with comprehensive reporting.
-                </CardDescription>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Real-time Monitoring</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>
-                  Continuous security monitoring to catch threats as they emerge.
-                </CardDescription>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Detailed Reports</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>
-                  Comprehensive security reports with actionable insights and recommendations.
-                </CardDescription>
-              </CardContent>
-            </Card>
-          </div>
+          {/* Show scan results if a scan is active */}
+          {activeScanId && (
+            <div className="mt-8">
+              <ScanResults scanId={activeScanId} onCreateAccount={() => navigate('/signup')} />
+            </div>
+          )}
+
+          {/* Call to Action Buttons */}
+          {!activeScanId && (
+            <div className="flex gap-4 justify-center">
+              <Button size="lg" onClick={() => navigate('/signup')}>
+                Get Started
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+              <Button variant="outline" size="lg" onClick={() => navigate('/login')}>
+                Sign In
+              </Button>
+            </div>
+          )}
+        </div>
+
+        {/* Features Section */}
+        <div className="grid md:grid-cols-3 gap-8 mb-16">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Zap className="h-5 w-5 text-primary" />
+                Quick Scanning
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CardDescription>
+                Get comprehensive security analysis of your website in minutes, not hours.
+                Our automated scanning engine checks for common vulnerabilities and configuration issues.
+              </CardDescription>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Shield className="h-5 w-5 text-primary" />
+                Real-time Monitoring
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CardDescription>
+                Monitor your website's security posture with automated scans and instant alerts
+                when new vulnerabilities are discovered.
+              </CardDescription>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5 text-primary" />
+                Detailed Reports
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CardDescription>
+                Receive actionable security reports with clear recommendations and prioritized
+                fixes to improve your website's security.
+              </CardDescription>
+            </CardContent>
+          </Card>
         </div>
       </div>
+      
+      <Footer />
     </div>
   );
 };
