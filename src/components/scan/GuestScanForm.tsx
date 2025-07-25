@@ -92,20 +92,10 @@ export const GuestScanForm = ({ onScanCreated }: GuestScanFormProps) => {
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader className="text-center">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-          <Shield className="h-6 w-6 text-primary" />
-        </div>
-        <CardTitle className="text-xl">Free Security Scan</CardTitle>
-        <CardDescription>
-          Get an instant security assessment of your website
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="scan-url">Website URL</Label>
+    <div className="w-full">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="flex flex-col sm:flex-row gap-3 max-w-2xl mx-auto">
+          <div className="flex-1">
             <Input
               id="scan-url"
               type="url"
@@ -113,34 +103,34 @@ export const GuestScanForm = ({ onScanCreated }: GuestScanFormProps) => {
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               disabled={isScanning}
-              className="w-full"
+              className="h-14 text-lg px-6 rounded-2xl border-2 focus:border-primary/50 bg-background/50 backdrop-blur"
             />
           </div>
-          
           <Button 
             type="submit" 
-            className="w-full" 
+            size="lg"
             disabled={isScanning}
+            className="h-14 px-8 rounded-2xl text-lg font-semibold shadow-lg hover:shadow-xl transition-all"
           >
             {isScanning ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                 Scanning...
               </>
             ) : (
               <>
-                <Shield className="mr-2 h-4 w-4" />
-                Start Free Scan
+                <Shield className="mr-2 h-5 w-5" />
+                Scan Now
               </>
             )}
           </Button>
-          
-          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-            <AlertTriangle className="h-4 w-4" />
-            <span>No registration required • Results available for 24 hours</span>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+        </div>
+        
+        <div className="flex items-center justify-center text-sm text-muted-foreground">
+          <AlertTriangle className="h-4 w-4 mr-2" />
+          <span>No registration required • Results available for 24 hours</span>
+        </div>
+      </form>
+    </div>
   );
 };

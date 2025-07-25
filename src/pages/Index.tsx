@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Shield, Zap, BarChart3, ArrowRight } from 'lucide-react';
 import { GuestScanForm } from '@/components/scan/GuestScanForm';
 import { ScanResults } from '@/components/scan/ScanResults';
+import { Header } from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 
 const Index = () => {
@@ -32,6 +33,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/50">
+      <Header />
       <div className="container mx-auto px-4 py-16">
         {/* Hero Section */}
         <div className="text-center mb-20">
