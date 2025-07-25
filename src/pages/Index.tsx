@@ -33,20 +33,46 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/50">
       <div className="container mx-auto px-4 py-16">
-        <div className="text-center mb-16">
-          <div className="flex items-center justify-center gap-2 mb-6">
-            <Shield className="h-12 w-12 text-primary" />
-            <h1 className="text-5xl font-bold">VibeSecure</h1>
+        {/* Hero Section */}
+        <div className="text-center mb-20">
+          <div className="flex items-center justify-center gap-3 mb-8">
+            <Shield className="h-14 w-14 text-primary" />
+            <h1 className="text-6xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+              VibeSecure
+            </h1>
           </div>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+          
+          <h2 className="text-4xl font-bold mb-6 text-foreground">
+            Security scan your web app in 60 seconds
+          </h2>
+          
+          <p className="text-xl text-muted-foreground mb-12 max-w-3xl mx-auto">
             Comprehensive website security scanning and monitoring. Get detailed security reports
             and actionable recommendations to protect your online presence.
           </p>
           
-          {/* Guest Scan Form */}
-          <div className="max-w-md mx-auto mb-8">
+          {/* Main CTA - Guest Scan Form */}
+          <div className="max-w-2xl mx-auto mb-8">
             <GuestScanForm onScanCreated={setActiveScanId} />
           </div>
+
+          {/* Trust Indicators */}
+          {!activeScanId && (
+            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground mb-12">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span>No signup required</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Zap className="w-4 h-4 text-primary" />
+                <span>Real-time results</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <BarChart3 className="w-4 h-4 text-secondary" />
+                <span>Instant security insights</span>
+              </div>
+            </div>
+          )}
 
           {/* Show scan results if a scan is active */}
           {activeScanId && (
@@ -55,14 +81,14 @@ const Index = () => {
             </div>
           )}
 
-          {/* Call to Action Buttons */}
+          {/* Secondary Call to Action Buttons */}
           {!activeScanId && (
             <div className="flex gap-4 justify-center">
-              <Button size="lg" onClick={() => navigate('/signup')}>
-                Get Started
+              <Button variant="outline" size="lg" onClick={() => navigate('/signup')}>
+                Create Account
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
-              <Button variant="outline" size="lg" onClick={() => navigate('/login')}>
+              <Button variant="ghost" size="lg" onClick={() => navigate('/login')}>
                 Sign In
               </Button>
             </div>
