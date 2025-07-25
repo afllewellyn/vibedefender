@@ -8,31 +8,27 @@ import { GuestScanForm } from '@/components/scan/GuestScanForm';
 import { ScanResults } from '@/components/scan/ScanResults';
 import { Header } from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-
 const Index = () => {
-  const { user, isLoading } = useAuth();
+  const {
+    user,
+    isLoading
+  } = useAuth();
   const navigate = useNavigate();
   const [activeScanId, setActiveScanId] = useState<string | null>(null);
-
   useEffect(() => {
     if (!isLoading && user) {
       navigate('/dashboard');
     }
   }, [user, isLoading, navigate]);
-
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+    return <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <h1 className="text-2xl font-semibold mb-2">Loading...</h1>
           <p className="text-muted-foreground">Please wait while we check your authentication status.</p>
         </div>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/50">
+  return <div className="min-h-screen bg-gradient-to-b from-background to-muted/50">
       <Header />
       <div className="container mx-auto px-4 py-16">
         {/* Hero Section */}
@@ -44,9 +40,7 @@ const Index = () => {
             </h1>
           </div>
           
-          <h2 className="text-4xl font-bold mb-6 text-foreground">
-            Security scan your web app in 60 seconds
-          </h2>
+          <h2 className="text-4xl font-bold mb-6 text-foreground">Security scan your vibe-coded web app in 60 seconds</h2>
           
           <p className="text-xl text-muted-foreground mb-12 max-w-3xl mx-auto">
             Comprehensive website security scanning and monitoring. Get detailed security reports
@@ -59,8 +53,7 @@ const Index = () => {
           </div>
 
           {/* Trust Indicators */}
-          {!activeScanId && (
-            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground mb-12">
+          {!activeScanId && <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground mb-12">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 <span>No signup required</span>
@@ -73,19 +66,15 @@ const Index = () => {
                 <BarChart3 className="w-4 h-4 text-secondary" />
                 <span>Instant security insights</span>
               </div>
-            </div>
-          )}
+            </div>}
 
           {/* Show scan results if a scan is active */}
-          {activeScanId && (
-            <div className="mt-8">
+          {activeScanId && <div className="mt-8">
               <ScanResults scanId={activeScanId} onCreateAccount={() => navigate('/signup')} />
-            </div>
-          )}
+            </div>}
 
           {/* Secondary Call to Action Buttons */}
-          {!activeScanId && (
-            <div className="flex gap-4 justify-center">
+          {!activeScanId && <div className="flex gap-4 justify-center">
               <Button variant="outline" size="lg" onClick={() => navigate('/signup')}>
                 Create Account
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -93,8 +82,7 @@ const Index = () => {
               <Button variant="ghost" size="lg" onClick={() => navigate('/login')}>
                 Sign In
               </Button>
-            </div>
-          )}
+            </div>}
         </div>
 
         {/* Features Section */}
@@ -147,8 +135,6 @@ const Index = () => {
       </div>
       
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
