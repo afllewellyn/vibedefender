@@ -123,7 +123,7 @@ const Privacy = () => {
               <li><strong>Restriction:</strong> Request restriction of processing</li>
             </ul>
             
-            <p>To exercise these rights, please contact us at privacy@vibesecure.com.</p>
+            <p>To exercise these rights, please contact us at privacy@vibescurity.com.</p>
           </CardContent>
         </Card>
 
@@ -151,7 +151,7 @@ const Privacy = () => {
           <CardContent>
             <p>If you have any questions about this Privacy Policy, please contact us:</p>
             <ul className="mt-4 space-y-2">
-              <li>Email: privacy@vibesecure.com</li>
+              <li>Email: privacy@vibescurity.com</li>
               <li>Address: [Company Address]</li>
             </ul>
           </CardContent>

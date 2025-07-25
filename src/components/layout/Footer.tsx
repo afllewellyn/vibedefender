@@ -7,7 +7,7 @@ const Footer = () => {
           <div className="space-y-4 bg-blue-950">
             <div className="flex items-center gap-2 text-slate-50">
               <Shield className="h-6 w-6" />
-              <span className="font-bold text-lg">VibeSecure</span>
+              <span className="font-bold text-lg">Vibescurity</span>
             </div>
             <p className="text-sm text-muted-foreground">
               Comprehensive website security scanning and monitoring platform.
@@ -55,12 +55,12 @@ const Footer = () => {
             <h3 className="font-semibold mb-4">Support</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="mailto:support@vibesecure.com" className="text-muted-foreground hover:text-foreground">
+                <a href="mailto:support@vibescurity.com" className="text-muted-foreground hover:text-foreground">
                   Contact Support
                 </a>
               </li>
               <li>
-                <a href="mailto:security@vibesecure.com" className="text-muted-foreground hover:text-foreground">
+                <a href="mailto:security@vibescurity.com" className="text-muted-foreground hover:text-foreground">
                   Report Security Issue
                 </a>
               </li>
@@ -69,7 +69,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t mt-8 pt-6 text-center text-sm text-muted-foreground">
-          <p>&copy; 2025 VibeSecure. All rights reserved.</p>
+          <p>&copy; 2025 Vibescurity. All rights reserved.</p>
         </div>
       </div>
     </footer>;

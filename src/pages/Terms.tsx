@@ -27,7 +27,7 @@ const Terms = () => {
           </CardHeader>
           <CardContent className="prose prose-gray max-w-none">
             <p>
-              By accessing and using VibeSecure's services, you accept and agree to be bound by the terms and provision of this agreement. These Terms of Service govern your use of our website security scanning platform and all related services.
+              By accessing and using Vibescurity's services, you accept and agree to be bound by the terms and provision of this agreement. These Terms of Service govern your use of our website security scanning platform and all related services.
             </p>
           </CardContent>
         </Card>
@@ -38,7 +38,7 @@ const Terms = () => {
           </CardHeader>
           <CardContent className="prose prose-gray max-w-none">
             <p>
-              VibeSecure provides automated website security scanning services that analyze websites for security vulnerabilities, configuration issues, and compliance with security best practices. Our service includes:
+              Vibescurity provides automated website security scanning services that analyze websites for security vulnerabilities, configuration issues, and compliance with security best practices. Our service includes:
             </p>
             <ul>
               <li>Automated security scans of publicly accessible websites</li>
@@ -120,7 +120,7 @@ const Terms = () => {
             
             <h4>Damages</h4>
             <p>
-              In no event shall VibeSecure be liable for any indirect, incidental, special, consequential, or punitive damages arising out of your use of our services.
+              In no event shall Vibescurity be liable for any indirect, incidental, special, consequential, or punitive damages arising out of your use of our services.
             </p>
           </CardContent>
         </Card>
@@ -164,7 +164,7 @@ const Terms = () => {
           </CardHeader>
           <CardContent className="prose prose-gray max-w-none">
             <p>
-              All content, features, and functionality of our service are owned by VibeSecure and are protected by copyright, trademark, and other intellectual property laws.
+              All content, features, and functionality of our service are owned by Vibescurity and are protected by copyright, trademark, and other intellectual property laws.
             </p>
           </CardContent>
         </Card>
@@ -198,7 +198,7 @@ const Terms = () => {
           <CardContent>
             <p>If you have any questions about these Terms of Service, please contact us:</p>
             <ul className="mt-4 space-y-2">
-              <li>Email: legal@vibesecure.com</li>
+              <li>Email: legal@vibescurity.com</li>
               <li>Address: [Company Address]</li>
             </ul>
           </CardContent>

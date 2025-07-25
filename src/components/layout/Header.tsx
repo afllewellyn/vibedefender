@@ -22,7 +22,7 @@ export const Header = () => {
         <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <Shield className="h-8 w-8 text-primary" />
           <span className="text-2xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-            VibeSecure
+            Vibescurity
           </span>
         </Link>
 

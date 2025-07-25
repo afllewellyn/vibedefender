@@ -36,7 +36,7 @@ const Index = () => {
           <div className="flex items-center justify-center gap-3 mb-8">
             <Shield className="h-14 w-14 text-primary" />
             <h1 className="text-6xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-              VibeSecure
+              Vibescurity
             </h1>
           </div>
           

@@ -34,7 +34,7 @@ const Methodology = () => {
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground">
-              VibeSecure performs comprehensive security assessments using industry-standard techniques 
+              Vibescurity performs comprehensive security assessments using industry-standard techniques 
               and best practices. Our scanning engine evaluates multiple aspects of your website's 
               security posture to provide actionable insights and recommendations.
             </p>
