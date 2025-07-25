@@ -71,10 +71,10 @@ const Index = () => {
 
         {/* Features Section */}
         <div className="grid md:grid-cols-3 gap-8 mb-16">
-          <Card>
+          <Card className="bg-secondary border-secondary/20">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Zap className="h-5 w-5 text-primary" />
+                <Zap className="h-5 w-5 text-secondary-foreground" />
                 Quick Scanning
               </CardTitle>
             </CardHeader>
@@ -86,10 +86,10 @@ const Index = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-accent border-accent/20">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5 text-primary" />
+                <Shield className="h-5 w-5 text-accent-foreground" />
                 Real-time Monitoring
               </CardTitle>
             </CardHeader>
@@ -101,10 +101,10 @@ const Index = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-tertiary border-tertiary/20">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5 text-primary" />
+                <BarChart3 className="h-5 w-5 text-tertiary-foreground" />
                 Detailed Reports
               </CardTitle>
             </CardHeader>
