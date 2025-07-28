@@ -16,6 +16,7 @@ interface SecurityCheck {
   impact_score: number;
   evidence?: string;
   confidence: 'high' | 'medium' | 'low';
+  reference_links?: string[];
 }
 
 serve(async (req) => {
@@ -88,6 +89,18 @@ serve(async (req) => {
       const csrfResults = await checkCSRF(scan.url);
       findings.push(...csrfResults.findings);
       totalScore -= csrfResults.deduction;
+
+      const cookieResults = await checkInsecureCookies(scan.url);
+      findings.push(...cookieResults.findings);
+      totalScore -= cookieResults.deduction;
+
+      const redirectResults = await checkOpenRedirect(scan.url);
+      findings.push(...redirectResults.findings);
+      totalScore -= redirectResults.deduction;
+
+      const sqlResults = await checkBasicSQLInjection(scan.url);
+      findings.push(...sqlResults.findings);
+      totalScore -= sqlResults.deduction;
 
       // Ensure score doesn't go below 0
       totalScore = Math.max(0, totalScore);
@@ -167,12 +180,17 @@ async function checkSecurityHeaders(url: string) {
       findings.push({
         id: 'missing-hsts',
         title: 'Missing HTTP Strict Transport Security (HSTS)',
-        description: 'The site does not enforce HTTPS connections',
+        description: 'The site does not enforce HTTPS connections, allowing potential man-in-the-middle attacks',
         severity: 'high',
         category: 'Security Headers',
-        recommendation: 'Add the Strict-Transport-Security header to enforce HTTPS',
+        recommendation: 'Add the Strict-Transport-Security header: "Strict-Transport-Security: max-age=31536000; includeSubDomains"',
         impact_score: 15,
-        confidence: 'high'
+        confidence: 'high',
+        reference_links: [
+          'https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security',
+          'https://owasp.org/www-community/controls/HTTP_Strict_Transport_Security',
+          'https://hstspreload.org/'
+        ]
       });
       deduction += 15;
     }
@@ -182,12 +200,17 @@ async function checkSecurityHeaders(url: string) {
       findings.push({
         id: 'missing-csp',
         title: 'Missing Content Security Policy',
-        description: 'No Content Security Policy header found',
+        description: 'No Content Security Policy header found, leaving the site vulnerable to XSS attacks',
         severity: 'medium',
         category: 'Security Headers',
-        recommendation: 'Implement a Content Security Policy to prevent XSS attacks',
+        recommendation: 'Implement a Content Security Policy header to control resource loading and prevent XSS',
         impact_score: 10,
-        confidence: 'high'
+        confidence: 'high',
+        reference_links: [
+          'https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP',
+          'https://csp-evaluator.withgoogle.com/',
+          'https://content-security-policy.com/'
+        ]
       });
       deduction += 10;
     }
@@ -197,14 +220,94 @@ async function checkSecurityHeaders(url: string) {
       findings.push({
         id: 'missing-frame-options',
         title: 'Missing X-Frame-Options Header',
-        description: 'Site may be vulnerable to clickjacking attacks',
+        description: 'Site may be vulnerable to clickjacking attacks through iframe embedding',
         severity: 'medium',
         category: 'Security Headers',
-        recommendation: 'Add X-Frame-Options header to prevent framing',
+        recommendation: 'Add X-Frame-Options header: "X-Frame-Options: DENY" or "X-Frame-Options: SAMEORIGIN"',
         impact_score: 8,
-        confidence: 'high'
+        confidence: 'high',
+        reference_links: [
+          'https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options',
+          'https://owasp.org/www-community/attacks/Clickjacking'
+        ]
       });
       deduction += 8;
+    }
+
+    // Check for X-Content-Type-Options
+    if (!headers.get('x-content-type-options')) {
+      findings.push({
+        id: 'missing-content-type-options',
+        title: 'Missing X-Content-Type-Options Header',
+        description: 'Browser may perform MIME type sniffing, potentially executing malicious content',
+        severity: 'medium',
+        category: 'Security Headers',
+        recommendation: 'Add X-Content-Type-Options header: "X-Content-Type-Options: nosniff"',
+        impact_score: 6,
+        confidence: 'high',
+        reference_links: [
+          'https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options',
+          'https://owasp.org/www-project-secure-headers/#x-content-type-options'
+        ]
+      });
+      deduction += 6;
+    }
+
+    // Check for Referrer-Policy
+    if (!headers.get('referrer-policy')) {
+      findings.push({
+        id: 'missing-referrer-policy',
+        title: 'Missing Referrer-Policy Header',
+        description: 'Referrer information may leak sensitive data to external sites',
+        severity: 'low',
+        category: 'Security Headers',
+        recommendation: 'Add Referrer-Policy header: "Referrer-Policy: strict-origin-when-cross-origin"',
+        impact_score: 3,
+        confidence: 'high',
+        reference_links: [
+          'https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy',
+          'https://web.dev/referrer-best-practices/'
+        ]
+      });
+      deduction += 3;
+    }
+
+    // Check for X-XSS-Protection (legacy but still relevant)
+    if (!headers.get('x-xss-protection')) {
+      findings.push({
+        id: 'missing-xss-protection',
+        title: 'Missing X-XSS-Protection Header',
+        description: 'Legacy XSS protection not enabled (still useful for older browsers)',
+        severity: 'low',
+        category: 'Security Headers',
+        recommendation: 'Add X-XSS-Protection header: "X-XSS-Protection: 1; mode=block"',
+        impact_score: 2,
+        confidence: 'medium',
+        reference_links: [
+          'https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection',
+          'https://owasp.org/www-project-secure-headers/#x-xss-protection'
+        ]
+      });
+      deduction += 2;
+    }
+
+    // Check for Permissions-Policy
+    if (!headers.get('permissions-policy')) {
+      findings.push({
+        id: 'missing-permissions-policy',
+        title: 'Missing Permissions-Policy Header',
+        description: 'No control over browser features and APIs that can be used',
+        severity: 'low',
+        category: 'Security Headers',
+        recommendation: 'Add Permissions-Policy header to control browser features: "Permissions-Policy: camera=(), microphone=(), geolocation=()"',
+        impact_score: 2,
+        confidence: 'medium',
+        reference_links: [
+          'https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy',
+          'https://www.w3.org/TR/permissions-policy-1/'
+        ]
+      });
+      deduction += 2;
     }
 
   } catch (error) {
@@ -220,31 +323,47 @@ async function checkExposedFiles(url: string) {
   let deduction = 0;
 
   const sensitiveFiles = [
-    '/.env',
-    '/.git/config',
-    '/config.json',
-    '/wp-config.php',
-    '/.htaccess',
-    '/admin',
-    '/phpmyadmin'
+    { path: '/.env', severity: 'critical' as const, impact: 30, description: 'Environment variables may contain database passwords, API keys, and other secrets' },
+    { path: '/.git/config', severity: 'critical' as const, impact: 25, description: 'Git configuration may expose repository information and access credentials' },
+    { path: '/config.json', severity: 'high' as const, impact: 20, description: 'Configuration files may contain sensitive application settings' },
+    { path: '/wp-config.php', severity: 'critical' as const, impact: 30, description: 'WordPress configuration contains database credentials and security keys' },
+    { path: '/.htaccess', severity: 'medium' as const, impact: 10, description: 'Apache configuration may reveal server setup details' },
+    { path: '/admin', severity: 'high' as const, impact: 15, description: 'Admin interface should not be publicly accessible without authentication' },
+    { path: '/phpmyadmin', severity: 'high' as const, impact: 20, description: 'Database administration tool should be restricted or removed' }
   ];
 
   for (const file of sensitiveFiles) {
     try {
-      const response = await fetch(`${url}${file}`);
+      const response = await fetch(`${url}${file.path}`);
       if (response.status === 200) {
+        const fileType = file.path.includes('.env') ? 'environment' : 
+                        file.path.includes('.git') ? 'git' :
+                        file.path.includes('wp-config') ? 'wordpress' : 'general';
+        
         findings.push({
-          id: `exposed-${file.replace(/[^a-zA-Z0-9]/g, '-')}`,
-          title: `Exposed Sensitive File: ${file}`,
-          description: `Sensitive file ${file} is publicly accessible`,
-          severity: 'critical',
+          id: `exposed-${file.path.replace(/[^a-zA-Z0-9]/g, '-')}`,
+          title: `Exposed Sensitive File: ${file.path}`,
+          description: file.description,
+          severity: file.severity,
           category: 'Exposed Files',
-          recommendation: `Restrict access to ${file} or remove it from the web root`,
-          impact_score: 25,
-          evidence: `File accessible at: ${url}${file}`,
-          confidence: 'high'
+          recommendation: `Immediately restrict access to ${file.path} or remove it from the web root`,
+          impact_score: file.impact,
+          evidence: `File accessible at: ${url}${file.path}`,
+          confidence: 'high',
+          reference_links: fileType === 'environment' ? [
+            'https://owasp.org/www-community/vulnerabilities/Improper_Error_Handling',
+            'https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html'
+          ] : fileType === 'git' ? [
+            'https://owasp.org/www-community/attacks/Forced_browsing',
+            'https://git-scm.com/docs/git-config'
+          ] : fileType === 'wordpress' ? [
+            'https://wordpress.org/support/article/hardening-wordpress/',
+            'https://owasp.org/www-project-web-security-testing-guide/'
+          ] : [
+            'https://owasp.org/www-community/attacks/Forced_browsing'
+          ]
         });
-        deduction += 25;
+        deduction += file.impact;
       }
     } catch (error) {
       // File not accessible, which is good
@@ -278,7 +397,11 @@ async function detectPlatform(url: string) {
           recommendation: 'Hide WordPress version information to reduce attack surface',
           impact_score: 3,
           evidence: wpVersionMatch[0],
-          confidence: 'high'
+          confidence: 'high',
+          reference_links: [
+            'https://wordpress.org/support/article/hardening-wordpress/',
+            'https://owasp.org/www-project-web-security-testing-guide/'
+          ]
         });
         deduction += 3;
       }
@@ -296,7 +419,11 @@ async function detectPlatform(url: string) {
         recommendation: 'Configure server to hide version information',
         impact_score: 2,
         evidence: `Server: ${serverHeader}`,
-        confidence: 'high'
+        confidence: 'high',
+        reference_links: [
+          'https://owasp.org/www-project-secure-headers/#server',
+          'https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html'
+        ]
       });
       deduction += 2;
     }
@@ -330,7 +457,11 @@ async function checkXSS(url: string) {
         category: 'Cross-Site Scripting',
         recommendation: 'Implement proper input validation and output encoding',
         impact_score: 20,
-        confidence: 'medium'
+        confidence: 'medium',
+        reference_links: [
+          'https://owasp.org/www-community/attacks/xss/',
+          'https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html'
+        ]
       });
       deduction += 20;
     }
@@ -364,7 +495,11 @@ async function checkCSRF(url: string) {
           category: 'Cross-Site Request Forgery',
           recommendation: 'Implement CSRF tokens for all state-changing forms',
           impact_score: 12,
-          confidence: 'medium'
+          confidence: 'medium',
+          reference_links: [
+            'https://owasp.org/www-community/attacks/csrf',
+            'https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html'
+          ]
         });
         deduction += 12;
       }
@@ -372,6 +507,201 @@ async function checkCSRF(url: string) {
 
   } catch (error) {
     console.error('Error checking CSRF:', error);
+  }
+
+  return { findings, deduction };
+}
+
+// Insecure Cookies Check
+async function checkInsecureCookies(url: string) {
+  const findings: SecurityCheck[] = [];
+  let deduction = 0;
+
+  try {
+    const response = await fetch(url);
+    const setCookieHeaders = response.headers.getSetCookie();
+    
+    for (const cookieHeader of setCookieHeaders) {
+      const isSecure = cookieHeader.toLowerCase().includes('secure');
+      const isHttpOnly = cookieHeader.toLowerCase().includes('httponly');
+      const hasSameSite = cookieHeader.toLowerCase().includes('samesite');
+      
+      if (!isSecure) {
+        findings.push({
+          id: 'insecure-cookie',
+          title: 'Insecure Cookie Configuration',
+          description: 'Cookies are not marked with Secure flag, allowing transmission over HTTP',
+          severity: 'medium',
+          category: 'Cookie Security',
+          recommendation: 'Add Secure flag to all cookies: Set-Cookie: name=value; Secure',
+          impact_score: 8,
+          evidence: cookieHeader,
+          confidence: 'high',
+          reference_links: [
+            'https://owasp.org/www-community/controls/SecureCookieAttribute',
+            'https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#restrict_access_to_cookies'
+          ]
+        });
+        deduction += 8;
+      }
+      
+      if (!isHttpOnly) {
+        findings.push({
+          id: 'missing-httponly',
+          title: 'Missing HttpOnly Cookie Flag',
+          description: 'Cookies are accessible via JavaScript, increasing XSS risk',
+          severity: 'medium',
+          category: 'Cookie Security',
+          recommendation: 'Add HttpOnly flag to cookies: Set-Cookie: name=value; HttpOnly',
+          impact_score: 6,
+          evidence: cookieHeader,
+          confidence: 'high',
+          reference_links: [
+            'https://owasp.org/www-community/HttpOnly',
+            'https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#restrict_access_to_cookies'
+          ]
+        });
+        deduction += 6;
+      }
+      
+      if (!hasSameSite) {
+        findings.push({
+          id: 'missing-samesite',
+          title: 'Missing SameSite Cookie Attribute',
+          description: 'Cookies lack SameSite protection against CSRF attacks',
+          severity: 'low',
+          category: 'Cookie Security',
+          recommendation: 'Add SameSite attribute: Set-Cookie: name=value; SameSite=Strict',
+          impact_score: 4,
+          evidence: cookieHeader,
+          confidence: 'high',
+          reference_links: [
+            'https://owasp.org/www-community/SameSite',
+            'https://web.dev/samesite-cookies-explained/'
+          ]
+        });
+        deduction += 4;
+      }
+    }
+  } catch (error) {
+    console.error('Error checking cookies:', error);
+  }
+
+  return { findings, deduction };
+}
+
+// Open Redirect Check
+async function checkOpenRedirect(url: string) {
+  const findings: SecurityCheck[] = [];
+  let deduction = 0;
+
+  try {
+    const testUrls = [
+      `${url}?redirect=https://evil.com`,
+      `${url}?url=https://evil.com`,
+      `${url}?return_to=https://evil.com`,
+      `${url}?next=https://evil.com`
+    ];
+
+    for (const testUrl of testUrls) {
+      try {
+        const response = await fetch(testUrl, { 
+          method: 'HEAD',
+          redirect: 'manual'
+        });
+        
+        if (response.status >= 300 && response.status < 400) {
+          const location = response.headers.get('location');
+          if (location && location.includes('evil.com')) {
+            findings.push({
+              id: 'open-redirect',
+              title: 'Open Redirect Vulnerability',
+              description: 'Application redirects to external URLs without validation',
+              severity: 'medium',
+              category: 'Open Redirect',
+              recommendation: 'Validate redirect URLs against a whitelist of allowed domains',
+              impact_score: 12,
+              evidence: `Redirect to: ${location}`,
+              confidence: 'high',
+              reference_links: [
+                'https://owasp.org/www-project-web-security-testing-guide/v42/4-Web_Application_Security_Testing/11-Client-side_Testing/04-Testing_for_Client-side_URL_Redirect',
+                'https://cheatsheetseries.owasp.org/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.html'
+              ]
+            });
+            deduction += 12;
+            break; // Found one, no need to test more
+          }
+        }
+      } catch (error) {
+        // Skip individual URL test errors
+      }
+    }
+  } catch (error) {
+    console.error('Error checking open redirects:', error);
+  }
+
+  return { findings, deduction };
+}
+
+// Basic SQL Injection Check
+async function checkBasicSQLInjection(url: string) {
+  const findings: SecurityCheck[] = [];
+  let deduction = 0;
+
+  try {
+    const sqlPayloads = [
+      "'",
+      "1'",
+      "1' OR '1'='1",
+      "'; DROP TABLE users; --"
+    ];
+
+    for (const payload of sqlPayloads) {
+      try {
+        const testUrl = `${url}?id=${encodeURIComponent(payload)}`;
+        const response = await fetch(testUrl);
+        const html = await response.text();
+        
+        // Look for common SQL error messages
+        const sqlErrors = [
+          'mysql_fetch_array',
+          'ORA-01756',
+          'Microsoft OLE DB Provider',
+          'ODBC SQL Server Driver',
+          'SQLServer JDBC Driver',
+          'PostgreSQL query failed',
+          'Warning: mysql_',
+          'valid MySQL result',
+          'MySqlClient\\.'
+        ];
+        
+        for (const errorPattern of sqlErrors) {
+          if (html.toLowerCase().includes(errorPattern.toLowerCase())) {
+            findings.push({
+              id: 'sql-injection-error',
+              title: 'Potential SQL Injection Vulnerability',
+              description: 'Database error messages suggest potential SQL injection vulnerability',
+              severity: 'high',
+              category: 'SQL Injection',
+              recommendation: 'Use parameterized queries and input validation to prevent SQL injection',
+              impact_score: 25,
+              evidence: `Error pattern found: ${errorPattern}`,
+              confidence: 'medium',
+              reference_links: [
+                'https://owasp.org/www-community/attacks/SQL_Injection',
+                'https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html'
+              ]
+            });
+            deduction += 25;
+            return { findings, deduction }; // Exit early if found
+          }
+        }
+      } catch (error) {
+        // Skip individual payload test errors
+      }
+    }
+  } catch (error) {
+    console.error('Error checking SQL injection:', error);
   }
 
   return { findings, deduction };
