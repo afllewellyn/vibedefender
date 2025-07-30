@@ -15,7 +15,6 @@ const Index = () => {
   } = useAuth();
   const navigate = useNavigate();
   const [activeScanId, setActiveScanId] = useState<string | null>(null);
-  
   console.log('[Index.tsx] Component rendered, activeScanId:', activeScanId);
   // Allow authenticated users to view homepage - no automatic redirect
   if (isLoading) {
@@ -38,12 +37,9 @@ const Index = () => {
             </h1>
           </div>
           
-          <h2 className="text-4xl font-bold mb-6 text-foreground">Security scan your vibe-coded web app in 60 seconds</h2>
+          <h2 className="text-4xl font-bold mb-6 text-foreground">Scan your vibe-coded app for security issues in 60 seconds</h2>
           
-          <p className="text-xl text-muted-foreground mb-12 max-w-3xl mx-auto">
-            Comprehensive website security scanning and monitoring. Get detailed security reports
-            and actionable recommendations to protect your online presence.
-          </p>
+          <p className="text-xl text-muted-foreground mb-12 max-w-3xl mx-auto">Comprehensive website security scanning. Get detailed security reports and actionable recommendations to protect your vibe-coded web apps.</p>
           
           {/* Main CTA - Guest Scan Form */}
           <div className="max-w-2xl mx-auto mb-8">
@@ -71,13 +67,10 @@ const Index = () => {
 
           {/* Secondary Call to Action Buttons */}
           {!activeScanId && <div className="flex gap-4 justify-center">
-              {user ? (
-                <Button variant="outline" size="lg" onClick={() => navigate('/dashboard')}>
+              {user ? <Button variant="outline" size="lg" onClick={() => navigate('/dashboard')}>
                   Go to Dashboard
                   <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              ) : (
-                <>
+                </Button> : <>
                   <Button variant="outline" size="lg" onClick={() => navigate('/signup')}>
                     Create Account
                     <ArrowRight className="ml-2 h-4 w-4" />
@@ -85,8 +78,7 @@ const Index = () => {
                   <Button variant="ghost" size="lg" onClick={() => navigate('/login')}>
                     Sign In
                   </Button>
-                </>
-              )}
+                </>}
             </div>}
         </div>
 
