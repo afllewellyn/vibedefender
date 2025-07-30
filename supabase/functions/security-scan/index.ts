@@ -26,8 +26,10 @@ serve(async (req) => {
 
   try {
     const { scanId } = await req.json();
+    console.log('[security-scan] Edge function invoked with scanId:', scanId);
     
     if (!scanId) {
+      console.error('[security-scan] No scanId provided in request');
       return new Response(JSON.stringify({ error: 'scanId is required' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -47,14 +49,17 @@ serve(async (req) => {
       .single();
 
     if (scanError || !scan) {
-      console.error('Failed to fetch scan:', scanError);
+      console.error('[security-scan] Failed to fetch scan:', scanError);
       return new Response(JSON.stringify({ error: 'Scan not found' }), {
         status: 404,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
+    console.log('[security-scan] Scan fetched successfully:', scan.url);
+
     // Update scan status to running
+    console.log('[security-scan] Updating scan status to running...');
     await supabase
       .from('scans')
       .update({ 
@@ -63,7 +68,7 @@ serve(async (req) => {
       })
       .eq('id', scanId);
 
-    console.log(`Starting security scan for: ${scan.url}`);
+    console.log(`[security-scan] Starting security scan for: ${scan.url}`);
 
     const findings: SecurityCheck[] = [];
     let totalScore = 100;
@@ -131,7 +136,7 @@ serve(async (req) => {
         })
         .eq('id', scanId);
 
-      console.log(`Scan completed. Score: ${totalScore}, Findings: ${findings.length}`);
+      console.log(`[security-scan] Scan completed. Score: ${totalScore}, Findings: ${findings.length}`);
 
       return new Response(JSON.stringify({ 
         success: true, 
@@ -142,7 +147,7 @@ serve(async (req) => {
       });
 
     } catch (error) {
-      console.error('Scan execution error:', error);
+      console.error('[security-scan] Scan execution error:', error);
       
       // Update scan status to failed
       await supabase
@@ -158,7 +163,7 @@ serve(async (req) => {
     }
 
   } catch (error) {
-    console.error('Security scan error:', error);
+    console.error('[security-scan] Security scan error:', error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

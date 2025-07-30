@@ -42,6 +42,7 @@ export const ScanResults = ({ scanId, onCreateAccount }: ScanResultsProps) => {
 
   const fetchScanData = async () => {
     try {
+      console.log('[ScanResults.tsx] Fetching scan data for scanId:', scanId);
       // Fetch scan details
       const { data: scanData, error: scanError } = await supabase
         .from('scans')
@@ -49,22 +50,31 @@ export const ScanResults = ({ scanId, onCreateAccount }: ScanResultsProps) => {
         .eq('id', scanId)
         .single();
 
-      if (scanError) throw scanError;
+      console.log('[ScanResults.tsx] Scan data fetched:', scanData);
+      if (scanError) {
+        console.error('[ScanResults.tsx] Error fetching scan:', scanError);
+        throw scanError;
+      }
       setScan(scanData);
 
       // Fetch findings if scan is completed
       if (scanData.status === 'completed') {
+        console.log('[ScanResults.tsx] Scan completed, fetching findings...');
         const { data: findingsData, error: findingsError } = await supabase
           .from('scan_findings')
           .select('*')
           .eq('scan_id', scanId)
           .order('impact_score', { ascending: false });
 
-        if (findingsError) throw findingsError;
+        console.log('[ScanResults.tsx] Findings data fetched:', findingsData);
+        if (findingsError) {
+          console.error('[ScanResults.tsx] Error fetching findings:', findingsError);
+          throw findingsError;
+        }
         setFindings(findingsData || []);
       }
     } catch (error) {
-      console.error('Error fetching scan data:', error);
+      console.error('[ScanResults.tsx] Error fetching scan data:', error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -72,20 +82,26 @@ export const ScanResults = ({ scanId, onCreateAccount }: ScanResultsProps) => {
       });
     } finally {
       setLoading(false);
+      console.log('[ScanResults.tsx] fetchScanData completed');
     }
   };
 
   useEffect(() => {
+    console.log('[ScanResults.tsx] useEffect triggered, scanId:', scanId, 'scan status:', scan?.status);
     fetchScanData();
     
     // Poll for updates if scan is not completed
     const interval = setInterval(() => {
       if (scan?.status === 'pending' || scan?.status === 'running') {
+        console.log('[ScanResults.tsx] Polling for scan updates, current status:', scan.status);
         fetchScanData();
       }
     }, 5000);
 
-    return () => clearInterval(interval);
+    return () => {
+      console.log('[ScanResults.tsx] Clearing polling interval');
+      clearInterval(interval);
+    };
   }, [scanId, scan?.status]);
 
   const getSeverityColor = (severity: string) => {

@@ -15,6 +15,8 @@ const Index = () => {
   } = useAuth();
   const navigate = useNavigate();
   const [activeScanId, setActiveScanId] = useState<string | null>(null);
+  
+  console.log('[Index.tsx] Component rendered, activeScanId:', activeScanId);
   useEffect(() => {
     if (!isLoading && user) {
       navigate('/dashboard');
@@ -69,7 +71,7 @@ const Index = () => {
             </div>}
 
           {/* Show scan results if a scan is active */}
-          {activeScanId}
+          {activeScanId && <ScanResults scanId={activeScanId} onCreateAccount={() => navigate('/signup')} />}
 
           {/* Secondary Call to Action Buttons */}
           {!activeScanId && <div className="flex gap-4 justify-center">

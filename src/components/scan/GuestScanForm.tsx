@@ -32,8 +32,10 @@ export const GuestScanForm = ({ onScanCreated }: GuestScanFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('[GuestScanForm.tsx] Form submitted with URL:', url);
     
     if (!url.trim()) {
+      console.log('[GuestScanForm.tsx] URL validation failed - empty URL');
       toast({
         variant: "destructive",
         title: "URL Required",
@@ -43,8 +45,10 @@ export const GuestScanForm = ({ onScanCreated }: GuestScanFormProps) => {
     }
 
     const sanitizedUrl = sanitizeUrl(url);
+    console.log('[GuestScanForm.tsx] Sanitized URL:', sanitizedUrl);
     
     if (!validateUrl(sanitizedUrl)) {
+      console.log('[GuestScanForm.tsx] URL validation failed:', sanitizedUrl);
       toast({
         variant: "destructive",
         title: "Invalid URL",
@@ -54,6 +58,7 @@ export const GuestScanForm = ({ onScanCreated }: GuestScanFormProps) => {
     }
 
     setIsScanning(true);
+    console.log('[GuestScanForm.tsx] Starting scan process...');
 
     try {
       // Create anonymous scan
@@ -67,21 +72,27 @@ export const GuestScanForm = ({ onScanCreated }: GuestScanFormProps) => {
         .select()
         .single();
 
+      console.log('[GuestScanForm.tsx] Scan record created:', scan);
+
       if (error) {
+        console.error('[GuestScanForm.tsx] Error creating scan record:', error);
         throw error;
       }
 
       // Trigger the security scan
+      console.log('[GuestScanForm.tsx] Invoking security-scan function with scanId:', scan.id);
       try {
         const { error: scanError } = await supabase.functions.invoke('security-scan', {
           body: { scanId: scan.id }
         });
 
         if (scanError) {
-          console.error('Error starting scan:', scanError);
+          console.error('[GuestScanForm.tsx] Error starting scan:', scanError);
+        } else {
+          console.log('[GuestScanForm.tsx] Security scan function invoked successfully');
         }
       } catch (scanInvokeError) {
-        console.error('Error invoking scan function:', scanInvokeError);
+        console.error('[GuestScanForm.tsx] Error invoking scan function:', scanInvokeError);
       }
 
       toast({
@@ -89,11 +100,12 @@ export const GuestScanForm = ({ onScanCreated }: GuestScanFormProps) => {
         description: "Your security scan has been initiated.",
       });
 
-      // Navigate to scan progress page
-      window.location.href = `/scan/${scan.id}`;
+      // Since we're staying on the same page now, just reset URL and call onScanCreated
+      console.log('[GuestScanForm.tsx] Calling onScanCreated with scanId:', scan.id);
+      onScanCreated(scan.id);
       setUrl('');
     } catch (error) {
-      console.error('Scan creation error:', error);
+      console.error('[GuestScanForm.tsx] Scan creation error:', error);
       toast({
         variant: "destructive",
         title: "Scan Failed",
@@ -101,6 +113,7 @@ export const GuestScanForm = ({ onScanCreated }: GuestScanFormProps) => {
       });
     } finally {
       setIsScanning(false);
+      console.log('[GuestScanForm.tsx] Scan process completed, isScanning set to false');
     }
   };
 
