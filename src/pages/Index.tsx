@@ -17,11 +17,7 @@ const Index = () => {
   const [activeScanId, setActiveScanId] = useState<string | null>(null);
   
   console.log('[Index.tsx] Component rendered, activeScanId:', activeScanId);
-  useEffect(() => {
-    if (!isLoading && user) {
-      navigate('/dashboard');
-    }
-  }, [user, isLoading, navigate]);
+  // Allow authenticated users to view homepage - no automatic redirect
   if (isLoading) {
     return <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
@@ -75,13 +71,22 @@ const Index = () => {
 
           {/* Secondary Call to Action Buttons */}
           {!activeScanId && <div className="flex gap-4 justify-center">
-              <Button variant="outline" size="lg" onClick={() => navigate('/signup')}>
-                Create Account
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="lg" onClick={() => navigate('/login')}>
-                Sign In
-              </Button>
+              {user ? (
+                <Button variant="outline" size="lg" onClick={() => navigate('/dashboard')}>
+                  Go to Dashboard
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              ) : (
+                <>
+                  <Button variant="outline" size="lg" onClick={() => navigate('/signup')}>
+                    Create Account
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="lg" onClick={() => navigate('/login')}>
+                    Sign In
+                  </Button>
+                </>
+              )}
             </div>}
         </div>
 

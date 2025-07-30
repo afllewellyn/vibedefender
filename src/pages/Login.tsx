@@ -17,11 +17,7 @@ const Login = () => {
   const navigate = useNavigate();
   const { user, isLoading: authLoading } = useAuth();
 
-  useEffect(() => {
-    if (!authLoading && user) {
-      navigate('/dashboard');
-    }
-  }, [user, authLoading, navigate]);
+  // Remove automatic redirect - only redirect after successful login
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
