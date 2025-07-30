@@ -3,20 +3,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { FolderOpen, Scan, History } from 'lucide-react';
+import { Header } from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
 
 const Dashboard = () => {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background p-4">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">Dashboard</h1>
-          <Button variant="outline" onClick={signOut}>
-            Sign Out
-          </Button>
-        </div>
+    <div className="min-h-screen bg-background">
+      <Header />
+      <div className="p-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold">Dashboard</h1>
+          </div>
         
         {/* Quick Stats */}
         <div className="grid gap-6 md:grid-cols-3 mb-8">
@@ -126,7 +127,9 @@ const Dashboard = () => {
             </CardContent>
           </Card>
         </div>
+        </div>
       </div>
+      <Footer />
     </div>
   );
 };

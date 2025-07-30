@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, Shield, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import { Header } from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
 
 interface Scan {
   id: string;
@@ -130,40 +132,44 @@ const ScanProgress = () => {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-center">
-            <Shield className="h-12 w-12 mx-auto mb-4 animate-spin" />
-            <p>Loading scan data...</p>
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <Shield className="h-12 w-12 mx-auto mb-4 animate-spin" />
+              <p>Loading scan data...</p>
+            </div>
           </div>
         </div>
+        <Footer />
       </div>
     );
   }
 
   if (!scan) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Scan Not Found</h1>
-          <p className="text-muted-foreground mb-6">The scan you're looking for doesn't exist.</p>
-          <Button onClick={() => navigate('/')}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Home
-          </Button>
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-4">Scan Not Found</h1>
+            <p className="text-muted-foreground mb-6">The scan you're looking for doesn't exist.</p>
+            <Button onClick={() => navigate('/')}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Home
+            </Button>
+          </div>
         </div>
+        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-6">
-        <Button variant="ghost" onClick={() => navigate('/')}>
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Home
-        </Button>
-      </div>
+    <div className="min-h-screen bg-background">
+      <Header />
+      <div className="container mx-auto px-4 py-8">
 
       <div className="max-w-2xl mx-auto">
         <Card>
@@ -228,6 +234,8 @@ const ScanProgress = () => {
           </CardContent>
         </Card>
       </div>
+      </div>
+      <Footer />
     </div>
   );
 };

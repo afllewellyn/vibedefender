@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useEffect } from 'react';
+import { Header } from '@/components/layout/Header';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -54,11 +55,18 @@ const Login = () => {
   };
 
   if (authLoading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="flex items-center justify-center min-h-[80vh]">Loading...</div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+    <div className="min-h-screen bg-background">
+      <Header />
+      <div className="flex items-center justify-center p-4 pt-20">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl text-center">Sign In</CardTitle>
@@ -108,6 +116,7 @@ const Login = () => {
           </div>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 };

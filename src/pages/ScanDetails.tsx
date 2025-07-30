@@ -7,6 +7,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, Shield, Clock, CheckCircle, XCircle, AlertTriangle, Download } from 'lucide-react';
+import { Header } from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
 
 interface ScanFinding {
   id: string;
@@ -150,35 +152,45 @@ const ScanDetails = () => {
 
   if (isLoading || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <Shield className="h-8 w-8 animate-pulse mx-auto mb-2 text-primary" />
-          <h1 className="text-2xl font-semibold mb-2">Loading...</h1>
-          <p className="text-muted-foreground">Please wait while we load the scan details.</p>
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="flex items-center justify-center p-4">
+          <div className="text-center">
+            <Shield className="h-8 w-8 animate-pulse mx-auto mb-2 text-primary" />
+            <h1 className="text-2xl font-semibold mb-2">Loading...</h1>
+            <p className="text-muted-foreground">Please wait while we load the scan details.</p>
+          </div>
         </div>
+        <Footer />
       </div>
     );
   }
 
   if (!scan) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-red-600" />
-          <h1 className="text-2xl font-semibold mb-2">Scan Not Found</h1>
-          <p className="text-muted-foreground mb-4">The requested scan could not be found.</p>
-          <Button onClick={() => navigate('/scans')}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Scans
-          </Button>
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="flex items-center justify-center p-4">
+          <div className="text-center">
+            <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-red-600" />
+            <h1 className="text-2xl font-semibold mb-2">Scan Not Found</h1>
+            <p className="text-muted-foreground mb-4">The requested scan could not be found.</p>
+            <Button onClick={() => navigate('/scans')}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Scans
+            </Button>
+          </div>
         </div>
+        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background p-4">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-background">
+      <Header />
+      <div className="p-4">
+        <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
           <Button variant="outline" onClick={() => navigate('/scans')}>
@@ -358,7 +370,9 @@ const ScanDetails = () => {
             </CardContent>
           </Card>
         )}
+        </div>
       </div>
+      <Footer />
     </div>
   );
 };

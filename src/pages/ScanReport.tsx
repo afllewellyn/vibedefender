@@ -7,6 +7,8 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, Shield, Download, Share2, User } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { Header } from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
 
 interface ScanFinding {
   id: string;
@@ -127,34 +129,44 @@ const ScanReport = () => {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-center">
-            <Shield className="h-12 w-12 mx-auto mb-4 animate-spin" />
-            <p>Loading scan report...</p>
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <Shield className="h-12 w-12 mx-auto mb-4 animate-spin" />
+              <p>Loading scan report...</p>
+            </div>
           </div>
         </div>
+        <Footer />
       </div>
     );
   }
 
   if (!scan) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Report Not Found</h1>
-          <p className="text-muted-foreground mb-6">The scan report you're looking for doesn't exist.</p>
-          <Button onClick={() => navigate('/')}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Home
-          </Button>
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-4">Report Not Found</h1>
+            <p className="text-muted-foreground mb-6">The scan report you're looking for doesn't exist.</p>
+            <Button onClick={() => navigate('/')}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Home
+            </Button>
+          </div>
         </div>
+        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-background">
+      <Header />
+      <div className="container mx-auto px-4 py-8">
       <div className="mb-6 flex items-center justify-between">
         <Button variant="ghost" onClick={() => navigate('/')}>
           <ArrowLeft className="mr-2 h-4 w-4" />
@@ -288,6 +300,8 @@ const ScanReport = () => {
           </Card>
         )}
       </div>
+      </div>
+      <Footer />
     </div>
   );
 };

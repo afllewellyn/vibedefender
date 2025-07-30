@@ -2,18 +2,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { Header } from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
 
 const Privacy = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-6">
-        <Button variant="ghost" onClick={() => navigate('/')}>
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Home
-        </Button>
-      </div>
+    <div className="min-h-screen bg-background">
+      <Header />
+      <div className="container mx-auto px-4 py-8">
 
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="text-center">
@@ -156,7 +154,9 @@ const Privacy = () => {
             </ul>
           </CardContent>
         </Card>
+        </div>
       </div>
+      <Footer />
     </div>
   );
 };
