@@ -102,7 +102,7 @@ const Index = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Shield className="h-5 w-5 text-accent-foreground" />
-                Real-time Monitoring
+                Deep Security Checks
               </CardTitle>
             </CardHeader>
             <CardContent>
