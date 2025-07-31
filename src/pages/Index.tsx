@@ -107,10 +107,7 @@ const Index = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription>
-                Monitor your website's security posture with automated scans and instant alerts
-                when new vulnerabilities are discovered.
-              </CardDescription>
+              <CardDescription>Uncover critical security risks including misconfigurations, exposed files, missing headers, and more — built for modern no-code and AI-built sites.</CardDescription>
             </CardContent>
           </Card>
 
