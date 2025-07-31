@@ -37,9 +37,11 @@ const Index = () => {
             </h1>
           </div>
           
-          <h2 className="text-4xl font-bold mb-6 text-foreground">Scan your vibe-coded app for security issues in 60 seconds</h2>
+          <h2 className="text-4xl font-bold mb-6 text-foreground">Scan your website for security vulnerabilities in 60 seconds — no signup needed</h2>
           
-          <p className="text-xl text-muted-foreground mb-12 max-w-3xl mx-auto">Comprehensive website security scanning. Get detailed security reports and actionable recommendations to protect your vibe-coded web apps.</p>
+          <p className="text-xl text-muted-foreground mb-12 max-w-3xl mx-auto">Run automated security scans to detect exposed secrets, missing security headers, and common misconfigurations. Designed for modern no-code, low-code, and AI-generated web apps.
+
+        </p>
           
           {/* Main CTA - Guest Scan Form */}
           <div className="max-w-2xl mx-auto mb-8">
@@ -92,10 +94,7 @@ const Index = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription>
-                Get comprehensive security analysis of your website in minutes, not hours.
-                Our automated scanning engine checks for common vulnerabilities and configuration issues.
-              </CardDescription>
+              <CardDescription>Instantly scan your site for common vulnerabilities, misconfigurations, and exposed files — with results in under 60 seconds.</CardDescription>
             </CardContent>
           </Card>
 
@@ -119,10 +118,7 @@ const Index = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription>
-                Receive actionable security reports with clear recommendations and prioritized
-                fixes to improve your website's security.
-              </CardDescription>
+              <CardDescription>Receive actionable security reports and grades with clear recommendations and prioritized fixes to improve your website's security.</CardDescription>
             </CardContent>
           </Card>
         </div>
