@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Search, Globe, Calendar, MoreVertical, Edit2, Trash2 } from 'lucide-react';
+import { Plus, Search, Globe, Calendar, MoreVertical, Edit2, Trash2, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { ProjectForm } from '@/components/projects/ProjectForm';
 import { DeleteProjectDialog } from '@/components/projects/DeleteProjectDialog';
+import { ProjectScanDialog } from '@/components/projects/ProjectScanDialog';
 import { Header } from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 
@@ -35,6 +36,7 @@ const Projects = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isScanDialogOpen, setIsScanDialogOpen] = useState(false);
 
   const fetchProjects = async () => {
     if (!user) return;
@@ -111,6 +113,12 @@ const Projects = () => {
       title: "Success",
       description: "Project deleted successfully.",
     });
+  };
+
+  const handleScanCreated = () => {
+    setIsScanDialogOpen(false);
+    setSelectedProject(null);
+    fetchProjects(); // Refresh to update scan count
   };
 
   const formatDate = (dateString: string) => {
@@ -272,7 +280,7 @@ const Projects = () => {
                     </p>
                   )}
                   
-                  <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center justify-between text-sm mb-4">
                     <div className="flex items-center gap-4">
                       <div className="flex items-center gap-1">
                         <Badge variant="secondary">{project.scan_count || 0} scans</Badge>
@@ -283,6 +291,18 @@ const Projects = () => {
                       <span>{formatDate(project.created_at)}</span>
                     </div>
                   </div>
+                  
+                  <Button 
+                    className="w-full" 
+                    size="sm" 
+                    onClick={() => {
+                      setSelectedProject(project);
+                      setIsScanDialogOpen(true);
+                    }}
+                  >
+                    <Shield className="h-4 w-4 mr-2" />
+                    New Scan
+                  </Button>
                 </CardContent>
               </Card>
             ))}
@@ -314,6 +334,17 @@ const Projects = () => {
             open={isDeleteDialogOpen}
             onOpenChange={setIsDeleteDialogOpen}
             onSuccess={handleProjectDeleted}
+          />
+        )}
+
+        {/* Scan Project Dialog */}
+        {selectedProject && (
+          <ProjectScanDialog
+            open={isScanDialogOpen}
+            onOpenChange={setIsScanDialogOpen}
+            projectId={selectedProject.id}
+            projectName={selectedProject.name}
+            onScanCreated={handleScanCreated}
           />
         )}
         </div>

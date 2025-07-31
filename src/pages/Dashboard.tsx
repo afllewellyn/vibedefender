@@ -2,13 +2,15 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
-import { FolderOpen, Scan, History } from 'lucide-react';
+import { FolderOpen, Scan, History, TrendingUp, TrendingDown } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import { useUserStats } from '@/hooks/useUserStats';
 
 const Dashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { totalProjects, totalScans, averageGrade, recentScans, isLoading } = useUserStats();
 
   return (
     <div className="min-h-screen bg-background">
@@ -26,8 +28,13 @@ const Dashboard = () => {
               <CardTitle className="text-base">Total Projects</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">0</div>
-              <p className="text-xs text-muted-foreground">+0 from last month</p>
+              <div className="text-2xl font-bold">
+                {isLoading ? "..." : totalProjects}
+              </div>
+              <p className="text-xs text-muted-foreground flex items-center">
+                <TrendingUp className="h-3 w-3 mr-1" />
+                Active projects
+              </p>
             </CardContent>
           </Card>
           
@@ -36,8 +43,13 @@ const Dashboard = () => {
               <CardTitle className="text-base">Total Scans</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">0</div>
-              <p className="text-xs text-muted-foreground">+0 from last month</p>
+              <div className="text-2xl font-bold">
+                {isLoading ? "..." : totalScans}
+              </div>
+              <p className="text-xs text-muted-foreground flex items-center">
+                <TrendingUp className="h-3 w-3 mr-1" />
+                Security scans completed
+              </p>
             </CardContent>
           </Card>
           
@@ -46,11 +58,50 @@ const Dashboard = () => {
               <CardTitle className="text-base">Average Grade</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">-</div>
-              <p className="text-xs text-muted-foreground">No scans yet</p>
+              <div className="text-2xl font-bold">
+                {isLoading ? "..." : averageGrade}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {totalScans === 0 ? "No scans yet" : "Across all scans"}
+              </p>
             </CardContent>
           </Card>
         </div>
+
+        {/* Recent Scans */}
+        {!isLoading && recentScans.length > 0 && (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>Recent Scans</CardTitle>
+              <CardDescription>Your latest security scan results</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {recentScans.slice(0, 3).map((scan, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex-1">
+                      <p className="font-medium text-sm">{scan.url}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(scan.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className={`text-sm font-bold ${
+                        scan.grade === 'A' ? 'text-green-600' :
+                        scan.grade === 'B' ? 'text-blue-600' :
+                        scan.grade === 'C' ? 'text-yellow-600' :
+                        scan.grade === 'D' ? 'text-orange-600' :
+                        scan.grade === 'F' ? 'text-red-600' : 'text-muted-foreground'
+                      }`}>
+                        {scan.grade || 'Pending'}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Welcome Card */}
         <Card className="mb-8">
