@@ -58,7 +58,7 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="mailto:security@vibescurity.com" className="text-muted-foreground hover:text-foreground">
+                <a href="mailto:afllewellyn@gmail.com" className="text-muted-foreground hover:text-foreground">
                   Report Security Issue
                 </a>
               </li>
