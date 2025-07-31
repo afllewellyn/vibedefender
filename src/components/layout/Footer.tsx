@@ -53,7 +53,7 @@ const Footer = () => {
             <h3 className="font-semibold mb-4">Support</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="mailto:support@vibescurity.com" className="text-muted-foreground hover:text-foreground">
+                <a href="mailto:afllewellyn@gmail.com" className="text-muted-foreground hover:text-foreground">
                   Contact Support
                 </a>
               </li>
