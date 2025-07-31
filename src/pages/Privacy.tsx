@@ -4,12 +4,9 @@ import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-
 const Privacy = () => {
   const navigate = useNavigate();
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       <Header />
       <div className="container mx-auto px-4 py-8">
 
@@ -149,16 +146,15 @@ const Privacy = () => {
           <CardContent>
             <p>If you have any questions about this Privacy Policy, please contact us:</p>
             <ul className="mt-4 space-y-2">
-              <li>Email: privacy@vibescurity.com</li>
-              <li>Address: [Company Address]</li>
+              <li>Email: afllewellyn@gmail.com</li>
+              <li>
+              </li>
             </ul>
           </CardContent>
         </Card>
         </div>
       </div>
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Privacy;
