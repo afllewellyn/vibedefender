@@ -4,19 +4,16 @@ import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-
 const Terms = () => {
   const navigate = useNavigate();
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       <Header />
       <div className="container mx-auto px-4 py-8">
 
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-4">Terms of Service</h1>
-          <p className="text-muted-foreground">Last updated: January 2025</p>
+          <p className="text-muted-foreground">Last updated: July 2025</p>
         </div>
 
         <Card>
@@ -196,16 +193,15 @@ const Terms = () => {
           <CardContent>
             <p>If you have any questions about these Terms of Service, please contact us:</p>
             <ul className="mt-4 space-y-2">
-              <li>Email: legal@vibescurity.com</li>
-              <li>Address: [Company Address]</li>
+              <li>Email: afllewellyn@gmail.com</li>
+              <li>
+              </li>
             </ul>
           </CardContent>
         </Card>
         </div>
       </div>
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Terms;
