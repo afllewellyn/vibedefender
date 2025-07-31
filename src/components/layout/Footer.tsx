@@ -9,9 +9,7 @@ const Footer = () => {
               <Shield className="h-6 w-6" />
               <span className="font-bold text-lg">Vibescurity</span>
             </div>
-            <p className="text-sm text-muted-foreground">
-              Comprehensive website security scanning and monitoring platform.
-            </p>
+            <p className="text-sm text-muted-foreground">Let AI provide website security reports for your vibe-coded web apps.</p>
           </div>
 
           <div>
