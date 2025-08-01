@@ -9,7 +9,7 @@ const Footer = () => {
               <Shield className="h-6 w-6" />
               <span className="font-bold text-lg text-slate-900">Vibescurity</span>
             </div>
-            <p className="text-sm text-muted-foreground">Let AI provide website security reports for your vibe-coded web apps. This site may make mistakes. For deep or authenticated testing, engage a security consultant.</p>
+            <p className="text-sm text-muted-foreground">Vibescurity scans only the homepage and select public endpoints for visible issues, scored to OWASP Top 10 and CVSS best practices. For in-depth, authenticated, or full-site testing, consult a professional security auditor. This site is in progress and may make mistakes.</p>
           </div>
 
           <div>
