@@ -94,7 +94,7 @@ const Index = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription>Instantly scan your site for common vulnerabilities, misconfigurations, and exposed files — with results in under 60 seconds.</CardDescription>
+              <CardDescription>Instantly scan your sites homepage for common vulnerabilities, misconfigurations, and exposed files — with results in under 60 seconds.</CardDescription>
             </CardContent>
           </Card>
 
@@ -106,7 +106,7 @@ const Index = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription>Uncover critical security risks including misconfigurations, exposed files, missing headers, and more — built for modern no-code and AI-built sites.</CardDescription>
+              <CardDescription>Uncover common security risks including misconfigurations, exposed files, missing headers, and more — built for modern no-code and AI-built sites.</CardDescription>
             </CardContent>
           </Card>
 
