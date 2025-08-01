@@ -86,6 +86,7 @@ export type Database = {
           id: string
           impact_score: number | null
           recommendation: string | null
+          reference_links: string[] | null
           scan_id: string
           severity: string
           title: string
@@ -98,6 +99,7 @@ export type Database = {
           id?: string
           impact_score?: number | null
           recommendation?: string | null
+          reference_links?: string[] | null
           scan_id: string
           severity: string
           title: string
@@ -110,6 +112,7 @@ export type Database = {
           id?: string
           impact_score?: number | null
           recommendation?: string | null
+          reference_links?: string[] | null
           scan_id?: string
           severity?: string
           title?: string

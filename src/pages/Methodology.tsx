@@ -44,35 +44,6 @@ const Methodology = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Globe className="h-5 w-5" />
-                Network & Infrastructure
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2 text-sm">
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-500" />
-                  SSL/TLS Configuration
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-500" />
-                  Certificate Validation
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-500" />
-                  DNS Security
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-500" />
-                  Port Scanning
-                </li>
-              </ul>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
                 <Shield className="h-5 w-5" />
                 Security Headers
               </CardTitle>
@@ -81,11 +52,11 @@ const Methodology = () => {
               <ul className="space-y-2 text-sm">
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4 text-green-500" />
-                  Content Security Policy (CSP)
+                  HTTP Strict Transport Security (HSTS)
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4 text-green-500" />
-                  HTTP Strict Transport Security
+                  Content Security Policy (CSP)
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4 text-green-500" />
@@ -95,6 +66,14 @@ const Methodology = () => {
                   <CheckCircle className="h-4 w-4 text-green-500" />
                   X-Content-Type-Options
                 </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  Referrer-Policy
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  Permissions-Policy
+                </li>
               </ul>
             </CardContent>
           </Card>
@@ -103,14 +82,14 @@ const Methodology = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5" />
-                Vulnerability Assessment
+                Vulnerability Testing
               </CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm">
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4 text-green-500" />
-                  OWASP Top 10 Checks
+                  Cross-Site Scripting (XSS)
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4 text-green-500" />
@@ -118,11 +97,11 @@ const Methodology = () => {
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4 text-green-500" />
-                  Cross-Site Scripting (XSS)
+                  Cross-Site Request Forgery (CSRF)
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4 text-green-500" />
-                  Authentication Bypasses
+                  Open Redirect Detection
                 </li>
               </ul>
             </CardContent>
@@ -132,26 +111,55 @@ const Methodology = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Globe className="h-5 w-5" />
-                Privacy & Compliance
+                Exposed Files & Data
               </CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm">
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4 text-green-500" />
-                  Cookie Security
+                  Environment Files (.env)
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4 text-green-500" />
-                  Data Protection Measures
+                  Git Configuration Files
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4 text-green-500" />
-                  Third-party Integrations
+                  WordPress Config Files
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4 text-green-500" />
-                  Information Disclosure
+                  Admin Interfaces
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Shield className="h-5 w-5" />
+                Cookie & Platform Security
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2 text-sm">
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  Secure Cookie Flags
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  HttpOnly Cookie Protection
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  SameSite Cookie Attributes
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  Server Information Disclosure
                 </li>
               </ul>
             </CardContent>
@@ -192,8 +200,9 @@ const Methodology = () => {
               </div>
             </div>
             <p className="text-sm text-muted-foreground mt-4">
-              Our grading system takes into account the severity and number of security issues found, 
-              weighted by their potential impact on your website's security posture.
+              Our weighted grading system evaluates security based on category importance: Security Headers (35%), 
+              Vulnerabilities (40%), Exposed Files (20%), and Cookie Security (5%). Each finding is scored by 
+              severity and impact to provide a balanced assessment of your security posture.
             </p>
           </CardContent>
         </Card>

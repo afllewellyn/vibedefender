@@ -5,7 +5,7 @@ import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Shield, AlertTriangle, CheckCircle, XCircle, Clock, User } from 'lucide-react';
+import { Shield, AlertTriangle, CheckCircle, XCircle, Clock, User, ExternalLink, BookOpen } from 'lucide-react';
 
 interface ScanResultsProps {
   scanId: string;
@@ -20,6 +20,7 @@ interface ScanFinding {
   category: string;
   recommendation: string;
   impact_score: number;
+  reference_links?: string[];
 }
 
 interface Scan {
@@ -267,6 +268,29 @@ export const ScanResults = ({ scanId, onCreateAccount }: ScanResultsProps) => {
                     <div className="mt-2 p-2 bg-muted rounded">
                       <span className="font-medium text-sm">Recommendation:</span>
                       <p className="text-sm mt-1">{finding.recommendation}</p>
+                    </div>
+                  )}
+                  
+                  {finding.reference_links && finding.reference_links.length > 0 && (
+                    <div className="mt-3 pt-2 border-t border-border">
+                      <div className="flex items-center gap-2 mb-2">
+                        <BookOpen className="h-4 w-4" />
+                        <span className="font-medium text-sm">Learn How to Fix:</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {finding.reference_links.map((link, index) => (
+                          <Button
+                            key={index}
+                            variant="outline"
+                            size="sm"
+                            className="h-8 text-xs"
+                            onClick={() => window.open(link, '_blank')}
+                          >
+                            <ExternalLink className="h-3 w-3 mr-1" />
+                            Documentation
+                          </Button>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>

@@ -71,44 +71,35 @@ serve(async (req) => {
     console.log(`[security-scan] Starting security scan for: ${scan.url}`);
 
     const findings: SecurityCheck[] = [];
-    let totalScore = 100;
 
     try {
       // Run security checks
       const securityHeadersResults = await checkSecurityHeaders(scan.url);
       findings.push(...securityHeadersResults.findings);
-      totalScore -= securityHeadersResults.deduction;
 
       const exposedFilesResults = await checkExposedFiles(scan.url);
       findings.push(...exposedFilesResults.findings);
-      totalScore -= exposedFilesResults.deduction;
 
       const platformResults = await detectPlatform(scan.url);
       findings.push(...platformResults.findings);
-      totalScore -= platformResults.deduction;
 
       const xssResults = await checkXSS(scan.url);
       findings.push(...xssResults.findings);
-      totalScore -= xssResults.deduction;
 
       const csrfResults = await checkCSRF(scan.url);
       findings.push(...csrfResults.findings);
-      totalScore -= csrfResults.deduction;
 
       const cookieResults = await checkInsecureCookies(scan.url);
       findings.push(...cookieResults.findings);
-      totalScore -= cookieResults.deduction;
 
       const redirectResults = await checkOpenRedirect(scan.url);
       findings.push(...redirectResults.findings);
-      totalScore -= redirectResults.deduction;
 
       const sqlResults = await checkBasicSQLInjection(scan.url);
       findings.push(...sqlResults.findings);
-      totalScore -= sqlResults.deduction;
 
-      // Ensure score doesn't go below 0
-      totalScore = Math.max(0, totalScore);
+      // Calculate weighted score based on findings and positive security measures
+      const totalScore = calculateSecurityScore(findings);
 
       // Save findings to database
       for (const finding of findings) {
@@ -122,7 +113,8 @@ serve(async (req) => {
             category: finding.category,
             recommendation: finding.recommendation,
             impact_score: finding.impact_score,
-            element_selector: finding.evidence
+            element_selector: finding.evidence,
+            reference_links: finding.reference_links || []
           });
       }
 
@@ -174,7 +166,6 @@ serve(async (req) => {
 // Security Headers Check
 async function checkSecurityHeaders(url: string) {
   const findings: SecurityCheck[] = [];
-  let deduction = 0;
 
   try {
     const response = await fetch(url, { method: 'HEAD' });
@@ -197,7 +188,7 @@ async function checkSecurityHeaders(url: string) {
           'https://hstspreload.org/'
         ]
       });
-      deduction += 15;
+      
     }
 
     // Check for CSP
@@ -217,7 +208,7 @@ async function checkSecurityHeaders(url: string) {
           'https://content-security-policy.com/'
         ]
       });
-      deduction += 10;
+      
     }
 
     // Check for X-Frame-Options
@@ -236,7 +227,7 @@ async function checkSecurityHeaders(url: string) {
           'https://owasp.org/www-community/attacks/Clickjacking'
         ]
       });
-      deduction += 8;
+      
     }
 
     // Check for X-Content-Type-Options
@@ -255,7 +246,7 @@ async function checkSecurityHeaders(url: string) {
           'https://owasp.org/www-project-secure-headers/#x-content-type-options'
         ]
       });
-      deduction += 6;
+      
     }
 
     // Check for Referrer-Policy
@@ -274,7 +265,7 @@ async function checkSecurityHeaders(url: string) {
           'https://web.dev/referrer-best-practices/'
         ]
       });
-      deduction += 3;
+      
     }
 
     // Check for X-XSS-Protection (legacy but still relevant)
@@ -293,7 +284,6 @@ async function checkSecurityHeaders(url: string) {
           'https://owasp.org/www-project-secure-headers/#x-xss-protection'
         ]
       });
-      deduction += 2;
     }
 
     // Check for Permissions-Policy
@@ -312,20 +302,64 @@ async function checkSecurityHeaders(url: string) {
           'https://www.w3.org/TR/permissions-policy-1/'
         ]
       });
-      deduction += 2;
+      
     }
 
   } catch (error) {
     console.error('Error checking security headers:', error);
   }
 
-  return { findings, deduction };
+  return { findings };
+}
+
+// Calculate weighted security score based on findings and positive measures
+function calculateSecurityScore(findings: SecurityCheck[]): number {
+  let baseScore = 100;
+  
+  // Weight categories by importance
+  const categoryWeights = {
+    'Security Headers': 0.35,        // 35% - Critical for basic security
+    'Cross-Site Scripting': 0.25,   // 25% - High impact vulnerabilities  
+    'Exposed Files': 0.20,          // 20% - Critical data exposure
+    'SQL Injection': 0.15,          // 15% - High impact vulnerabilities
+    'Cookie Security': 0.08,        // 8% - Important but lower impact
+    'Platform Security': 0.05,      // 5% - Version disclosure, etc.
+    'Information Disclosure': 0.05, // 5% - Server info, etc.
+    'Open Redirect': 0.12,          // 12% - Medium-high impact
+    'CSRF Protection': 0.10         // 10% - Important for forms
+  };
+  
+  // Calculate deductions by category with weighted impact
+  const categoryDeductions: { [key: string]: number } = {};
+  
+  findings.forEach(finding => {
+    const weight = categoryWeights[finding.category] || 0.10; // Default 10% for other categories
+    const severityMultiplier = getSeverityMultiplier(finding.severity);
+    const deduction = finding.impact_score * weight * severityMultiplier;
+    
+    categoryDeductions[finding.category] = (categoryDeductions[finding.category] || 0) + deduction;
+  });
+  
+  // Apply total deductions
+  const totalDeductions = Object.values(categoryDeductions).reduce((sum, deduction) => sum + deduction, 0);
+  const finalScore = Math.max(0, Math.min(100, baseScore - totalDeductions));
+  
+  return Math.round(finalScore);
+}
+
+function getSeverityMultiplier(severity: string): number {
+  switch (severity) {
+    case 'critical': return 1.5;
+    case 'high': return 1.2;
+    case 'medium': return 1.0;
+    case 'low': return 0.7;
+    default: return 1.0;
+  }
 }
 
 // Exposed Files Check
 async function checkExposedFiles(url: string) {
   const findings: SecurityCheck[] = [];
-  let deduction = 0;
 
   const sensitiveFiles = [
     { path: '/.env', severity: 'critical' as const, impact: 30, description: 'Environment variables may contain database passwords, API keys, and other secrets' },
@@ -368,20 +402,19 @@ async function checkExposedFiles(url: string) {
             'https://owasp.org/www-community/attacks/Forced_browsing'
           ]
         });
-        deduction += file.impact;
+        
       }
     } catch (error) {
       // File not accessible, which is good
     }
   }
 
-  return { findings, deduction };
+  return { findings };
 }
 
 // Platform Detection
 async function detectPlatform(url: string) {
   const findings: SecurityCheck[] = [];
-  let deduction = 0;
 
   try {
     const response = await fetch(url);
@@ -408,7 +441,6 @@ async function detectPlatform(url: string) {
             'https://owasp.org/www-project-web-security-testing-guide/'
           ]
         });
-        deduction += 3;
       }
     }
 
@@ -430,20 +462,18 @@ async function detectPlatform(url: string) {
           'https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html'
         ]
       });
-      deduction += 2;
     }
 
   } catch (error) {
     console.error('Error in platform detection:', error);
   }
 
-  return { findings, deduction };
+  return { findings };
 }
 
 // Basic XSS Check
 async function checkXSS(url: string) {
   const findings: SecurityCheck[] = [];
-  let deduction = 0;
 
   try {
     // Test for reflected XSS with a safe payload
@@ -468,20 +498,19 @@ async function checkXSS(url: string) {
           'https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html'
         ]
       });
-      deduction += 20;
+      
     }
 
   } catch (error) {
     console.error('Error checking XSS:', error);
   }
 
-  return { findings, deduction };
+  return { findings };
 }
 
 // CSRF Check
 async function checkCSRF(url: string) {
   const findings: SecurityCheck[] = [];
-  let deduction = 0;
 
   try {
     const response = await fetch(url);
@@ -497,7 +526,7 @@ async function checkCSRF(url: string) {
           title: 'Forms May Lack CSRF Protection',
           description: 'Forms detected but no CSRF tokens found',
           severity: 'medium',
-          category: 'Cross-Site Request Forgery',
+          category: 'CSRF Protection',
           recommendation: 'Implement CSRF tokens for all state-changing forms',
           impact_score: 12,
           confidence: 'medium',
@@ -506,7 +535,6 @@ async function checkCSRF(url: string) {
             'https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html'
           ]
         });
-        deduction += 12;
       }
     }
 
@@ -514,13 +542,12 @@ async function checkCSRF(url: string) {
     console.error('Error checking CSRF:', error);
   }
 
-  return { findings, deduction };
+  return { findings };
 }
 
 // Insecure Cookies Check
 async function checkInsecureCookies(url: string) {
   const findings: SecurityCheck[] = [];
-  let deduction = 0;
 
   try {
     const response = await fetch(url);
@@ -547,7 +574,6 @@ async function checkInsecureCookies(url: string) {
             'https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#restrict_access_to_cookies'
           ]
         });
-        deduction += 8;
       }
       
       if (!isHttpOnly) {
@@ -566,7 +592,6 @@ async function checkInsecureCookies(url: string) {
             'https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#restrict_access_to_cookies'
           ]
         });
-        deduction += 6;
       }
       
       if (!hasSameSite) {
@@ -585,20 +610,18 @@ async function checkInsecureCookies(url: string) {
             'https://web.dev/samesite-cookies-explained/'
           ]
         });
-        deduction += 4;
       }
     }
   } catch (error) {
     console.error('Error checking cookies:', error);
   }
 
-  return { findings, deduction };
+  return { findings };
 }
 
 // Open Redirect Check
 async function checkOpenRedirect(url: string) {
   const findings: SecurityCheck[] = [];
-  let deduction = 0;
 
   try {
     const testUrls = [
@@ -633,7 +656,7 @@ async function checkOpenRedirect(url: string) {
                 'https://cheatsheetseries.owasp.org/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.html'
               ]
             });
-            deduction += 12;
+            
             break; // Found one, no need to test more
           }
         }
@@ -645,13 +668,12 @@ async function checkOpenRedirect(url: string) {
     console.error('Error checking open redirects:', error);
   }
 
-  return { findings, deduction };
+  return { findings };
 }
 
 // Basic SQL Injection Check
 async function checkBasicSQLInjection(url: string) {
   const findings: SecurityCheck[] = [];
-  let deduction = 0;
 
   try {
     const sqlPayloads = [
@@ -697,8 +719,7 @@ async function checkBasicSQLInjection(url: string) {
                 'https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html'
               ]
             });
-            deduction += 25;
-            return { findings, deduction }; // Exit early if found
+            return { findings }; // Exit early if found
           }
         }
       } catch (error) {
@@ -709,5 +730,5 @@ async function checkBasicSQLInjection(url: string) {
     console.error('Error checking SQL injection:', error);
   }
 
-  return { findings, deduction };
+  return { findings };
 }

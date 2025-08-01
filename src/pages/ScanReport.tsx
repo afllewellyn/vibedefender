@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, Shield, Download, Share2, User } from 'lucide-react';
+import { ArrowLeft, Shield, Download, Share2, User, ExternalLink, BookOpen } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Header } from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
@@ -18,6 +18,7 @@ interface ScanFinding {
   category: string;
   recommendation: string;
   impact_score: number;
+  reference_links?: string[];
 }
 
 interface Scan {
@@ -281,6 +282,29 @@ const ScanReport = () => {
                       <h5 className="font-medium text-sm mb-1">Recommendation:</h5>
                       <p className="text-sm text-muted-foreground">{finding.recommendation}</p>
                     </div>
+                    
+                    {finding.reference_links && finding.reference_links.length > 0 && (
+                      <div className="pt-2 border-t border-border">
+                        <div className="flex items-center gap-2 mb-2">
+                          <BookOpen className="h-4 w-4" />
+                          <span className="font-medium text-sm">Learn How to Fix:</span>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {finding.reference_links.map((link, index) => (
+                            <Button
+                              key={index}
+                              variant="outline"
+                              size="sm"
+                              className="h-8 text-xs"
+                              onClick={() => window.open(link, '_blank')}
+                            >
+                              <ExternalLink className="h-3 w-3 mr-1" />
+                              Documentation
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
