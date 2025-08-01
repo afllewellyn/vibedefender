@@ -4,12 +4,9 @@ import { ArrowLeft, Shield, CheckCircle, AlertTriangle, Globe } from 'lucide-rea
 import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-
 const Methodology = () => {
   const navigate = useNavigate();
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       <Header />
       <div className="container mx-auto px-4 py-8">
 
@@ -31,11 +28,12 @@ const Methodology = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground">
-              Vibescurity performs comprehensive security assessments using industry-standard techniques 
-              and best practices. Our scanning engine evaluates multiple aspects of your website's 
-              security posture to provide actionable insights and recommendations.
-            </p>
+            <p className="text-muted-foreground">Vibescurity performs comprehensive security assessments using industry-standard techniques and best practices. Our scanning engine evaluates multiple aspects of your website's security posture to provide actionable insights and recommendations. We do not crawl the entire site or test authenticated/POST flows. 
+
+
+
+
+For deep or authenticated testing, engage a security consultant.</p>
           </CardContent>
         </Card>
 
@@ -222,8 +220,6 @@ const Methodology = () => {
         </div>
       </div>
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Methodology;
