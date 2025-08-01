@@ -37,9 +37,11 @@ const Index = () => {
             </h1>
           </div>
           
-          <h2 className="text-4xl font-bold mb-6 text-foreground">  Scan your website for OWASP security risks — in 60 seconds</h2>
+          <h2 className="text-4xl font-bold mb-6 text-foreground">Scan your website for security vulnerabilities in 60 seconds — no signup needed</h2>
           
-          <p className="text-xl text-muted-foreground mb-12 max-w-3xl mx-auto">Instantly check your homepage for missing security headers and common website misconfigurations. Designed for modern no-code, low-code, and AI-generated web apps.  All results mapped to OWASP Top 10 and scored with CVSS grades.</p>
+          <p className="text-xl text-muted-foreground mb-12 max-w-3xl mx-auto">Run automated security scans to detect exposed secrets, missing security headers, and common misconfigurations. Designed for modern no-code, low-code, and AI-generated web apps.
+
+        </p>
           
           {/* Main CTA - Guest Scan Form */}
           <div className="max-w-2xl mx-auto mb-8">
@@ -88,11 +90,11 @@ const Index = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Zap className="h-5 w-5 text-secondary-foreground" />
-                Quick Scanning
+                Quick OWASP Scan
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription>Instantly scan your sites homepage for common vulnerabilities, misconfigurations, and exposed files — with results in under 60 seconds.</CardDescription>
+              <CardDescription>Scan your homepage for exposed secrets, PII (to come), and the most common web vulnerabilities flagged by the <b>OWASP Top 10</b>. Instant results, zero impact.</CardDescription>
             </CardContent>
           </Card>
 
@@ -100,11 +102,11 @@ const Index = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Shield className="h-5 w-5 text-accent-foreground" />
-                Deep Security Checks
+                Security Checks
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription>Uncover common security risks including misconfigurations, exposed files, missing headers, and more — built for modern no-code and AI-built sites.</CardDescription>
+              <CardDescription>Every issue is mapped to OWASP and given a clear <b>CVSS risk grade</b>.</CardDescription>
             </CardContent>
           </Card>
 
@@ -112,11 +114,12 @@ const Index = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BarChart3 className="h-5 w-5 text-tertiary-foreground" />
-                Detailed Reports
+                Actionable Reports
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription>Receive actionable security reports and grades with clear recommendations and prioritized fixes to improve your website's security.</CardDescription>
+              <CardDescription>Get an easy-to-understand security score, prioritized fixes, and links to official remediation guides.<br/>
+  All scoring follows <b>OWASP</b> and <b>CVSS</b> standards.</CardDescription>
             </CardContent>
           </Card>
         </div>
