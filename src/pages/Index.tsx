@@ -88,7 +88,7 @@ const Index = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Zap className="h-5 w-5 text-secondary-foreground" />
-                Quick Scanning
+                Quick OWASP Scan
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -100,7 +100,7 @@ const Index = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Shield className="h-5 w-5 text-accent-foreground" />
-                Deep Security Checks
+                   CVSS-Based Security Checks
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -112,7 +112,7 @@ const Index = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BarChart3 className="h-5 w-5 text-tertiary-foreground" />
-                Detailed Reports
+                Actionable Reports
               </CardTitle>
             </CardHeader>
             <CardContent>
