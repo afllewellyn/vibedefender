@@ -37,11 +37,9 @@ const Index = () => {
             </h1>
           </div>
           
-          <h2 className="text-4xl font-bold mb-6 text-foreground">Scan your website for security vulnerabilities in 60 seconds — no signup needed</h2>
+          <h2 className="text-4xl font-bold mb-6 text-foreground">  Scan your website’s homepage for exposed security gaps — in 60 seconds</h2>
           
-          <p className="text-xl text-muted-foreground mb-12 max-w-3xl mx-auto">Run automated security scans to detect exposed secrets, missing security headers, and common misconfigurations. Designed for modern no-code, low-code, and AI-generated web apps.
-
-        </p>
+          <p className="text-xl text-muted-foreground mb-12 max-w-3xl mx-auto">Instantly check for missing security headers and common website misconfigurations. Designed for modern no-code, low-code, and AI-generated web apps. No signup required.</p>
           
           {/* Main CTA - Guest Scan Form */}
           <div className="max-w-2xl mx-auto mb-8">
