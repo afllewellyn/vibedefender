@@ -37,11 +37,9 @@ const Index = () => {
             </h1>
           </div>
           
-          <h2 className="text-4xl font-bold mb-6 text-foreground">Scan your website for security vulnerabilities in 60 seconds — no signup needed</h2>
+          <h2 className="text-4xl font-bold mb-6 text-foreground">  Scan your website for OWASP security risks — in 60 seconds</h2>
           
-          <p className="text-xl text-muted-foreground mb-12 max-w-3xl mx-auto">Run automated security scans to detect exposed secrets, missing security headers, and common misconfigurations. Designed for modern no-code, low-code, and AI-generated web apps.
-
-        </p>
+          <p className="text-xl text-muted-foreground mb-12 max-w-3xl mx-auto">Instantly check your homepage for missing security headers and common website misconfigurations. Designed for modern no-code, low-code, and AI-generated web apps.  All results mapped to OWASP Top 10 and scored with CVSS grades.</p>
           
           {/* Main CTA - Guest Scan Form */}
           <div className="max-w-2xl mx-auto mb-8">
@@ -102,11 +100,11 @@ const Index = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Shield className="h-5 w-5 text-accent-foreground" />
-                  Security Checks
+                Deep Security Checks
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription>Uncover common security risks including misconfigurations, exposed files, missing headers, and more — built for modern no-code and AI-built sites.</CardDescription>
+              <CardDescription>Built for modern no-code and AI-built sites but any website will do.</CardDescription>
             </CardContent>
           </Card>
 
@@ -118,7 +116,7 @@ const Index = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription>Receive actionable security reports and grades with clear recommendations and prioritized fixes to improve your website's security.</CardDescription>
+              <CardDescription>Get an easy-to-understand security score, prioritized fixes, and links to official remediation guides. All scoring follows OWASP and CVSS standards.</CardDescription>
             </CardContent>
           </Card>
         </div>
