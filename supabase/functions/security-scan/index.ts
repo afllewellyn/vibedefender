@@ -17,6 +17,8 @@ interface SecurityCheck {
   evidence?: string;
   confidence: 'high' | 'medium' | 'low';
   reference_links?: string[];
+  cvss_score: number;
+  owasp_category: string;
 }
 
 serve(async (req) => {
@@ -98,8 +100,12 @@ serve(async (req) => {
       const sqlResults = await checkBasicSQLInjection(scan.url);
       findings.push(...sqlResults.findings);
 
-      // Calculate weighted score based on findings and positive security measures
-      const totalScore = calculateSecurityScore(findings);
+      // Check for PII and API key exposure in homepage HTML
+      const piiResults = await checkPIIAndAPIKeys(scan.url);
+      findings.push(...piiResults.findings);
+
+      // Calculate CVSS-based score
+      const totalScore = calculateCVSSScore(findings);
 
       // Save findings to database
       for (const finding of findings) {
@@ -114,7 +120,10 @@ serve(async (req) => {
             recommendation: finding.recommendation,
             impact_score: finding.impact_score,
             element_selector: finding.evidence,
-            reference_links: finding.reference_links || []
+            reference_links: finding.reference_links || [],
+            cvss_score: finding.cvss_score,
+            owasp_category: finding.owasp_category,
+            evidence: finding.evidence
           });
       }
 
@@ -182,13 +191,14 @@ async function checkSecurityHeaders(url: string) {
         recommendation: 'Add the Strict-Transport-Security header: "Strict-Transport-Security: max-age=31536000; includeSubDomains"',
         impact_score: 15,
         confidence: 'high',
+        cvss_score: 7.5,
+        owasp_category: 'A6: Security Misconfiguration',
         reference_links: [
           'https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security',
           'https://owasp.org/www-community/controls/HTTP_Strict_Transport_Security',
           'https://hstspreload.org/'
         ]
       });
-      
     }
 
     // Check for CSP
@@ -202,13 +212,14 @@ async function checkSecurityHeaders(url: string) {
         recommendation: 'Implement a Content Security Policy header to control resource loading and prevent XSS',
         impact_score: 10,
         confidence: 'high',
+        cvss_score: 6.1,
+        owasp_category: 'A3: Injection',
         reference_links: [
           'https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP',
           'https://csp-evaluator.withgoogle.com/',
           'https://content-security-policy.com/'
         ]
       });
-      
     }
 
     // Check for X-Frame-Options
@@ -222,12 +233,13 @@ async function checkSecurityHeaders(url: string) {
         recommendation: 'Add X-Frame-Options header: "X-Frame-Options: DENY" or "X-Frame-Options: SAMEORIGIN"',
         impact_score: 8,
         confidence: 'high',
+        cvss_score: 5.4,
+        owasp_category: 'A6: Security Misconfiguration',
         reference_links: [
           'https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options',
           'https://owasp.org/www-community/attacks/Clickjacking'
         ]
       });
-      
     }
 
     // Check for X-Content-Type-Options
@@ -241,12 +253,13 @@ async function checkSecurityHeaders(url: string) {
         recommendation: 'Add X-Content-Type-Options header: "X-Content-Type-Options: nosniff"',
         impact_score: 6,
         confidence: 'high',
+        cvss_score: 4.3,
+        owasp_category: 'A6: Security Misconfiguration',
         reference_links: [
           'https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options',
           'https://owasp.org/www-project-secure-headers/#x-content-type-options'
         ]
       });
-      
     }
 
     // Check for Referrer-Policy
@@ -260,12 +273,13 @@ async function checkSecurityHeaders(url: string) {
         recommendation: 'Add Referrer-Policy header: "Referrer-Policy: strict-origin-when-cross-origin"',
         impact_score: 3,
         confidence: 'high',
+        cvss_score: 3.7,
+        owasp_category: 'A6: Security Misconfiguration',
         reference_links: [
           'https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy',
           'https://web.dev/referrer-best-practices/'
         ]
       });
-      
     }
 
     // Check for X-XSS-Protection (legacy but still relevant)
@@ -279,6 +293,8 @@ async function checkSecurityHeaders(url: string) {
         recommendation: 'Add X-XSS-Protection header: "X-XSS-Protection: 1; mode=block"',
         impact_score: 2,
         confidence: 'medium',
+        cvss_score: 3.1,
+        owasp_category: 'A3: Injection',
         reference_links: [
           'https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection',
           'https://owasp.org/www-project-secure-headers/#x-xss-protection'
@@ -297,12 +313,13 @@ async function checkSecurityHeaders(url: string) {
         recommendation: 'Add Permissions-Policy header to control browser features: "Permissions-Policy: camera=(), microphone=(), geolocation=()"',
         impact_score: 2,
         confidence: 'medium',
+        cvss_score: 2.7,
+        owasp_category: 'A6: Security Misconfiguration',
         reference_links: [
           'https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy',
           'https://www.w3.org/TR/permissions-policy-1/'
         ]
       });
-      
     }
 
   } catch (error) {
@@ -312,63 +329,18 @@ async function checkSecurityHeaders(url: string) {
   return { findings };
 }
 
-// Calculate weighted security score based on findings and positive measures
-function calculateSecurityScore(findings: SecurityCheck[]): number {
-  let baseScore = 100;
-  
-  // Weight categories by importance
-  const categoryWeights = {
-    'Security Headers': 0.35,        // 35% - Critical for basic security
-    'Cross-Site Scripting': 0.25,   // 25% - High impact vulnerabilities  
-    'Exposed Files': 0.20,          // 20% - Critical data exposure
-    'SQL Injection': 0.15,          // 15% - High impact vulnerabilities
-    'Cookie Security': 0.08,        // 8% - Important but lower impact
-    'Platform Security': 0.05,      // 5% - Version disclosure, etc.
-    'Information Disclosure': 0.05, // 5% - Server info, etc.
-    'Open Redirect': 0.12,          // 12% - Medium-high impact
-    'CSRF Protection': 0.10         // 10% - Important for forms
-  };
-  
-  // Calculate deductions by category with weighted impact
-  const categoryDeductions: { [key: string]: number } = {};
-  
-  findings.forEach(finding => {
-    const weight = categoryWeights[finding.category] || 0.10; // Default 10% for other categories
-    const severityMultiplier = getSeverityMultiplier(finding.severity);
-    const deduction = finding.impact_score * weight * severityMultiplier;
-    
-    categoryDeductions[finding.category] = (categoryDeductions[finding.category] || 0) + deduction;
-  });
-  
-  // Apply total deductions
-  const totalDeductions = Object.values(categoryDeductions).reduce((sum, deduction) => sum + deduction, 0);
-  const finalScore = Math.max(0, Math.min(100, baseScore - totalDeductions));
-  
-  return Math.round(finalScore);
-}
-
-function getSeverityMultiplier(severity: string): number {
-  switch (severity) {
-    case 'critical': return 1.5;
-    case 'high': return 1.2;
-    case 'medium': return 1.0;
-    case 'low': return 0.7;
-    default: return 1.0;
-  }
-}
-
 // Exposed Files Check
 async function checkExposedFiles(url: string) {
   const findings: SecurityCheck[] = [];
 
   const sensitiveFiles = [
-    { path: '/.env', severity: 'critical' as const, impact: 30, description: 'Environment variables may contain database passwords, API keys, and other secrets' },
-    { path: '/.git/config', severity: 'critical' as const, impact: 25, description: 'Git configuration may expose repository information and access credentials' },
-    { path: '/config.json', severity: 'high' as const, impact: 20, description: 'Configuration files may contain sensitive application settings' },
-    { path: '/wp-config.php', severity: 'critical' as const, impact: 30, description: 'WordPress configuration contains database credentials and security keys' },
-    { path: '/.htaccess', severity: 'medium' as const, impact: 10, description: 'Apache configuration may reveal server setup details' },
-    { path: '/admin', severity: 'high' as const, impact: 15, description: 'Admin interface should not be publicly accessible without authentication' },
-    { path: '/phpmyadmin', severity: 'high' as const, impact: 20, description: 'Database administration tool should be restricted or removed' }
+    { path: '/.env', severity: 'critical' as const, impact: 30, description: 'Environment variables may contain database passwords, API keys, and other secrets', cvss: 9.5 },
+    { path: '/.git/config', severity: 'critical' as const, impact: 25, description: 'Git configuration may expose repository information and access credentials', cvss: 9.0 },
+    { path: '/config.json', severity: 'high' as const, impact: 20, description: 'Configuration files may contain sensitive application settings', cvss: 7.5 },
+    { path: '/wp-config.php', severity: 'critical' as const, impact: 30, description: 'WordPress configuration contains database credentials and security keys', cvss: 9.5 },
+    { path: '/.htaccess', severity: 'medium' as const, impact: 10, description: 'Apache configuration may reveal server setup details', cvss: 5.3 },
+    { path: '/admin', severity: 'high' as const, impact: 15, description: 'Admin interface should not be publicly accessible without authentication', cvss: 7.1 },
+    { path: '/phpmyadmin', severity: 'high' as const, impact: 20, description: 'Database administration tool should be restricted or removed', cvss: 8.2 }
   ];
 
   for (const file of sensitiveFiles) {
@@ -389,6 +361,8 @@ async function checkExposedFiles(url: string) {
           impact_score: file.impact,
           evidence: `File accessible at: ${url}${file.path}`,
           confidence: 'high',
+          cvss_score: file.cvss,
+          owasp_category: 'A6: Security Misconfiguration',
           reference_links: fileType === 'environment' ? [
             'https://owasp.org/www-community/vulnerabilities/Improper_Error_Handling',
             'https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html'
@@ -402,7 +376,6 @@ async function checkExposedFiles(url: string) {
             'https://owasp.org/www-community/attacks/Forced_browsing'
           ]
         });
-        
       }
     } catch (error) {
       // File not accessible, which is good
@@ -423,7 +396,6 @@ async function detectPlatform(url: string) {
 
     // WordPress detection
     if (html.includes('wp-content') || headers.get('x-powered-by')?.includes('WordPress')) {
-      // Check for common WordPress vulnerabilities
       const wpVersionMatch = html.match(/wp-includes.*?ver=([0-9.]+)/);
       if (wpVersionMatch) {
         findings.push({
@@ -436,6 +408,8 @@ async function detectPlatform(url: string) {
           impact_score: 3,
           evidence: wpVersionMatch[0],
           confidence: 'high',
+          cvss_score: 3.1,
+          owasp_category: 'A6: Security Misconfiguration',
           reference_links: [
             'https://wordpress.org/support/article/hardening-wordpress/',
             'https://owasp.org/www-project-web-security-testing-guide/'
@@ -457,6 +431,8 @@ async function detectPlatform(url: string) {
         impact_score: 2,
         evidence: `Server: ${serverHeader}`,
         confidence: 'high',
+        cvss_score: 2.7,
+        owasp_category: 'A6: Security Misconfiguration',
         reference_links: [
           'https://owasp.org/www-project-secure-headers/#server',
           'https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html'
@@ -493,12 +469,13 @@ async function checkXSS(url: string) {
         recommendation: 'Implement proper input validation and output encoding',
         impact_score: 20,
         confidence: 'medium',
+        cvss_score: 8.8,
+        owasp_category: 'A3: Injection',
         reference_links: [
           'https://owasp.org/www-community/attacks/xss/',
           'https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html'
         ]
       });
-      
     }
 
   } catch (error) {
@@ -530,6 +507,8 @@ async function checkCSRF(url: string) {
           recommendation: 'Implement CSRF tokens for all state-changing forms',
           impact_score: 12,
           confidence: 'medium',
+          cvss_score: 6.5,
+          owasp_category: 'A8: Cross-Site Request Forgery (CSRF)',
           reference_links: [
             'https://owasp.org/www-community/attacks/csrf',
             'https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html'
@@ -569,6 +548,8 @@ async function checkInsecureCookies(url: string) {
           impact_score: 8,
           evidence: cookieHeader,
           confidence: 'high',
+          cvss_score: 5.4,
+          owasp_category: 'A6: Security Misconfiguration',
           reference_links: [
             'https://owasp.org/www-community/controls/SecureCookieAttribute',
             'https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#restrict_access_to_cookies'
@@ -587,6 +568,8 @@ async function checkInsecureCookies(url: string) {
           impact_score: 6,
           evidence: cookieHeader,
           confidence: 'high',
+          cvss_score: 4.3,
+          owasp_category: 'A3: Injection',
           reference_links: [
             'https://owasp.org/www-community/HttpOnly',
             'https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#restrict_access_to_cookies'
@@ -605,6 +588,8 @@ async function checkInsecureCookies(url: string) {
           impact_score: 4,
           evidence: cookieHeader,
           confidence: 'high',
+          cvss_score: 3.5,
+          owasp_category: 'A8: Cross-Site Request Forgery (CSRF)',
           reference_links: [
             'https://owasp.org/www-community/SameSite',
             'https://web.dev/samesite-cookies-explained/'
@@ -651,12 +636,13 @@ async function checkOpenRedirect(url: string) {
               impact_score: 12,
               evidence: `Redirect to: ${location}`,
               confidence: 'high',
+              cvss_score: 6.1,
+              owasp_category: 'A1: Unvalidated Redirects and Forwards',
               reference_links: [
                 'https://owasp.org/www-project-web-security-testing-guide/v42/4-Web_Application_Security_Testing/11-Client-side_Testing/04-Testing_for_Client-side_URL_Redirect',
                 'https://cheatsheetseries.owasp.org/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.html'
               ]
             });
-            
             break; // Found one, no need to test more
           }
         }
@@ -714,6 +700,8 @@ async function checkBasicSQLInjection(url: string) {
               impact_score: 25,
               evidence: `Error pattern found: ${errorPattern}`,
               confidence: 'medium',
+              cvss_score: 8.8,
+              owasp_category: 'A3: Injection',
               reference_links: [
                 'https://owasp.org/www-community/attacks/SQL_Injection',
                 'https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html'
@@ -731,4 +719,102 @@ async function checkBasicSQLInjection(url: string) {
   }
 
   return { findings };
+}
+
+// PII and API Key Detection
+async function checkPIIAndAPIKeys(url: string) {
+  const findings: SecurityCheck[] = [];
+  
+  try {
+    console.log('[security-scan] Fetching homepage HTML for PII/API key analysis...');
+    const response = await fetch(url);
+    const html = await response.text();
+    
+    // Email detection pattern
+    const emailPattern = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+    const emailMatches = html.match(emailPattern);
+    
+    if (emailMatches && emailMatches.length > 0) {
+      const uniqueEmails = [...new Set(emailMatches)];
+      findings.push({
+        id: 'pii-email-exposure',
+        title: 'Email Addresses Exposed in HTML',
+        description: `Found ${uniqueEmails.length} email address(es) exposed in the webpage source`,
+        severity: 'high',
+        category: 'PII Exposure',
+        recommendation: 'Remove email addresses from HTML source. Use contact forms or obfuscation techniques.',
+        impact_score: 20,
+        evidence: uniqueEmails.slice(0, 3).join(', ') + (uniqueEmails.length > 3 ? '...' : ''),
+        confidence: 'high',
+        cvss_score: 7.5,
+        owasp_category: 'A6: Security Misconfiguration',
+        reference_links: [
+          'https://owasp.org/www-community/vulnerabilities/Information_exposure_through_directory_listing',
+          'https://cheatsheetseries.owasp.org/cheatsheets/Information_Exposure_Prevention_Cheat_Sheet.html'
+        ]
+      });
+    }
+    
+    // API Key patterns
+    const apiKeyPatterns = [
+      { name: 'Google/Firebase API Key', pattern: /AIza[0-9A-Za-z-_]{35}/g, cvss: 9.0 },
+      { name: 'OpenAI API Key', pattern: /sk-[A-Za-z0-9]{32,}/g, cvss: 9.5 },
+      { name: 'AWS Access Key', pattern: /AKIA[0-9A-Z]{16}/g, cvss: 9.5 },
+      { name: 'Supabase API Key', pattern: /eyJ[A-Za-z0-9_-]*\.[A-Za-z0-9_-]*\.[A-Za-z0-9_-]*/g, cvss: 8.5 },
+      { name: 'Stripe API Key', pattern: /sk_live_[0-9a-zA-Z]{24}/g, cvss: 9.0 },
+      { name: 'GitHub Token', pattern: /ghp_[A-Za-z0-9]{36}/g, cvss: 8.0 }
+    ];
+    
+    for (const apiPattern of apiKeyPatterns) {
+      const matches = html.match(apiPattern.pattern);
+      if (matches && matches.length > 0) {
+        const uniqueKeys = [...new Set(matches)];
+        findings.push({
+          id: `credential-exposure-${apiPattern.name.toLowerCase().replace(/[^a-zA-Z0-9]/g, '-')}`,
+          title: `${apiPattern.name} Exposed in HTML`,
+          description: `Found ${uniqueKeys.length} ${apiPattern.name}(s) exposed in the webpage source`,
+          severity: 'critical',
+          category: 'Credential Exposure',
+          recommendation: 'IMMEDIATELY revoke and rotate exposed API keys. Never expose API keys in client-side code.',
+          impact_score: 30,
+          evidence: uniqueKeys[0].substring(0, 20) + '...',
+          confidence: 'high',
+          cvss_score: apiPattern.cvss,
+          owasp_category: 'A6: Security Misconfiguration',
+          reference_links: [
+            'https://owasp.org/www-project-api-security/',
+            'https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html'
+          ]
+        });
+      }
+    }
+    
+    console.log(`[security-scan] PII/API key check completed. Found ${findings.length} issues.`);
+    
+  } catch (error) {
+    console.error('Error checking PII and API keys:', error);
+  }
+  
+  return { findings };
+}
+
+// CVSS v3.1 based scoring system
+function calculateCVSSScore(findings: SecurityCheck[]): number {
+  if (findings.length === 0) {
+    return 100; // Perfect score if no findings
+  }
+  
+  // Find the highest CVSS score among all findings
+  const maxCVSSScore = Math.max(...findings.map(f => f.cvss_score || 0));
+  
+  // Score formula: 100 - max(cvss_scores)
+  let finalScore = Math.max(0, 100 - (maxCVSSScore * 10));
+  
+  // Cap at C grade (70) or below if any critical finding (CVSS >= 9.0)
+  const hasCriticalFinding = findings.some(f => (f.cvss_score || 0) >= 9.0);
+  if (hasCriticalFinding) {
+    finalScore = Math.min(finalScore, 70);
+  }
+  
+  return Math.round(finalScore);
 }

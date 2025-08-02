@@ -81,10 +81,13 @@ export type Database = {
         Row: {
           category: string
           created_at: string
+          cvss_score: number | null
           description: string | null
           element_selector: string | null
+          evidence: string | null
           id: string
           impact_score: number | null
+          owasp_category: string | null
           recommendation: string | null
           reference_links: string[] | null
           scan_id: string
@@ -94,10 +97,13 @@ export type Database = {
         Insert: {
           category: string
           created_at?: string
+          cvss_score?: number | null
           description?: string | null
           element_selector?: string | null
+          evidence?: string | null
           id?: string
           impact_score?: number | null
+          owasp_category?: string | null
           recommendation?: string | null
           reference_links?: string[] | null
           scan_id: string
@@ -107,10 +113,13 @@ export type Database = {
         Update: {
           category?: string
           created_at?: string
+          cvss_score?: number | null
           description?: string | null
           element_selector?: string | null
+          evidence?: string | null
           id?: string
           impact_score?: number | null
+          owasp_category?: string | null
           recommendation?: string | null
           reference_links?: string[] | null
           scan_id?: string
