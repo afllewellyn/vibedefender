@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Shield } from 'lucide-react';
 const Footer = () => {
-  return <footer className="border-t bg-blue-950">
+  return <footer className="border-t bg-slate-300">
       <div className="container mx-auto px-4 py-8 bg-slate-300">
         <div className="grid md:grid-cols-4 gap-8">
           <div className="space-y-4 bg-slate-300">
