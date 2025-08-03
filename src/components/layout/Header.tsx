@@ -2,25 +2,19 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Shield, Menu } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-
 export const Header = () => {
-  const { user, signOut } = useAuth();
+  const {
+    user,
+    signOut
+  } = useAuth();
   const navigate = useNavigate();
-
-  return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+  return <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <Shield className="h-8 w-8 text-primary" />
+          
           <span className="text-2xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
             {"{ Vibe Defender }"}
           </span>
@@ -28,26 +22,17 @@ export const Header = () => {
 
         {/* Navigation */}
         <nav className="hidden md:flex items-center gap-6">
-          <Link 
-            to="/methodology" 
-            className="text-muted-foreground hover:text-foreground transition-colors font-medium"
-          >
+          <Link to="/methodology" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
             How It Works
           </Link>
-          {user && (
-            <Link 
-              to="/dashboard" 
-              className="text-muted-foreground hover:text-foreground transition-colors font-medium"
-            >
+          {user && <Link to="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
               Dashboard
-            </Link>
-          )}
+            </Link>}
         </nav>
 
         {/* Auth Buttons */}
         <div className="flex items-center gap-3">
-          {user ? (
-            <DropdownMenu>
+          {user ? <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                   <Avatar className="h-8 w-8">
@@ -72,17 +57,14 @@ export const Header = () => {
                   Sign Out
                 </DropdownMenuItem>
               </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <div className="flex items-center gap-2">
+            </DropdownMenu> : <div className="flex items-center gap-2">
               <Button variant="ghost" size="sm" onClick={() => navigate('/login')}>
                 Sign In
               </Button>
               <Button size="sm" onClick={() => navigate('/signup')}>
                 Get Started
               </Button>
-            </div>
-          )}
+            </div>}
 
           {/* Mobile Menu */}
           <DropdownMenu>
@@ -95,13 +77,10 @@ export const Header = () => {
               <DropdownMenuItem onClick={() => navigate('/methodology')}>
                 How It Works
               </DropdownMenuItem>
-              {user && (
-                <DropdownMenuItem onClick={() => navigate('/dashboard')}>
+              {user && <DropdownMenuItem onClick={() => navigate('/dashboard')}>
                   Dashboard
-                </DropdownMenuItem>
-              )}
-              {!user && (
-                <>
+                </DropdownMenuItem>}
+              {!user && <>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => navigate('/login')}>
                     Sign In
@@ -109,12 +88,10 @@ export const Header = () => {
                   <DropdownMenuItem onClick={() => navigate('/signup')}>
                     Get Started
                   </DropdownMenuItem>
-                </>
-              )}
+                </>}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </div>
-    </header>
-  );
+    </header>;
 };
