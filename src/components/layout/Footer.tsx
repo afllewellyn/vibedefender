@@ -9,7 +9,7 @@ const Footer = () => {
               
               <span className="font-bold text-lg text-slate-900">{"{ Vibe Defender }"}</span>
             </div>
-            <p className="text-sm text-muted-foreground">Vibe Defender scans only the homepage and select public endpoints for visible issues, scored to OWASP Top 10 and CVSS best practices. For in-depth, authenticated, or full-site testing, consult a professional security auditor. This site is in progress and may make mistakes.</p>
+            <p className="text-sm text-muted-foreground">Vibe Defender scans only the homepage and select public endpoints for visible issues, scored to OWASP Top 10 and CVSS - inspired best practices. For in-depth, authenticated, or full-site testing, consult a professional security auditor. This site is in progress and may make mistakes.</p>
           </div>
 
           <div>

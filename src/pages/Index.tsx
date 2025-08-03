@@ -84,7 +84,7 @@ const Index = () => {
 
         {/* Features Section */}
         <div className="grid md:grid-cols-3 gap-8 mb-16">
-          <Card className="border border-border bg-[#9873d3]/[0.32]">
+          <Card className="border border-border bg-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Zap className="h-5 w-5 text-primary" />
@@ -96,7 +96,7 @@ const Index = () => {
             </CardContent>
           </Card>
 
-          <Card className="border border-border bg-[#9873d3]/[0.32]">
+          <Card className="border border-border bg-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Shield className="h-5 w-5 text-primary" />
@@ -108,7 +108,7 @@ const Index = () => {
             </CardContent>
           </Card>
 
-          <Card className="border border-border bg-[#9873d3]/[0.32]">
+          <Card className="border border-border bg-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BarChart3 className="h-5 w-5 text-primary" />
@@ -116,7 +116,7 @@ const Index = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription>Get an easy-to-understand security score, prioritized fixes, and links to official remediation guides. All scoring follows OWASP and CVSS standards.</CardDescription>
+              <CardDescription>Get an easy-to-understand security score, prioritized fixes, and links to official remediation guides. All scoring follows OWASP and CVSS - inspired standards.</CardDescription>
             </CardContent>
           </Card>
         </div>
