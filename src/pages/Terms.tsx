@@ -22,7 +22,7 @@ const Terms = () => {
           </CardHeader>
           <CardContent className="prose prose-gray max-w-none">
             <p>
-              By accessing and using Vibescurity's services, you accept and agree to be bound by the terms and provision of this agreement. These Terms of Service govern your use of our website security scanning platform and all related services.
+              By accessing and using Vibe Defender's services, you accept and agree to be bound by the terms and provision of this agreement. These Terms of Service govern your use of our website security scanning platform and all related services.
             </p>
           </CardContent>
         </Card>
@@ -33,7 +33,7 @@ const Terms = () => {
           </CardHeader>
           <CardContent className="prose prose-gray max-w-none">
             <p>
-              Vibescurity provides automated website security scanning services that analyze websites for security vulnerabilities, configuration issues, and compliance with security best practices. Our service includes:
+              Vibe Defender provides automated website security scanning services that analyze websites for security vulnerabilities, configuration issues, and compliance with security best practices. Our service includes:
             </p>
             <ul>
               <li>Automated security scans of publicly accessible websites</li>
@@ -115,7 +115,7 @@ const Terms = () => {
             
             <h4>Damages</h4>
             <p>
-              In no event shall Vibescurity be liable for any indirect, incidental, special, consequential, or punitive damages arising out of your use of our services.
+              In no event shall Vibe Defender be liable for any indirect, incidental, special, consequential, or punitive damages arising out of your use of our services.
             </p>
           </CardContent>
         </Card>
@@ -159,7 +159,7 @@ const Terms = () => {
           </CardHeader>
           <CardContent className="prose prose-gray max-w-none">
             <p>
-              All content, features, and functionality of our service are owned by Vibescurity and are protected by copyright, trademark, and other intellectual property laws.
+              All content, features, and functionality of our service are owned by Vibe Defender and are protected by copyright, trademark, and other intellectual property laws.
             </p>
           </CardContent>
         </Card>

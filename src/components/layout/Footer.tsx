@@ -7,9 +7,9 @@ const Footer = () => {
           <div className="space-y-4 bg-slate-300">
             <div className="flex items-center gap-2 text-slate-50">
               <Shield className="h-6 w-6" />
-              <span className="font-bold text-lg text-slate-900">Vibescurity</span>
+              <span className="font-bold text-lg text-slate-900">{"{ Vibe Defender }"}</span>
             </div>
-            <p className="text-sm text-muted-foreground">Vibescurity scans only the homepage and select public endpoints for visible issues, scored to OWASP Top 10 and CVSS best practices. For in-depth, authenticated, or full-site testing, consult a professional security auditor. This site is in progress and may make mistakes.</p>
+            <p className="text-sm text-muted-foreground">Vibe Defender scans only the homepage and select public endpoints for visible issues, scored to OWASP Top 10 and CVSS best practices. For in-depth, authenticated, or full-site testing, consult a professional security auditor. This site is in progress and may make mistakes.</p>
           </div>
 
           <div>
@@ -67,7 +67,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t mt-8 pt-6 text-center text-sm text-muted-foreground">
-          <p>&copy; 2025 Vibescurity. All rights reserved.</p>
+          <p>&copy; 2025 Vibe Defender. All rights reserved.</p>
         </div>
       </div>
     </footer>;

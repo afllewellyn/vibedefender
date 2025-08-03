@@ -28,7 +28,7 @@ const Methodology = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground">Vibescurity performs comprehensive security assessments using industry-standard techniques and best practices. Our scanning engine evaluates multiple aspects of your website's security posture to provide actionable insights and recommendations. We do not crawl the entire site or test authenticated/POST flows. 
+            <p className="text-muted-foreground">Vibe Defender performs comprehensive security assessments using industry-standard techniques and best practices. Our scanning engine evaluates multiple aspects of your website's security posture to provide actionable insights and recommendations. We do not crawl the entire site or test authenticated/POST flows. 
 
 
 

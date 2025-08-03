@@ -118,7 +118,7 @@ const Privacy = () => {
               <li><strong>Restriction:</strong> Request restriction of processing</li>
             </ul>
             
-            <p>To exercise these rights, please contact us at privacy@vibescurity.com.</p>
+            <p>To exercise these rights, please contact us at privacy@vibedefender.com.</p>
           </CardContent>
         </Card>
 
