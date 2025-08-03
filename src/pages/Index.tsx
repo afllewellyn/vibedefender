@@ -32,7 +32,7 @@ const Index = () => {
         <div className="text-center mb-20">
           <div className="flex items-center justify-center gap-3 mb-8">
             
-            <h1 className="text-6xl font-bold text-stone-950">
+            <h1 className="text-6xl font-bold text-primary">
               {"{ Vibe Defender }"}
             </h1>
           </div>
@@ -84,7 +84,7 @@ const Index = () => {
 
         {/* Features Section */}
         <div className="grid md:grid-cols-3 gap-8 mb-16">
-          <Card className="border border-border bg-card">
+          <Card className="border border-border bg-[#9873d3]/[0.32]">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Zap className="h-5 w-5 text-primary" />
@@ -96,7 +96,7 @@ const Index = () => {
             </CardContent>
           </Card>
 
-          <Card className="border border-border bg-card">
+          <Card className="border border-border bg-[#9873d3]/[0.32]">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Shield className="h-5 w-5 text-primary" />
@@ -108,7 +108,7 @@ const Index = () => {
             </CardContent>
           </Card>
 
-          <Card className="border border-border bg-card">
+          <Card className="border border-border bg-[#9873d3]/[0.32]">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BarChart3 className="h-5 w-5 text-primary" />
