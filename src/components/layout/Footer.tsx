@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom';
 import { Shield } from 'lucide-react';
 const Footer = () => {
-  return <footer className="border-t bg-slate-300">
-      <div className="container mx-auto px-4 py-8 bg-slate-300">
+  return <footer className="border-t bg-slate-50">
+      <div className="container mx-auto px-4 py-8 bg-slate-50">
         <div className="grid md:grid-cols-4 gap-8">
-          <div className="space-y-4 bg-slate-300">
+          <div className="space-y-4 bg-slate-50">
             <div className="flex items-center gap-2 text-slate-50">
               
               <span className="font-bold text-lg text-slate-900">{"{ Vibe Defender }"}</span>

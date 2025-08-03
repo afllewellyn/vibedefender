@@ -15,7 +15,7 @@ export const Header = () => {
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           
-          <span className="text-2xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+          <span className="text-2xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-stone-950">
             {"{ Vibe Defender }"}
           </span>
         </Link>
