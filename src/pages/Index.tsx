@@ -32,7 +32,7 @@ const Index = () => {
         <div className="text-center mb-20">
           <div className="flex items-center justify-center gap-3 mb-8">
             
-            <h1 className="text-6xl font-bold text-primary">
+            <h1 className="text-6xl font-bold text-stone-950">
               {"{ Vibe Defender }"}
             </h1>
           </div>
