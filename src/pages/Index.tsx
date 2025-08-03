@@ -25,14 +25,14 @@ const Index = () => {
         </div>
       </div>;
   }
-  return <div className="min-h-screen bg-gradient-to-b from-background to-muted/50">
+  return <div className="min-h-screen bg-background">
       <Header />
       <div className="container mx-auto px-4 py-16">
         {/* Hero Section */}
         <div className="text-center mb-20">
           <div className="flex items-center justify-center gap-3 mb-8">
             <Shield className="h-14 w-14 text-primary" />
-            <h1 className="text-6xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+            <h1 className="text-6xl font-bold text-primary">
               {"{ Vibe Defender }"}
             </h1>
           </div>
@@ -84,10 +84,10 @@ const Index = () => {
 
         {/* Features Section */}
         <div className="grid md:grid-cols-3 gap-8 mb-16">
-          <Card className="bg-secondary border-secondary/20">
+          <Card className="border border-border bg-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Zap className="h-5 w-5 text-secondary-foreground" />
+                <Zap className="h-5 w-5 text-primary" />
                 Quick OWASP Scan
               </CardTitle>
             </CardHeader>
@@ -96,10 +96,10 @@ const Index = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-accent border-accent/20">
+          <Card className="border border-border bg-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5 text-accent-foreground" />
+                <Shield className="h-5 w-5 text-primary" />
                    CVSS-Based Security Checks
               </CardTitle>
             </CardHeader>
@@ -108,10 +108,10 @@ const Index = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-tertiary border-tertiary/20">
+          <Card className="border border-border bg-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5 text-tertiary-foreground" />
+                <BarChart3 className="h-5 w-5 text-primary" />
                 Actionable Reports
               </CardTitle>
             </CardHeader>
