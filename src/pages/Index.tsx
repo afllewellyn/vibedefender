@@ -39,7 +39,7 @@ const Index = () => {
           
           <h2 className="text-4xl font-bold mb-6 text-foreground">  Scan your website for OWASP security risks — in 60 seconds</h2>
           
-          <p className="text-xl text-muted-foreground mb-12 max-w-3xl mx-auto">Instantly check your homepage for missing security headers and common website misconfigurations. Designed for modern no-code, low-code, and AI-generated web apps.  All results mapped to OWASP Top 10 and graded using the CVSS v3.1 standard.</p>
+          <p className="text-xl text-muted-foreground mb-12 max-w-3xl mx-auto">Instantly check your homepage for missing security headers, exposed PII, and common website misconfigurations. Designed for modern no-code, low-code, and AI-generated web apps.  All results mapped to OWASP Top 10 and graded using the CVSS v3.1 standard.</p>
           
           {/* Main CTA - Guest Scan Form */}
           <div className="max-w-2xl mx-auto mb-8">
