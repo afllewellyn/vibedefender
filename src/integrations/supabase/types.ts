@@ -82,9 +82,10 @@ export type Database = {
           category: string
           created_at: string
           cvss_score: number | null
+          cvss_vector: string | null
           description: string | null
           element_selector: string | null
-          evidence: string | null
+          evidence: Json | null
           id: string
           impact_score: number | null
           owasp_category: string | null
@@ -98,9 +99,10 @@ export type Database = {
           category: string
           created_at?: string
           cvss_score?: number | null
+          cvss_vector?: string | null
           description?: string | null
           element_selector?: string | null
-          evidence?: string | null
+          evidence?: Json | null
           id?: string
           impact_score?: number | null
           owasp_category?: string | null
@@ -114,9 +116,10 @@ export type Database = {
           category?: string
           created_at?: string
           cvss_score?: number | null
+          cvss_vector?: string | null
           description?: string | null
           element_selector?: string | null
-          evidence?: string | null
+          evidence?: Json | null
           id?: string
           impact_score?: number | null
           owasp_category?: string | null
