@@ -57,7 +57,7 @@ const Index = () => {
                 <span>Real-time results</span>
               </div>
               <div className="flex items-center gap-2">
-                <BarChart3 className="w-4 h-4 text-secondary" />
+                <BarChart3 className="w-4 h-4 text-foreground" />
                 <span>Instant security insights</span>
               </div>
             </div>}
