@@ -210,13 +210,13 @@ async function checkSecurityHeaders(url: string) {
       findings.push({
         id: 'missing-csp',
         title: 'Missing Content Security Policy',
-        description: 'No Content Security Policy header found, leaving the site vulnerable to XSS attacks',
+        description: 'No Content Security Policy header found, which reduces defense against XSS attacks',
         severity: 'medium',
         category: 'Security Headers',
         recommendation: 'Implement a Content Security Policy header to control resource loading and prevent XSS',
-        impact_score: 10,
+        impact_score: 8,
         confidence: 'high',
-        cvss_score: 6.1,
+        cvss_score: 4.3,
         owasp_category: 'A3: Injection',
         reference_links: [
           'https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP',
@@ -235,9 +235,9 @@ async function checkSecurityHeaders(url: string) {
         severity: 'medium',
         category: 'Security Headers',
         recommendation: 'Add X-Frame-Options header: "X-Frame-Options: DENY" or "X-Frame-Options: SAMEORIGIN"',
-        impact_score: 8,
+        impact_score: 6,
         confidence: 'high',
-        cvss_score: 5.4,
+        cvss_score: 4.0,
         owasp_category: 'A6: Security Misconfiguration',
         reference_links: [
           'https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options',
@@ -255,9 +255,9 @@ async function checkSecurityHeaders(url: string) {
         severity: 'medium',
         category: 'Security Headers',
         recommendation: 'Add X-Content-Type-Options header: "X-Content-Type-Options: nosniff"',
-        impact_score: 6,
+        impact_score: 5,
         confidence: 'high',
-        cvss_score: 4.3,
+        cvss_score: 3.7,
         owasp_category: 'A6: Security Misconfiguration',
         reference_links: [
           'https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options',
@@ -277,7 +277,7 @@ async function checkSecurityHeaders(url: string) {
         recommendation: 'Add Referrer-Policy header: "Referrer-Policy: strict-origin-when-cross-origin"',
         impact_score: 3,
         confidence: 'high',
-        cvss_score: 3.7,
+        cvss_score: 2.4,
         owasp_category: 'A6: Security Misconfiguration',
         reference_links: [
           'https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy',
@@ -511,7 +511,7 @@ async function checkCSRF(url: string) {
           recommendation: 'Implement CSRF tokens for all state-changing forms',
           impact_score: 12,
           confidence: 'medium',
-          cvss_score: 6.5,
+          cvss_score: 5.4,
           owasp_category: 'A8: Cross-Site Request Forgery (CSRF)',
           reference_links: [
             'https://owasp.org/www-community/attacks/csrf',
@@ -640,7 +640,7 @@ async function checkOpenRedirect(url: string) {
               impact_score: 12,
               evidence: `Redirect to: ${location}`,
               confidence: 'high',
-              cvss_score: 6.1,
+              cvss_score: 5.4,
               owasp_category: 'A1: Unvalidated Redirects and Forwards',
               reference_links: [
                 'https://owasp.org/www-project-web-security-testing-guide/v42/4-Web_Application_Security_Testing/11-Client-side_Testing/04-Testing_for_Client-side_URL_Redirect',
