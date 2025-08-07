@@ -104,11 +104,15 @@ serve(async (req) => {
       const piiResults = await checkPIIAndAPIKeys(scan.url);
       findings.push(...piiResults.findings);
 
+      // Remove duplicates based on title and category
+      const uniqueFindings = deduplicateFindings(findings);
+      console.log(`[security-scan] Removed ${findings.length - uniqueFindings.length} duplicate findings`);
+
       // Calculate CVSS-based score
-      const totalScore = calculateCVSSScore(findings);
+      const totalScore = calculateCVSSScore(uniqueFindings);
 
       // Save findings to database
-      for (const finding of findings) {
+      for (const finding of uniqueFindings) {
         await supabase
           .from('scan_findings')
           .insert({
@@ -137,12 +141,12 @@ serve(async (req) => {
         })
         .eq('id', scanId);
 
-      console.log(`[security-scan] Scan completed. Score: ${totalScore}, Findings: ${findings.length}`);
+      console.log(`[security-scan] Scan completed. Score: ${totalScore}, Findings: ${uniqueFindings.length}`);
 
       return new Response(JSON.stringify({ 
         success: true, 
         score: totalScore,
-        findings: findings.length
+        findings: uniqueFindings.length
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -798,6 +802,22 @@ async function checkPIIAndAPIKeys(url: string) {
   return { findings };
 }
 
+// Deduplicate findings based on title and category
+function deduplicateFindings(findings: SecurityCheck[]): SecurityCheck[] {
+  const seen = new Set<string>();
+  const uniqueFindings: SecurityCheck[] = [];
+  
+  for (const finding of findings) {
+    const key = `${finding.title}|${finding.category}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      uniqueFindings.push(finding);
+    }
+  }
+  
+  return uniqueFindings;
+}
+
 // CVSS v3.1 based scoring system
 function calculateCVSSScore(findings: SecurityCheck[]): number {
   if (findings.length === 0) {
@@ -806,14 +826,17 @@ function calculateCVSSScore(findings: SecurityCheck[]): number {
   
   // Find the highest CVSS score among all findings
   const maxCVSSScore = Math.max(...findings.map(f => f.cvss_score || 0));
+  console.log(`[security-scan] Max CVSS Score found: ${maxCVSSScore}`);
   
-  // Score formula: 100 - max(cvss_scores)
+  // Score formula: 100 - (Highest CVSS Score × 10)
   let finalScore = Math.max(0, 100 - (maxCVSSScore * 10));
+  console.log(`[security-scan] Calculated base score: ${finalScore}`);
   
-  // Cap at C grade (70) or below if any critical finding (CVSS >= 9.0)
+  // Cap at F grade (59) or below if any critical finding (CVSS >= 9.0)
   const hasCriticalFinding = findings.some(f => (f.cvss_score || 0) >= 9.0);
   if (hasCriticalFinding) {
-    finalScore = Math.min(finalScore, 70);
+    finalScore = Math.min(finalScore, 59);
+    console.log(`[security-scan] Critical finding detected, score capped at: ${finalScore}`);
   }
   
   return Math.round(finalScore);
