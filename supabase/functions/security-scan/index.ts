@@ -828,8 +828,8 @@ function calculateCVSSScore(findings: SecurityCheck[]): number {
   const maxCVSSScore = Math.max(...findings.map(f => f.cvss_score || 0));
   console.log(`[security-scan] Max CVSS Score found: ${maxCVSSScore}`);
   
-  // Score formula: 100 - (Highest CVSS Score × 10)
-  let finalScore = Math.max(0, 100 - (maxCVSSScore * 10));
+  // Score formula: 100 - (Highest CVSS Score × 7)
+  let finalScore = Math.max(0, 100 - (maxCVSSScore * 7));
   console.log(`[security-scan] Calculated base score: ${finalScore}`);
   
   // Cap at F grade (59) or below if any critical finding (CVSS >= 9.0)
