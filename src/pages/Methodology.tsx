@@ -266,7 +266,7 @@ const Methodology = () => {
               </div>
             </div>
             <p className="text-sm text-muted-foreground">
-              Your final security score is calculated as: <strong>100 - (Highest CVSS Score × 10)</strong>. This "worst-case scenario" approach ensures that critical vulnerabilities significantly impact the overall grade, encouraging immediate remediation of high-risk issues.
+              Your final security score is calculated as: <strong>100 - (Highest CVSS Score × 7)</strong>. This "worst-case scenario" approach ensures that critical vulnerabilities significantly impact the overall grade, encouraging immediate remediation of high-risk issues.
             </p>
           </CardContent>
         </Card>
@@ -307,9 +307,11 @@ const Methodology = () => {
             <div className="mt-6 p-4 bg-yellow-50 dark:bg-yellow-950 rounded-lg">
               <h4 className="font-semibold text-yellow-800 dark:text-yellow-200 mb-2">Important Notes:</h4>
               <ul className="text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
-                <li>• Exposed credentials or PII automatically cap scores at 70 (Grade C)</li>
-                <li>• Critical vulnerabilities (CVSS 9.0+) result in Grade D or F</li>
-                <li>• Multiple high-risk findings compound the security impact</li>
+                <li>• Low CVSS (0.1–3.9): typically Grades A/B (configuration tweaks)</li>
+                <li>• Medium CVSS (4.0–6.9): usually Grades B/C/D (security gaps needing attention)</li>
+                <li>• High CVSS (7.0–8.9): typically Grade F (real vulnerabilities)</li>
+                <li>• Critical CVSS (9.0+): Grade F (urgent issues)</li>
+                <li>• Score uses the highest CVSS finding (worst-case), not a sum of all findings</li>
                 <li>• This automated assessment complements but doesn't replace manual security testing</li>
               </ul>
             </div>
