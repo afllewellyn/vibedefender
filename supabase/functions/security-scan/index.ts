@@ -100,7 +100,7 @@ serve(async (req) => {
       const sqlResults = await checkBasicSQLInjection(scan.url);
       findings.push(...sqlResults.findings);
 
-      // Check for PII and API key exposure in homepage HTML
+      // Check for PII and API key exposure in homepage HTML (reuse this fetch for context/bonuses)
       const piiResults = await checkPIIAndAPIKeys(scan.url);
       findings.push(...piiResults.findings);
 
@@ -108,11 +108,27 @@ serve(async (req) => {
       const uniqueFindings = deduplicateFindings(findings);
       console.log(`[security-scan] Removed ${findings.length - uniqueFindings.length} duplicate findings`);
 
-      // Calculate CVSS-based score
-      const totalScore = calculateCVSSScore(uniqueFindings);
+      // Context-aware scoring with positive bonuses
+      const pageContent = piiResults.pageContent || '';
+      const headersMap = piiResults.headersMap || {} as Record<string, string>;
+      const context = detectContext(scan.url, pageContent);
+      const bonuses = computePositiveBonuses(pageContent, headersMap, scan.url, piiResults.setCookies || []);
+      const contextualizedFindings = applyContextualCvss(uniqueFindings, context, pageContent);
+      const maxContextualCvss = contextualizedFindings.length > 0 
+        ? Math.max(...contextualizedFindings.map(f => (f as any).contextual_cvss || f.cvss_score || 0))
+        : 0;
+      const base = context === 'training' ? 85 : 90;
+      const multiplier = context === 'training' ? 4 : 7;
+      let finalScore = base - (maxContextualCvss * multiplier) + bonuses.total;
+      finalScore = Math.max(0, Math.min(100, finalScore));
+      const finalScoreRounded = Math.round(finalScore);
+      const grade = deriveGrade(finalScoreRounded);
+      const disclaimer = context === 'training'
+        ? 'This is a security training platform. Vulnerabilities may be intentional; focus on non-intentional issues.'
+        : 'This assessment provides a comprehensive security overview. Consider professional penetration testing for critical applications.';
 
-      // Save findings to database
-      for (const finding of uniqueFindings) {
+      // Save findings to database (include contextual_cvss)
+      for (const finding of contextualizedFindings) {
         await supabase
           .from('scan_findings')
           .insert({
@@ -127,26 +143,40 @@ serve(async (req) => {
             reference_links: finding.reference_links || [],
             cvss_score: finding.cvss_score,
             owasp_category: finding.owasp_category,
-            evidence: finding.evidence
+            evidence: finding.evidence,
+            contextual_cvss: (finding as any).contextual_cvss ?? finding.cvss_score
           });
       }
 
-      // Update scan with results
+      // Update scan with results and metadata
       await supabase
         .from('scans')
         .update({
           status: 'completed',
-          score: totalScore,
-          completed_at: new Date().toISOString()
+          score: finalScoreRounded,
+          grade,
+          completed_at: new Date().toISOString(),
+          metadata: {
+            context,
+            bonusBreakdown: { siteHeader: bonuses.siteHeader, apiPii: bonuses.apiPii },
+            bonusDetails: { siteHeader: bonuses.siteHeaderItems, apiPii: bonuses.apiPiiItems },
+            recommendations: bonuses.maintainNotes,
+            disclaimer
+          }
         })
         .eq('id', scanId);
 
-      console.log(`[security-scan] Scan completed. Score: ${totalScore}, Findings: ${uniqueFindings.length}`);
+      console.log(`[security-scan] Scan completed. Score: ${finalScoreRounded}, Grade: ${grade}, Findings: ${contextualizedFindings.length}`);
 
       return new Response(JSON.stringify({ 
         success: true, 
-        score: totalScore,
-        findings: uniqueFindings.length
+        context,
+        score: finalScoreRounded,
+        grade,
+        findings: contextualizedFindings.map(f => ({ id: f.id, title: f.title, contextual_cvss: (f as any).contextual_cvss, cvss_score: f.cvss_score })),
+        bonusBreakdown: { siteHeader: bonuses.siteHeader, apiPii: bonuses.apiPii },
+        recommendations: bonuses.maintainNotes,
+        disclaimer
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -733,6 +763,13 @@ async function checkPIIAndAPIKeys(url: string) {
     console.log('[security-scan] Fetching homepage HTML for PII/API key analysis...');
     const response = await fetch(url);
     const html = await response.text();
+
+    // Build a simple lowercase headers map and capture Set-Cookie values
+    const headersMap: Record<string, string> = {};
+    for (const [k, v] of response.headers.entries()) {
+      headersMap[k.toLowerCase()] = v;
+    }
+    const setCookies: string[] = (response.headers as any).getSetCookie?.() ?? [];
     
     // Email detection pattern
     const emailPattern = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
@@ -795,11 +832,12 @@ async function checkPIIAndAPIKeys(url: string) {
     
     console.log(`[security-scan] PII/API key check completed. Found ${findings.length} issues.`);
     
+    return { findings, pageContent: html, headersMap, setCookies };
   } catch (error) {
     console.error('Error checking PII and API keys:', error);
   }
   
-  return { findings };
+  return { findings, pageContent: '', headersMap: {}, setCookies: [] } as any;
 }
 
 // Deduplicate findings based on title and category
@@ -818,7 +856,7 @@ function deduplicateFindings(findings: SecurityCheck[]): SecurityCheck[] {
   return uniqueFindings;
 }
 
-// CVSS v3.1 based scoring system
+// CVSS v3.1 legacy scoring (kept for reference)
 function calculateCVSSScore(findings: SecurityCheck[]): number {
   if (findings.length === 0) {
     return 100; // Perfect score if no findings
@@ -840,4 +878,132 @@ function calculateCVSSScore(findings: SecurityCheck[]): number {
   }
   
   return Math.round(finalScore);
+}
+
+// Context detection based on URL/domain and page content
+function detectContext(url: string, html: string): 'training' | 'business' | 'general' {
+  const lowerHtml = (html || '').toLowerCase();
+  const lowerUrl = (url || '').toLowerCase();
+  const trainingHosts = [
+    'dvwa', 'juice-shop', 'owasp juice', 'hackthebox', 'tryhackme', 'ctf', 'webgoat', 'bwaap', 'bwapp', 'portswigger-labs'
+  ];
+  const trainingKeywords = [/\bctf\b/i, /hacking challenge/i, /security training/i, /practice lab/i, /intentional vulnerability/i];
+  const businessKeywords = [/privacy policy/i, /terms of service/i, /checkout/i, /payment/i, /login/i, /sign in/i];
+
+  if (trainingHosts.some(h => lowerUrl.includes(h)) || trainingKeywords.some(rx => rx.test(lowerHtml))) {
+    return 'training';
+  }
+  if (businessKeywords.some(rx => rx.test(lowerHtml))) {
+    return 'business';
+  }
+  return 'general';
+}
+
+// Apply contextual reductions to per-finding CVSS
+function applyContextualCvss(findings: SecurityCheck[], context: 'training' | 'business' | 'general', html: string) {
+  const lowerHtml = (html || '').toLowerCase();
+  const looksIntentional = /\b(ctf|challenge|training|practice|intentional|deliberate)\b/i;
+
+  return findings.map(f => {
+    let contextual = f.cvss_score || 0;
+    const cat = (f.category || '').toLowerCase();
+    const title = (f.title || '').toLowerCase();
+
+    if (context === 'training') {
+      const isMissingHeaders = cat.includes('security headers') || cat.includes('header') || title.includes('missing');
+      const isVulnCat = cat.includes('xss') || cat.includes('sql injection') || cat.includes('csrf') || cat.includes('exposed') || cat.includes('file');
+      if (isMissingHeaders) {
+        contextual = contextual * 0.2; // ~80% reduction
+      } else if (isVulnCat && looksIntentional.test(lowerHtml + ' ' + (f.description || ''))) {
+        contextual = contextual * 0.1; // ~90% reduction if appears intentional
+      }
+    }
+
+    const contextual_clamped = Math.max(0, Math.min(10, contextual));
+    return { ...f, contextual_cvss: contextual_clamped } as any;
+  });
+}
+
+// Compute positive bonuses (site/header and API/PII)
+function computePositiveBonuses(pageContent: string, headersMap: Record<string, string>, url: string, setCookies: string[] = []) {
+  const html = (pageContent || '').toLowerCase();
+  const headers = headersMap || {};
+  const siteHeaderItems: string[] = [];
+  const apiPiiItems: string[] = [];
+  const maintainNotes: string[] = [];
+
+  // Site/Header bonuses (cap 8)
+  if (headers['strict-transport-security']) { siteHeaderItems.push('HSTS present'); }
+  if (headers['content-security-policy']) { siteHeaderItems.push('CSP present'); }
+  if (headers['x-frame-options']) { siteHeaderItems.push('X-Frame-Options present'); }
+  if (!/http:\/\//i.test(html)) { siteHeaderItems.push('HTTPS links used'); }
+  if (!headers['server'] && !headers['x-powered-by']) { siteHeaderItems.push('Server/X-Powered-By hidden'); }
+  if (/privacy\s*policy/i.test(html)) { siteHeaderItems.push('Privacy Policy present'); }
+  if (headers['permissions-policy']) { siteHeaderItems.push('Permissions-Policy present'); }
+  const siteHeader = Math.min(siteHeaderItems.length, 8);
+
+  // API/PII bonuses (cap 6)
+  // Extract in-page API refs and ensure they use HTTPS
+  const apiUrls: string[] = [];
+  const patterns = [
+    /fetch\(\s*['\"](https?:\/\/[^'\"]+)['\"]/gi,
+    /axios(?:\.get|\.post|\.put|\.delete)?\(\s*['\"](https?:\/\/[^'\"]+)['\"]/gi,
+    /XMLHttpRequest/gi,
+    /graphql\(\s*['\"](https?:\/\/[^'\"]+)['\"]/gi
+  ];
+  for (const rx of patterns) {
+    let m: RegExpExecArray | null;
+    while ((m = rx.exec(pageContent)) !== null) {
+      if (m[1]) apiUrls.push(m[1]);
+    }
+  }
+  let allApiHttps = false;
+  if (apiUrls.length > 0) {
+    allApiHttps = apiUrls.every(u => u.startsWith('https://'));
+    if (allApiHttps) { apiPiiItems.push('All in-page API calls use HTTPS'); maintainNotes.push('All in-page API calls use HTTPS; continue enforcing TLS.'); }
+  }
+
+  const acao = headers['access-control-allow-origin'];
+  if (acao && acao.trim() !== '*') { apiPiiItems.push('Tight CORS (non-wildcard)'); maintainNotes.push('Tight CORS detected; maintain allow-list.'); }
+
+  const hasRateLimit = Object.keys(headers).some(k => k.toLowerCase().startsWith('x-ratelimit'));
+  if (hasRateLimit) { apiPiiItems.push('Rate limiting headers present'); maintainNotes.push('Rate limiting headers present; keep fair-use protections.'); }
+
+  const hasCsrfToken = /(<input[^>]+name=["'](?:csrf|_csrf|csrftoken|__RequestVerificationToken)["'])|(<meta[^>]+name=["']csrf[^"']*["'])/i.test(pageContent);
+  if (hasCsrfToken) { apiPiiItems.push('Anti-CSRF token present'); maintainNotes.push('Anti-CSRF tokens detected; keep including them in forms.'); }
+
+  const cookieBonus = setCookies.some(c => {
+    const lc = c.toLowerCase();
+    return lc.includes('secure') && lc.includes('httponly') && /samesite=(lax|strict)/i.test(lc);
+  });
+  if (cookieBonus) { apiPiiItems.push('Secure+HttpOnly+SameSite cookies'); maintainNotes.push('Secure+HttpOnly+SameSite cookies detected; keep enforcing.'); }
+
+  const emailObfuscated = /(\[at\]|\sat\s)/i.test(pageContent) && /(\[dot\]|\sdot\s)/i.test(pageContent);
+  if (emailObfuscated) { apiPiiItems.push('Email obfuscation in page'); maintainNotes.push('Email obfuscation detected; keep addresses protected.'); }
+
+  const hasForm = /<form\b/i.test(pageContent);
+  const hasMailto = /mailto:/i.test(pageContent);
+  if (hasForm && !hasMailto) { apiPiiItems.push('Contact via form (no mailto)'); maintainNotes.push('Contact form present without mailto; keep using form submissions.'); }
+
+  const apiPii = Math.min(apiPiiItems.length
+    + (allApiHttps ? 1 : 0), 6);
+  // Note: allApiHttps already accounted in push above; guard against double counting by basing on items array length.
+  const total = Math.min(siteHeader, 8) + Math.min(apiPiiItems.length, 6);
+
+  return {
+    siteHeader,
+    apiPii: Math.min(apiPiiItems.length, 6),
+    total: Math.min(total, 14),
+    siteHeaderItems,
+    apiPiiItems,
+    maintainNotes
+  };
+}
+
+function deriveGrade(score: number): string {
+  if (score >= 90) return 'A';
+  if (score >= 80) return 'B';
+  if (score >= 70) return 'C';
+  if (score >= 60) return 'D';
+  return 'F';
 }

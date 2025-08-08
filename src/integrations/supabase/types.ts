@@ -80,6 +80,7 @@ export type Database = {
       scan_findings: {
         Row: {
           category: string
+          contextual_cvss: number | null
           created_at: string
           cvss_score: number | null
           cvss_vector: string | null
@@ -97,6 +98,7 @@ export type Database = {
         }
         Insert: {
           category: string
+          contextual_cvss?: number | null
           created_at?: string
           cvss_score?: number | null
           cvss_vector?: string | null
@@ -114,6 +116,7 @@ export type Database = {
         }
         Update: {
           category?: string
+          contextual_cvss?: number | null
           created_at?: string
           cvss_score?: number | null
           cvss_vector?: string | null
@@ -146,6 +149,7 @@ export type Database = {
           error_message: string | null
           grade: string | null
           id: string
+          metadata: Json
           project_id: string | null
           score: number | null
           started_at: string | null
@@ -160,6 +164,7 @@ export type Database = {
           error_message?: string | null
           grade?: string | null
           id?: string
+          metadata?: Json
           project_id?: string | null
           score?: number | null
           started_at?: string | null
@@ -174,6 +179,7 @@ export type Database = {
           error_message?: string | null
           grade?: string | null
           id?: string
+          metadata?: Json
           project_id?: string | null
           score?: number | null
           started_at?: string | null
