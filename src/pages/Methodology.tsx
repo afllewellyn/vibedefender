@@ -4,8 +4,12 @@ import { ArrowLeft, Shield, CheckCircle, AlertTriangle, Globe, Eye, Key, Server 
 import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import { useEffect } from 'react';
 const Methodology = () => {
   const navigate = useNavigate();
+  useEffect(() => {
+    document.title = 'Security Scanning Methodology & Scoring | Vibe Defender';
+  }, []);
   return <div className="min-h-screen bg-background">
       <Header />
       <div className="container mx-auto px-4 py-8">
@@ -13,7 +17,7 @@ const Methodology = () => {
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Header */}
         <div className="text-center">
-          <h1 className="text-4xl font-bold mb-4">How It Works</h1>
+          <h1 className="text-4xl font-bold mb-4">Security Scanning Methodology &amp; Scoring</h1>
           <p className="text-xl text-muted-foreground">
             Learn about our comprehensive security scanning methodology
           </p>
@@ -241,33 +245,79 @@ const Methodology = () => {
         {/* CVSS Methodology */}
         <Card>
           <CardHeader>
-            <CardTitle>CVSS v3.1 Scoring Methodology</CardTitle>
+            <CardTitle>Context-Aware Scoring (Two-Tier + Bonuses)</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground mb-4">
-              We use the industry-standard Common Vulnerability Scoring System (CVSS) v3.1 to evaluate security findings. Each vulnerability is assigned a CVSS score from 0.0 to 10.0 based on exploitability, impact, and environmental factors.
+              We use CVSS v3.1 to score findings, then apply context-aware adjustments and universal positive bonuses. No new network requests—only the page HTML and response headers are analyzed.
             </p>
-            <div className="grid md:grid-cols-4 gap-4 mb-4">
-              <div className="text-center p-3 bg-green-50 dark:bg-green-950 rounded-lg">
-                <div className="font-semibold text-green-700 dark:text-green-300">Low</div>
-                <div className="text-sm text-muted-foreground">0.1 - 3.9</div>
+            <div className="grid md:grid-cols-3 gap-4">
+              <div className="p-3 rounded-lg border">
+                <div className="font-semibold">Context Detection</div>
+                <ul className="text-sm text-muted-foreground mt-2 space-y-1">
+                  <li>• Training (CTF/challenge keywords or known training platforms)</li>
+                  <li>• Business (privacy/terms/payment/login indicators)</li>
+                  <li>• General (treated as production)</li>
+                </ul>
               </div>
-              <div className="text-center p-3 bg-yellow-50 dark:bg-yellow-950 rounded-lg">
-                <div className="font-semibold text-yellow-700 dark:text-yellow-300">Medium</div>
-                <div className="text-sm text-muted-foreground">4.0 - 6.9</div>
+              <div className="p-3 rounded-lg border">
+                <div className="font-semibold">Baselines & Multipliers</div>
+                <ul className="text-sm text-muted-foreground mt-2 space-y-1">
+                  <li>• Training: base 85, multiplier ×4</li>
+                  <li>• Production (business/general): base 90, multiplier ×7</li>
+                </ul>
               </div>
-              <div className="text-center p-3 bg-orange-50 dark:bg-orange-950 rounded-lg">
-                <div className="font-semibold text-orange-700 dark:text-orange-300">High</div>
-                <div className="text-sm text-muted-foreground">7.0 - 8.9</div>
-              </div>
-              <div className="text-center p-3 bg-red-50 dark:bg-red-950 rounded-lg">
-                <div className="font-semibold text-red-700 dark:text-red-300">Critical</div>
-                <div className="text-sm text-muted-foreground">9.0 - 10.0</div>
+              <div className="p-3 rounded-lg border">
+                <div className="font-semibold">Contextual CVSS</div>
+                <ul className="text-sm text-muted-foreground mt-2 space-y-1">
+                  <li>• Training: missing_headers ×0.2</li>
+                  <li>• Training: intentional xss/sqli/csrf/file_exposure ×0.1</li>
+                  <li>• Production: standard CVSS (no reduction)</li>
+                </ul>
               </div>
             </div>
-            <p className="text-sm text-muted-foreground">
-              Your final security score is calculated as: <strong>100 - (Highest CVSS Score × 7)</strong>. This "worst-case scenario" approach ensures that critical vulnerabilities significantly impact the overall grade, encouraging immediate remediation of high-risk issues.
+            <p className="text-sm text-muted-foreground mt-4">
+              Final score formula: <strong>final = clamp[0–100](base − (highestContextualCVSS × multiplier) + positiveBonus)</strong>. 
+              Grades: A ≥ 90, B 80–89, C 70–79, D 60–69, F &lt; 60.
             </p>
+          </CardContent>
+        </Card>
+
+        {/* Positive Bonuses */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Positive Bonuses &amp; API &amp; PII Hygiene</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <div className="font-semibold mb-2">Headers/Site Bonuses (max +8)</div>
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  <li>• HSTS present</li>
+                  <li>• CSP present</li>
+                  <li>• X-Frame-Options present</li>
+                  <li>• HTTPS links used</li>
+                  <li>• Server/X-Powered-By hidden</li>
+                  <li>• Privacy Policy present</li>
+                  <li>• Permissions-Policy present</li>
+                </ul>
+              </div>
+              <div>
+                <div className="font-semibold mb-2">API &amp; PII Hygiene (max +6)</div>
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  <li>• All in-page API references use HTTPS</li>
+                  <li>• Tight CORS (Access-Control-Allow-Origin not *)</li>
+                  <li>• Rate-limit headers present (X-RateLimit-*)</li>
+                  <li>• Anti-CSRF token detected in forms</li>
+                  <li>• Secure cookies (Secure + HttpOnly + SameSite=Lax/Strict)</li>
+                  <li>• Email obfuscated and/or contact form without mailto</li>
+                </ul>
+              </div>
+            </div>
+            <div className="mt-4 text-sm">
+              <strong>Bonus Breakdown:</strong> Headers/Site up to +8, API/PII up to +6 — Max +14
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">No penalties here — these are universal positives you should maintain.</p>
           </CardContent>
         </Card>
 
@@ -314,6 +364,23 @@ const Methodology = () => {
                 <li>• Score uses the highest CVSS finding (worst-case), not a sum of all findings</li>
                 <li>• This automated assessment complements but doesn't replace manual security testing</li>
               </ul>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Disclaimers */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Disclaimers</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3 text-sm text-muted-foreground">
+              <div>
+                <span className="font-semibold">Training context:</span> This is a security training platform. Vulnerabilities may be intentional; focus on non-intentional issues.
+              </div>
+              <div>
+                <span className="font-semibold">Production context:</span> This assessment provides a comprehensive security overview. Consider professional penetration testing for critical applications.
+              </div>
             </div>
           </CardContent>
         </Card>
