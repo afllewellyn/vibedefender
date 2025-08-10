@@ -69,6 +69,7 @@ const ScanReport = () => {
         .from('scan_findings')
         .select('*')
         .eq('scan_id', scanId)
+        .order('contextual_cvss', { ascending: false })
         .order('impact_score', { ascending: false });
 
       if (findingsError) throw findingsError;

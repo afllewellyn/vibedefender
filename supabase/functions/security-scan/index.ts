@@ -75,47 +75,50 @@ serve(async (req) => {
     const findings: SecurityCheck[] = [];
 
     try {
-      // Run security checks
-      const securityHeadersResults = await checkSecurityHeaders(scan.url);
-      findings.push(...securityHeadersResults.findings);
+      const TIMEOUT_PER_CHECK = 10000; // 10s per check
 
-      const exposedFilesResults = await checkExposedFiles(scan.url);
-      findings.push(...exposedFilesResults.findings);
+      const tasks = {
+        securityHeaders: withTimeout(checkSecurityHeaders(scan.url), TIMEOUT_PER_CHECK, 'securityHeaders'),
+        exposedFiles: withTimeout(checkExposedFiles(scan.url), TIMEOUT_PER_CHECK, 'exposedFiles'),
+        platform: withTimeout(detectPlatform(scan.url), TIMEOUT_PER_CHECK, 'platform'),
+        xss: withTimeout(checkXSS(scan.url), TIMEOUT_PER_CHECK, 'xss'),
+        csrf: withTimeout(checkCSRF(scan.url), TIMEOUT_PER_CHECK, 'csrf'),
+        cookies: withTimeout(checkInsecureCookies(scan.url), TIMEOUT_PER_CHECK, 'cookies'),
+        redirect: withTimeout(checkOpenRedirect(scan.url), TIMEOUT_PER_CHECK, 'openRedirect'),
+        sql: withTimeout(checkBasicSQLInjection(scan.url), TIMEOUT_PER_CHECK, 'sqli'),
+        pii: withTimeout(checkPIIAndAPIKeys(scan.url), TIMEOUT_PER_CHECK, 'pii'),
+      } as const;
 
-      const platformResults = await detectPlatform(scan.url);
-      findings.push(...platformResults.findings);
+      const entries = Object.entries(tasks);
+      const settled = await Promise.allSettled(entries.map(([, p]) => p));
 
-      const xssResults = await checkXSS(scan.url);
-      findings.push(...xssResults.findings);
+      const findings: SecurityCheck[] = [];
+      let piiResults: any = { findings: [], pageContent: '', headersMap: {}, setCookies: [] };
 
-      const csrfResults = await checkCSRF(scan.url);
-      findings.push(...csrfResults.findings);
+      for (let i = 0; i < entries.length; i++) {
+        const [key] = entries[i];
+        const r = settled[i];
+        if (r.status === 'fulfilled') {
+          const value: any = r.value;
+          if (key === 'pii') piiResults = value;
+          if (value?.findings?.length) findings.push(...value.findings);
+        } else {
+          console.warn(`[security-scan] Check failed: ${key}`, r.reason);
+        }
+      }
 
-      const cookieResults = await checkInsecureCookies(scan.url);
-      findings.push(...cookieResults.findings);
-
-      const redirectResults = await checkOpenRedirect(scan.url);
-      findings.push(...redirectResults.findings);
-
-      const sqlResults = await checkBasicSQLInjection(scan.url);
-      findings.push(...sqlResults.findings);
-
-      // Check for PII and API key exposure in homepage HTML (reuse this fetch for context/bonuses)
-      const piiResults = await checkPIIAndAPIKeys(scan.url);
-      findings.push(...piiResults.findings);
-
-      // Remove duplicates based on title and category
-      const uniqueFindings = deduplicateFindings(findings);
+      // Remove duplicates based on title and category and ensure CVSS vector/score
+      const uniqueFindings = deduplicateFindings(findings).map(ensureCvss) as any[];
       console.log(`[security-scan] Removed ${findings.length - uniqueFindings.length} duplicate findings`);
 
       // Context-aware scoring with positive bonuses
       const pageContent = piiResults.pageContent || '';
-      const headersMap = piiResults.headersMap || {} as Record<string, string>;
+      const headersMap = (piiResults.headersMap || {}) as Record<string, string>;
       const context = detectContext(scan.url, pageContent);
       const bonuses = computePositiveBonuses(pageContent, headersMap, scan.url, piiResults.setCookies || []);
-      const contextualizedFindings = applyContextualCvss(uniqueFindings, context, pageContent);
-      const maxContextualCvss = contextualizedFindings.length > 0 
-        ? Math.max(...contextualizedFindings.map(f => (f as any).contextual_cvss || f.cvss_score || 0))
+      const contextualizedFindings = applyContextualCvss(uniqueFindings as any, context, pageContent) as any[];
+      const maxContextualCvss = contextualizedFindings.length > 0
+        ? Math.max(...contextualizedFindings.map((f: any) => f.contextual_cvss ?? f.cvss_score ?? 0))
         : 0;
       const base = context === 'training' ? 85 : 90;
       const multiplier = context === 'training' ? 4 : 7;
@@ -127,25 +130,31 @@ serve(async (req) => {
         ? 'This is a security training platform. Vulnerabilities may be intentional; focus on non-intentional issues.'
         : 'This assessment provides a comprehensive security overview. Consider professional penetration testing for critical applications.';
 
-      // Save findings to database (include contextual_cvss)
-      for (const finding of contextualizedFindings) {
-        await supabase
+      // Batch insert findings
+      if (contextualizedFindings.length > 0) {
+        const rows = contextualizedFindings.map((finding: any) => ({
+          scan_id: scanId,
+          title: finding.title,
+          description: finding.description,
+          severity: finding.severity,
+          category: finding.category,
+          recommendation: finding.recommendation,
+          impact_score: finding.impact_score,
+          element_selector: finding.evidence,
+          reference_links: finding.reference_links || [],
+          cvss_score: finding.cvss_score,
+          cvss_vector: finding.cvss_vector || null,
+          owasp_category: finding.owasp_category,
+          evidence: finding.evidence,
+          contextual_cvss: finding.contextual_cvss ?? finding.cvss_score,
+        }));
+
+        const { error: insertError } = await supabase
           .from('scan_findings')
-          .insert({
-            scan_id: scanId,
-            title: finding.title,
-            description: finding.description,
-            severity: finding.severity,
-            category: finding.category,
-            recommendation: finding.recommendation,
-            impact_score: finding.impact_score,
-            element_selector: finding.evidence,
-            reference_links: finding.reference_links || [],
-            cvss_score: finding.cvss_score,
-            owasp_category: finding.owasp_category,
-            evidence: finding.evidence,
-            contextual_cvss: (finding as any).contextual_cvss ?? finding.cvss_score
-          });
+          .insert(rows);
+        if (insertError) {
+          console.error('[security-scan] Batch insert of findings failed:', insertError);
+        }
       }
 
       // Update scan with results and metadata
@@ -168,18 +177,19 @@ serve(async (req) => {
 
       console.log(`[security-scan] Scan completed. Score: ${finalScoreRounded}, Grade: ${grade}, Findings: ${contextualizedFindings.length}`);
 
-      return new Response(JSON.stringify({ 
-        success: true, 
+      return new Response(JSON.stringify({
+        success: true,
         context,
         score: finalScoreRounded,
         grade,
-        findings: contextualizedFindings.map(f => ({ id: f.id, title: f.title, contextual_cvss: (f as any).contextual_cvss, cvss_score: f.cvss_score })),
+        findings: contextualizedFindings.map((f: any) => ({ id: f.id, title: f.title, contextual_cvss: f.contextual_cvss, cvss_score: f.cvss_score, cvss_vector: f.cvss_vector })),
         bonusBreakdown: { siteHeader: bonuses.siteHeader, apiPii: bonuses.apiPii },
         recommendations: bonuses.maintainNotes,
         disclaimer
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
+
 
     } catch (error) {
       console.error('[security-scan] Scan execution error:', error);
@@ -840,20 +850,82 @@ async function checkPIIAndAPIKeys(url: string) {
   return { findings, pageContent: '', headersMap: {}, setCookies: [] } as any;
 }
 
-// Deduplicate findings based on title and category
+// Deduplicate findings based on (category, title) and aggregate evidence/links
 function deduplicateFindings(findings: SecurityCheck[]): SecurityCheck[] {
-  const seen = new Set<string>();
-  const uniqueFindings: SecurityCheck[] = [];
-  
-  for (const finding of findings) {
-    const key = `${finding.title}|${finding.category}`;
-    if (!seen.has(key)) {
-      seen.add(key);
-      uniqueFindings.push(finding);
+  const map = new Map<string, any>();
+  for (const f of findings) {
+    const key = `${(f.category || '').toLowerCase()}|${(f.title || '').toLowerCase()}`;
+    const existing = map.get(key);
+    if (!existing) {
+      map.set(key, {
+        ...f,
+        evidence: f.evidence ? [f.evidence] : [],
+        reference_links: f.reference_links || []
+      });
+    } else {
+      existing.impact_score = Math.max(existing.impact_score || 0, f.impact_score || 0);
+      existing.cvss_score = Math.max(existing.cvss_score || 0, f.cvss_score || 0);
+      const refs = new Set([...(existing.reference_links || []), ...(f.reference_links || [])]);
+      existing.reference_links = Array.from(refs);
+      const ev = Array.isArray(existing.evidence) ? existing.evidence : (existing.evidence ? [existing.evidence] : []);
+      if (f.evidence && !ev.includes(f.evidence)) ev.push(f.evidence);
+      existing.evidence = ev;
     }
   }
-  
-  return uniqueFindings;
+  return Array.from(map.values());
+}
+
+// Per-check timeout helper
+function withTimeout<T>(promise: Promise<T>, ms: number, label = 'task'): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(`${label} timeout after ${ms}ms`)), ms);
+    promise.then((val) => { clearTimeout(timer); resolve(val); })
+           .catch((err) => { clearTimeout(timer); reject(err); });
+  });
+}
+
+// CVSS mapping for common findings
+const CVSS_VECTORS: Record<string, string> = {
+  'missing-hsts': 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N',
+  'missing-csp': 'CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:N',
+  'missing-frame-options': 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N',
+  'missing-content-type-options': 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:N',
+  'missing-referrer-policy': 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N',
+  'missing-xss-protection': 'CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:L/A:N',
+  'missing-permissions-policy': 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:N',
+  'exposed--env': 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N',
+  'exposed--git-config': 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N',
+  'exposed-wp-config-php': 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N',
+  'open-redirect': 'CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:N',
+  'basic-sql-injection': 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H',
+  'reflected-xss': 'CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N',
+  'csrf-missing-token': 'CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:N',
+  'insecure-cookies': 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N',
+};
+
+const DEFAULT_CVSS_BY_CATEGORY: Array<{match: RegExp, vector: string, score: number}> = [
+  { match: /security headers/i, vector: 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N', score: 4.0 },
+  { match: /exposed/i, vector: 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N', score: 9.0 },
+  { match: /xss/i, vector: 'CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N', score: 6.1 },
+  { match: /csrf/i, vector: 'CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:N', score: 6.5 },
+  { match: /open redirect/i, vector: 'CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:N', score: 6.1 },
+  { match: /sql/i, vector: 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H', score: 9.8 },
+  { match: /cookie/i, vector: 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N', score: 3.0 },
+  { match: /platform/i, vector: 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N', score: 3.1 },
+];
+
+function ensureCvss(f: SecurityCheck): any {
+  let vector = CVSS_VECTORS[f.id];
+  let score = f.cvss_score;
+  if (!vector) {
+    const cat = f.category || '';
+    const fallback = DEFAULT_CVSS_BY_CATEGORY.find(v => v.match.test(cat));
+    vector = fallback?.vector || 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N';
+    score = score ?? fallback?.score ?? 4.0;
+  } else {
+    score = score ?? 4.0;
+  }
+  return { ...(f as any), cvss_vector: vector, cvss_score: score };
 }
 
 // CVSS v3.1 legacy scoring (kept for reference)
@@ -861,22 +933,18 @@ function calculateCVSSScore(findings: SecurityCheck[]): number {
   if (findings.length === 0) {
     return 100; // Perfect score if no findings
   }
-  
   // Find the highest CVSS score among all findings
   const maxCVSSScore = Math.max(...findings.map(f => f.cvss_score || 0));
   console.log(`[security-scan] Max CVSS Score found: ${maxCVSSScore}`);
-  
   // Score formula: 100 - (Highest CVSS Score × 7)
   let finalScore = Math.max(0, 100 - (maxCVSSScore * 7));
   console.log(`[security-scan] Calculated base score: ${finalScore}`);
-  
   // Cap at F grade (59) or below if any critical finding (CVSS >= 9.0)
   const hasCriticalFinding = findings.some(f => (f.cvss_score || 0) >= 9.0);
   if (hasCriticalFinding) {
     finalScore = Math.min(finalScore, 59);
     console.log(`[security-scan] Critical finding detected, score capped at: ${finalScore}`);
   }
-  
   return Math.round(finalScore);
 }
 
@@ -985,19 +1053,18 @@ function computePositiveBonuses(pageContent: string, headersMap: Record<string, 
   const hasMailto = /mailto:/i.test(pageContent);
   if (hasForm && !hasMailto) { apiPiiItems.push('Contact via form (no mailto)'); maintainNotes.push('Contact form present without mailto; keep using form submissions.'); }
 
-  const apiPii = Math.min(apiPiiItems.length
-    + (allApiHttps ? 1 : 0), 6);
-  // Note: allApiHttps already accounted in push above; guard against double counting by basing on items array length.
-  const total = Math.min(siteHeader, 8) + Math.min(apiPiiItems.length, 6);
+  const apiPii = Math.min(apiPiiItems.length, 6);
+  const total = Math.min(siteHeader, 8) + Math.min(apiPii, 6);
 
   return {
     siteHeader,
-    apiPii: Math.min(apiPiiItems.length, 6),
+    apiPii,
     total: Math.min(total, 14),
     siteHeaderItems,
     apiPiiItems,
     maintainNotes
   };
+
 }
 
 function deriveGrade(score: number): string {

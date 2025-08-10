@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 const Privacy = () => {
@@ -118,7 +118,7 @@ const Privacy = () => {
               <li><strong>Restriction:</strong> Request restriction of processing</li>
             </ul>
             
-            <p>To exercise these rights, please contact us at privacy@vibedefender.com.</p>
+            <p>To exercise these rights, please use our <Link to="/contact" className="underline">Contact</Link> page.</p>
           </CardContent>
         </Card>
 
@@ -144,12 +144,7 @@ const Privacy = () => {
             <CardTitle>Contact Us</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>If you have any questions about this Privacy Policy, please contact us:</p>
-            <ul className="mt-4 space-y-2">
-              <li>Email: afllewellyn@gmail.com</li>
-              <li>
-              </li>
-            </ul>
+            <p>If you have any questions about this Privacy Policy, please contact us via the <Link to="/contact" className="underline">Contact</Link> page.</p>
           </CardContent>
         </Card>
         </div>
