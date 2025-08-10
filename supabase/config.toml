@@ -1,3 +1,4 @@
+
 project_id = "hkpwhzhbrxbhxypyslmw"
 
 [api]
@@ -47,4 +48,7 @@ enabled = true
 inspector_port = 8083
 
 [functions.security-scan]
+verify_jwt = false
+
+[functions.contact-submit]
 verify_jwt = false
