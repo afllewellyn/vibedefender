@@ -270,8 +270,8 @@ const Methodology = () => {
               <div className="p-3 rounded-lg border">
                 <div className="font-semibold">Contextual CVSS</div>
                 <ul className="text-sm text-muted-foreground mt-2 space-y-1">
-                  <li>• Training: missing_headers ×0.2</li>
-                  <li>• Training: intentional xss/sqli/csrf/file_exposure ×0.1</li>
+                  <li>• Training: missing_headers ×0.4</li>
+                  <li>• Training: intentional xss/sqli/csrf/file_exposure ×0.3</li>
                   <li>• Production: standard CVSS (no reduction)</li>
                 </ul>
               </div>
@@ -279,6 +279,9 @@ const Methodology = () => {
             <p className="text-sm text-muted-foreground mt-4">
               Final score formula: <strong>final = clamp[0–100](base − (highestContextualCVSS × multiplier) + positiveBonus)</strong>. 
               Grades: A ≥ 90, B 80–89, C 70–79, D 60–69, F &lt; 60.
+            </p>
+            <p className="text-sm text-muted-foreground mt-2">
+              <strong>Zero findings rule:</strong> If no low/medium/high/critical issues are detected after deduplication, your grade is computed as a high baseline plus positive bonuses — no penalty multipliers are applied.
             </p>
           </CardContent>
         </Card>
@@ -291,7 +294,7 @@ const Methodology = () => {
           <CardContent>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <div className="font-semibold mb-2">Headers/Site Bonuses (max +8)</div>
+                <div className="font-semibold mb-2">Headers/Site Bonuses (max +6)</div>
                 <ul className="text-sm text-muted-foreground space-y-1">
                   <li>• HSTS present</li>
                   <li>• CSP present</li>
@@ -303,7 +306,7 @@ const Methodology = () => {
                 </ul>
               </div>
               <div>
-                <div className="font-semibold mb-2">API &amp; PII Hygiene (max +6)</div>
+                <div className="font-semibold mb-2">API &amp; PII Hygiene (max +4)</div>
                 <ul className="text-sm text-muted-foreground space-y-1">
                   <li>• All in-page API references use HTTPS</li>
                   <li>• Tight CORS (Access-Control-Allow-Origin not *)</li>
@@ -315,7 +318,7 @@ const Methodology = () => {
               </div>
             </div>
             <div className="mt-4 text-sm">
-              <strong>Bonus Breakdown:</strong> Headers/Site up to +8, API/PII up to +6 — Max +14
+              <strong>Bonus Breakdown:</strong> Headers/Site up to +6, API/PII up to +4 — Max +10
             </div>
             <p className="text-xs text-muted-foreground mt-2">No penalties here — these are universal positives you should maintain.</p>
           </CardContent>
@@ -376,7 +379,7 @@ const Methodology = () => {
           <CardContent>
             <div className="space-y-3 text-sm text-muted-foreground">
               <div>
-                <span className="font-semibold">Training context:</span> This is a security training platform. Vulnerabilities may be intentional; focus on non-intentional issues.
+                <span className="font-semibold">Training context:</span> This is a security training platform. Vulnerabilities may be intentional; focus on non-intentional issues. Grades on known training platforms are capped at B/B+ to reflect intentional vulnerabilities and learning environments.
               </div>
               <div>
                 <span className="font-semibold">Production context:</span> This assessment provides a comprehensive security overview. Consider professional penetration testing for critical applications.

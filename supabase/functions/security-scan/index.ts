@@ -94,6 +94,7 @@ serve(async (req) => {
 
       const findings: SecurityCheck[] = [];
       let piiResults: any = { findings: [], pageContent: '', headersMap: {}, setCookies: [] };
+      const checkErrors: string[] = [];
 
       for (let i = 0; i < entries.length; i++) {
         const [key] = entries[i];
@@ -103,7 +104,10 @@ serve(async (req) => {
           if (key === 'pii') piiResults = value;
           if (value?.findings?.length) findings.push(...value.findings);
         } else {
-          console.warn(`[security-scan] Check failed: ${key}`, r.reason);
+          const reason = (r as PromiseRejectedResult).reason;
+          const msg = typeof reason?.message === 'string' ? reason.message : String(reason);
+          checkErrors.push(`${key}: ${msg}`);
+          console.warn(`[security-scan] Check failed: ${key}`, reason);
         }
       }
 
@@ -117,18 +121,36 @@ serve(async (req) => {
       const context = detectContext(scan.url, pageContent);
       const bonuses = computePositiveBonuses(pageContent, headersMap, scan.url, piiResults.setCookies || []);
       const contextualizedFindings = applyContextualCvss(uniqueFindings as any, context, pageContent) as any[];
-      const maxContextualCvss = contextualizedFindings.length > 0
-        ? Math.max(...contextualizedFindings.map((f: any) => f.contextual_cvss ?? f.cvss_score ?? 0))
+
+      // Negatives only (we don't generate warnings/info as findings)
+      const negatives = contextualizedFindings;
+      const negativesCount = negatives.length;
+      const maxContextualCvss = negativesCount > 0
+        ? Math.max(...negatives.map((f: any) => f.contextual_cvss ?? f.cvss_score ?? 0))
         : 0;
+
       const base = context === 'training' ? 85 : 90;
       const multiplier = context === 'training' ? 4 : 7;
-      let finalScore = base - (maxContextualCvss * multiplier) + bonuses.total;
+
+      // Zero-findings guard: no penalty multipliers when there are no issues
+      let finalScore = negativesCount === 0
+        ? base + bonuses.total
+        : base - (maxContextualCvss * multiplier) + bonuses.total;
+
+      // Clamp and apply training cap (B/B+ ceiling)
       finalScore = Math.max(0, Math.min(100, finalScore));
+      if (context === 'training' && finalScore > 88) {
+        finalScore = 88;
+      }
+
       const finalScoreRounded = Math.round(finalScore);
       const grade = deriveGrade(finalScoreRounded);
       const disclaimer = context === 'training'
         ? 'This is a security training platform. Vulnerabilities may be intentional; focus on non-intentional issues.'
         : 'This assessment provides a comprehensive security overview. Consider professional penetration testing for critical applications.';
+
+      // Defensive summary logging
+      console.log(`[security-scan] Summary -> context=${context}, negatives=${negativesCount}, maxCtxCVSS=${maxContextualCvss.toFixed(2)}, base=${base}, mult=${multiplier}, bonuses=${bonuses.total}, final=${finalScoreRounded}, grade=${grade}`);
 
       // Batch insert findings
       if (contextualizedFindings.length > 0) {
@@ -139,7 +161,7 @@ serve(async (req) => {
           severity: finding.severity,
           category: finding.category,
           recommendation: finding.recommendation,
-          impact_score: finding.impact_score,
+          impact_score: Math.max(0, Math.min(10, Number(finding.impact_score ?? 0))),
           element_selector: finding.evidence,
           reference_links: finding.reference_links || [],
           cvss_score: finding.cvss_score,
@@ -170,7 +192,8 @@ serve(async (req) => {
             bonusBreakdown: { siteHeader: bonuses.siteHeader, apiPii: bonuses.apiPii },
             bonusDetails: { siteHeader: bonuses.siteHeaderItems, apiPii: bonuses.apiPiiItems },
             recommendations: bonuses.maintainNotes,
-            disclaimer
+            disclaimer,
+            errors: checkErrors
           }
         })
         .eq('id', scanId);
@@ -981,9 +1004,9 @@ function applyContextualCvss(findings: SecurityCheck[], context: 'training' | 'b
       const isMissingHeaders = cat.includes('security headers') || cat.includes('header') || title.includes('missing');
       const isVulnCat = cat.includes('xss') || cat.includes('sql injection') || cat.includes('csrf') || cat.includes('exposed') || cat.includes('file');
       if (isMissingHeaders) {
-        contextual = contextual * 0.2; // ~80% reduction
+        contextual = contextual * 0.4; // ~60% reduction (less generous)
       } else if (isVulnCat && looksIntentional.test(lowerHtml + ' ' + (f.description || ''))) {
-        contextual = contextual * 0.1; // ~90% reduction if appears intentional
+        contextual = contextual * 0.3; // ~70% reduction if appears intentional
       }
     }
 
@@ -1000,7 +1023,7 @@ function computePositiveBonuses(pageContent: string, headersMap: Record<string, 
   const apiPiiItems: string[] = [];
   const maintainNotes: string[] = [];
 
-  // Site/Header bonuses (cap 8)
+  // Site/Header bonuses (cap 6)
   if (headers['strict-transport-security']) { siteHeaderItems.push('HSTS present'); }
   if (headers['content-security-policy']) { siteHeaderItems.push('CSP present'); }
   if (headers['x-frame-options']) { siteHeaderItems.push('X-Frame-Options present'); }
@@ -1008,9 +1031,9 @@ function computePositiveBonuses(pageContent: string, headersMap: Record<string, 
   if (!headers['server'] && !headers['x-powered-by']) { siteHeaderItems.push('Server/X-Powered-By hidden'); }
   if (/privacy\s*policy/i.test(html)) { siteHeaderItems.push('Privacy Policy present'); }
   if (headers['permissions-policy']) { siteHeaderItems.push('Permissions-Policy present'); }
-  const siteHeader = Math.min(siteHeaderItems.length, 8);
+  const siteHeader = Math.min(siteHeaderItems.length, 6);
 
-  // API/PII bonuses (cap 6)
+  // API/PII bonuses (cap 4)
   // Extract in-page API refs and ensure they use HTTPS
   const apiUrls: string[] = [];
   const patterns = [
@@ -1053,13 +1076,13 @@ function computePositiveBonuses(pageContent: string, headersMap: Record<string, 
   const hasMailto = /mailto:/i.test(pageContent);
   if (hasForm && !hasMailto) { apiPiiItems.push('Contact via form (no mailto)'); maintainNotes.push('Contact form present without mailto; keep using form submissions.'); }
 
-  const apiPii = Math.min(apiPiiItems.length, 6);
-  const total = Math.min(siteHeader, 8) + Math.min(apiPii, 6);
+  const apiPii = Math.min(apiPiiItems.length, 4);
+  const total = Math.min(siteHeader, 6) + Math.min(apiPii, 4);
 
   return {
     siteHeader,
     apiPii,
-    total: Math.min(total, 14),
+    total: Math.min(total, 10),
     siteHeaderItems,
     apiPiiItems,
     maintainNotes
