@@ -19,6 +19,7 @@ interface ScanFinding {
   recommendation: string;
   impact_score: number;
   element_selector: string;
+  reference_links?: string[];
 }
 
 interface Scan {
@@ -80,7 +81,7 @@ const ScanDetails = () => {
       if (scanData.status === 'completed') {
         const { data: findingsData, error: findingsError } = await supabase
           .from('scan_findings')
-          .select('*')
+          .select('id, title, description, severity, category, recommendation, impact_score, element_selector, reference_links')
           .eq('scan_id', scanId)
           .order('impact_score', { ascending: false });
 
@@ -138,6 +139,56 @@ const ScanDetails = () => {
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  const exportToCSV = () => {
+    if (!scan || findings.length === 0) return;
+
+    const headers = [
+      'Title',
+      'Description', 
+      'Severity',
+      'Category',
+      'Recommendation',
+      'Impact Score',
+      'Element Selector',
+      'Reference Links'
+    ];
+
+    const csvData = findings.map(finding => [
+      `"${finding.title.replace(/"/g, '""')}"`,
+      `"${finding.description?.replace(/"/g, '""') || ''}"`,
+      `"${finding.severity}"`,
+      `"${finding.category}"`,
+      `"${finding.recommendation?.replace(/"/g, '""') || ''}"`,
+      `"${finding.impact_score || ''}"`,
+      `"${finding.element_selector || ''}"`,
+      `"${finding.reference_links?.join('|') || ''}"`
+    ]);
+
+    const csvContent = [headers.join(','), ...csvData.map(row => row.join(','))].join('\n');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      
+      const urlDomain = new URL(scan.url).hostname;
+      const date = new Date().toISOString().split('T')[0];
+      link.setAttribute('download', `scan-report-${urlDomain}-${date}.csv`);
+      
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast({
+        title: "Export Successful",
+        description: "Scan report has been downloaded as CSV.",
+      });
+    }
   };
 
   const filteredFindings = severityFilter === 'all' 
@@ -214,7 +265,7 @@ const ScanDetails = () => {
               <div className="flex items-center space-x-2">
                 <Badge variant="outline">{scan.status}</Badge>
                 {scan.status === 'completed' && (
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" onClick={exportToCSV}>
                     <Download className="mr-2 h-4 w-4" />
                     Export Report
                   </Button>
@@ -349,6 +400,24 @@ const ScanDetails = () => {
                         <div className="mt-3 p-3 bg-muted rounded">
                           <span className="font-medium text-sm">Recommendation:</span>
                           <p className="text-sm mt-1">{finding.recommendation}</p>
+                        </div>
+                      )}
+                      {finding.reference_links && finding.reference_links.length > 0 && (
+                        <div className="mt-3 space-y-1">
+                          <span className="font-medium text-sm">Reference Links:</span>
+                          <div className="flex flex-wrap gap-2">
+                            {finding.reference_links.map((link, index) => (
+                              <a
+                                key={index}
+                                href={link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs text-primary hover:underline bg-primary/10 px-2 py-1 rounded"
+                              >
+                                {new URL(link).hostname}
+                              </a>
+                            ))}
+                          </div>
                         </div>
                       )}
                     </div>
