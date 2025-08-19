@@ -55,3 +55,6 @@ verify_jwt = false
 
 [functions.scan-public-get]
 verify_jwt = false
+
+[functions.scan-public-create]
+verify_jwt = false

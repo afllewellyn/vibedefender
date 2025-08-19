@@ -61,29 +61,24 @@ export const GuestScanForm = ({ onScanCreated }: GuestScanFormProps) => {
     console.log('[GuestScanForm.tsx] Starting scan process...');
 
     try {
-      // Create anonymous scan
-      const { data: scan, error } = await supabase
-        .from('scans')
-        .insert({
-          url: sanitizedUrl,
-          status: 'pending',
-          user_id: null // Anonymous scan
-        })
-        .select()
-        .single();
+      // Create anonymous scan via edge function to bypass RLS returning restrictions
+      const { data: createResp, error: createError } = await supabase.functions.invoke('scan-public-create', {
+        body: { url: sanitizedUrl }
+      });
 
-      console.log('[GuestScanForm.tsx] Scan record created:', scan);
-
-      if (error) {
-        console.error('[GuestScanForm.tsx] Error creating scan record:', error);
-        throw error;
+      if (createError || !createResp?.id || !createResp?.access_token) {
+        console.error('[GuestScanForm.tsx] Error creating scan via edge function:', createError, createResp);
+        throw createError || new Error('Failed to create scan');
       }
 
+      const scanId = createResp.id as string;
+      const accessToken = createResp.access_token as string;
+
       // Trigger the security scan
-      console.log('[GuestScanForm.tsx] Invoking security-scan function with scanId:', scan.id);
+      console.log('[GuestScanForm.tsx] Invoking security-scan function with scanId:', scanId);
       try {
         const { error: scanError } = await supabase.functions.invoke('security-scan', {
-          body: { scanId: scan.id }
+          body: { scanId }
         });
 
         if (scanError) {
@@ -101,8 +96,8 @@ export const GuestScanForm = ({ onScanCreated }: GuestScanFormProps) => {
       });
 
       // Since we're staying on the same page now, just reset URL and call onScanCreated
-      console.log('[GuestScanForm.tsx] Calling onScanCreated with access_token:', scan.access_token);
-      onScanCreated(scan.access_token);
+      console.log('[GuestScanForm.tsx] Calling onScanCreated with access_token:', accessToken);
+      onScanCreated(accessToken);
       setUrl('');
     } catch (error) {
       console.error('[GuestScanForm.tsx] Scan creation error:', error);
