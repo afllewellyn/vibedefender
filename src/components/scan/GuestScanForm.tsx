@@ -101,8 +101,8 @@ export const GuestScanForm = ({ onScanCreated }: GuestScanFormProps) => {
       });
 
       // Since we're staying on the same page now, just reset URL and call onScanCreated
-      console.log('[GuestScanForm.tsx] Calling onScanCreated with scanId:', scan.id);
-      onScanCreated(scan.id);
+      console.log('[GuestScanForm.tsx] Calling onScanCreated with access_token:', scan.access_token);
+      onScanCreated(scan.access_token);
       setUrl('');
     } catch (error) {
       console.error('[GuestScanForm.tsx] Scan creation error:', error);

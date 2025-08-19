@@ -14,6 +14,7 @@ import Scans from "./pages/Scans";
 import ScanDetails from "./pages/ScanDetails";
 import ScanProgress from "./pages/ScanProgress";
 import ScanReport from "./pages/ScanReport";
+import PublicScanResults from "./pages/PublicScanResults";
 import Methodology from "./pages/Methodology";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
@@ -40,6 +41,7 @@ const App = () => (
             <Route path="/scans/:scanId" element={<ScanDetails />} />
             <Route path="/scan/:scanId" element={<ScanProgress />} />
             <Route path="/report/:scanId" element={<ScanReport />} />
+            <Route path="/r/:accessToken" element={<PublicScanResults />} />
             <Route path="/methodology" element={<Methodology />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />

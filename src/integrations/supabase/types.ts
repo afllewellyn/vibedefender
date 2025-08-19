@@ -144,6 +144,7 @@ export type Database = {
       }
       scans: {
         Row: {
+          access_token: string
           completed_at: string | null
           created_at: string
           error_message: string | null
@@ -154,11 +155,13 @@ export type Database = {
           score: number | null
           started_at: string | null
           status: string
+          token_expires_at: string | null
           updated_at: string
           url: string
           user_id: string | null
         }
         Insert: {
+          access_token?: string
           completed_at?: string | null
           created_at?: string
           error_message?: string | null
@@ -169,11 +172,13 @@ export type Database = {
           score?: number | null
           started_at?: string | null
           status?: string
+          token_expires_at?: string | null
           updated_at?: string
           url: string
           user_id?: string | null
         }
         Update: {
+          access_token?: string
           completed_at?: string | null
           created_at?: string
           error_message?: string | null
@@ -184,6 +189,7 @@ export type Database = {
           score?: number | null
           started_at?: string | null
           status?: string
+          token_expires_at?: string | null
           updated_at?: string
           url?: string
           user_id?: string | null

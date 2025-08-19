@@ -52,3 +52,6 @@ verify_jwt = false
 
 [functions.contact-submit]
 verify_jwt = false
+
+[functions.scan-public-get]
+verify_jwt = false

@@ -1,11 +1,10 @@
-import { useEffect, useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
 import { Shield, Zap, BarChart3, ArrowRight } from 'lucide-react';
 import { GuestScanForm } from '@/components/scan/GuestScanForm';
-import { ScanResults } from '@/components/scan/ScanResults';
 import { Header } from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 const Index = () => {
@@ -14,8 +13,13 @@ const Index = () => {
     isLoading
   } = useAuth();
   const navigate = useNavigate();
-  const [activeScanId, setActiveScanId] = useState<string | null>(null);
-  console.log('[Index.tsx] Component rendered, activeScanId:', activeScanId);
+  
+  
+  const handleScanCreated = (accessToken: string) => {
+    console.log('[Index.tsx] Scan created with access token:', accessToken);
+    // Redirect to the public scan results page
+    navigate(`/r/${accessToken}`);
+  };
   // Allow authenticated users to view homepage - no automatic redirect
   if (isLoading) {
     return <div className="min-h-screen flex items-center justify-center bg-background">
@@ -43,11 +47,11 @@ const Index = () => {
           
           {/* Main CTA - Guest Scan Form */}
           <div className="max-w-2xl mx-auto mb-8">
-            <GuestScanForm onScanCreated={setActiveScanId} />
+            <GuestScanForm onScanCreated={handleScanCreated} />
           </div>
 
           {/* Trust Indicators */}
-          {!activeScanId && <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground mb-12">
+          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground mb-12">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 <span>No signup required</span>
@@ -60,13 +64,12 @@ const Index = () => {
                 <BarChart3 className="w-4 h-4 text-foreground" />
                 <span>Instant security insights</span>
               </div>
-            </div>}
+            </div>
 
-          {/* Show scan results if a scan is active */}
-          {activeScanId && <ScanResults scanId={activeScanId} onCreateAccount={() => navigate('/signup')} />}
+          {/* Show scan results if a scan is active - this is now handled by redirect */}
 
           {/* Secondary Call to Action Buttons */}
-          {!activeScanId && <div className="flex gap-4 justify-center">
+          <div className="flex gap-4 justify-center">
               {user ? <Button variant="outline" size="lg" onClick={() => navigate('/dashboard')}>
                   Go to Dashboard
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -79,7 +82,7 @@ const Index = () => {
                     Sign In
                   </Button>
                 </>}
-            </div>}
+            </div>
         </div>
 
         {/* Features Section */}
