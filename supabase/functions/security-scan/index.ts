@@ -803,33 +803,96 @@ async function checkPIIAndAPIKeys(url: string) {
       headersMap[k.toLowerCase()] = v;
     }
     const setCookies: string[] = (response.headers as any).getSetCookie?.() ?? [];
-    
-    // Email detection pattern
+
+    // ================= Email Exposure Refinements =================
+    // Ignore common business alias emails and asset filename false-positives.
+    // Only flag personal/sensitive emails (public providers or individual-looking formats).
+    const BUSINESS_ALIASES = new Set([
+      'info', 'support', 'sales', 'hello', 'contact', 'careers', 'press', 'marketing', 'feedback', 'newsletter'
+    ]);
+    const PUBLIC_PROVIDERS = new Set([
+      'gmail.com', 'yahoo.com', 'outlook.com'
+    ]);
+    const ASSET_EXTENSIONS = ['png','jpg','jpeg','gif','webp','svg','ico','bmp','pdf','mp4','mov','webm'];
+
     const emailPattern = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
-    const emailMatches = html.match(emailPattern);
-    
-    if (emailMatches && emailMatches.length > 0) {
-      const uniqueEmails = [...new Set(emailMatches)];
+    const emailMatchesIter = html.matchAll(emailPattern);
+
+    const rawEmails: string[] = [];
+    for (const m of emailMatchesIter) {
+      if (m[0]) rawEmails.push(m[0]);
+    }
+
+    const uniqueRawEmails = Array.from(new Set(rawEmails));
+
+    const flaggedEmails: string[] = [];
+    const ignoredByAlias: string[] = [];
+    const ignoredByAsset: string[] = [];
+    const ignoredOther: string[] = [];
+
+    for (const email of uniqueRawEmails) {
+      const lower = email.toLowerCase();
+      const [localPartRaw, domainPartRaw] = lower.split('@');
+      if (!localPartRaw || !domainPartRaw) { ignoredOther.push(email); continue; }
+
+      const localPart = localPartRaw.trim();
+      const domainPart = domainPartRaw.trim();
+
+      // 1) Ignore business aliases (role-based)
+      if (BUSINESS_ALIASES.has(localPart)) { ignoredByAlias.push(email); continue; }
+
+      // 2) Ignore asset filename false-positives like something@2x.png, logo@3x.jpg
+      const domainPieces = domainPart.split('.');
+      const lastPiece = domainPieces[domainPieces.length - 1] || '';
+      const firstPiece = domainPieces[0] || '';
+      const isAssetExt = ASSET_EXTENSIONS.includes(lastPiece);
+      const isRetinaToken = /^(?:2x|3x|\d+x)$/.test(firstPiece);
+      if (isAssetExt && (isRetinaToken || firstPiece === '2x' || firstPiece === '3x')) {
+        ignoredByAsset.push(email);
+        continue;
+      }
+
+      // 3) Flag personal/sensitive emails
+      const isPublicProvider = PUBLIC_PROVIDERS.has(domainPart);
+      // Heuristic for individual-looking corporate emails: contains a separator with alphabetic groups
+      const isIndividualFormat = /^(?:[a-z]{1,2}[a-z]*[._-])?[a-z]+(?:[._-][a-z]+)+\d*$/i.test(localPart);
+
+      if (isPublicProvider || isIndividualFormat) {
+        flaggedEmails.push(email);
+      } else {
+        ignoredOther.push(email);
+      }
+    }
+
+    if (flaggedEmails.length > 0) {
       findings.push({
         id: 'pii-email-exposure',
-        title: 'Email Addresses Exposed in HTML',
-        description: `Found ${uniqueEmails.length} email address(es) exposed in the webpage source`,
+        title: 'Potential Personal Email Exposure in HTML',
+        description: `Found ${flaggedEmails.length} personal or non-standard email address(es) in page HTML. Role-based business aliases (e.g., info@, support@) and asset filenames (e.g., something@2x.png) are ignored by design.`,
         severity: 'high',
         category: 'PII Exposure',
-        recommendation: 'Remove email addresses from HTML source. Use contact forms or obfuscation techniques.',
+        recommendation: 'Avoid exposing personal inboxes directly. Prefer contact forms or role-based aliases. If email display is required, consider obfuscation to reduce scraping.',
         impact_score: 20,
-        evidence: uniqueEmails.slice(0, 3).join(', ') + (uniqueEmails.length > 3 ? '...' : ''),
+        evidence: flaggedEmails.slice(0, 3).join(', ') + (flaggedEmails.length > 3 ? '...' : ''),
         confidence: 'high',
         cvss_score: 7.5,
         owasp_category: 'A6: Security Misconfiguration',
         reference_links: [
-          'https://owasp.org/www-community/vulnerabilities/Information_exposure_through_directory_listing',
           'https://cheatsheetseries.owasp.org/cheatsheets/Information_Exposure_Prevention_Cheat_Sheet.html'
         ]
       });
     }
-    
-    // API Key patterns
+
+    console.log('[security-scan] Email scan stats:', {
+      raw: rawEmails.length,
+      unique: uniqueRawEmails.length,
+      flagged: flaggedEmails.length,
+      ignoredAlias: ignoredByAlias.length,
+      ignoredAsset: ignoredByAsset.length,
+      ignoredOther: ignoredOther.length
+    });
+
+    // ================= API Key Detection (unchanged) =================
     const apiKeyPatterns = [
       { name: 'Google/Firebase API Key', pattern: /AIza[0-9A-Za-z-_]{35}/g, cvss: 9.0 },
       { name: 'OpenAI API Key', pattern: /sk-[A-Za-z0-9]{32,}/g, cvss: 9.5 },
@@ -838,7 +901,7 @@ async function checkPIIAndAPIKeys(url: string) {
       { name: 'Stripe API Key', pattern: /sk_live_[0-9a-zA-Z]{24}/g, cvss: 9.0 },
       { name: 'GitHub Token', pattern: /ghp_[A-Za-z0-9]{36}/g, cvss: 8.0 }
     ];
-    
+
     for (const apiPattern of apiKeyPatterns) {
       const matches = html.match(apiPattern.pattern);
       if (matches && matches.length > 0) {
@@ -862,9 +925,9 @@ async function checkPIIAndAPIKeys(url: string) {
         });
       }
     }
-    
-    console.log(`[security-scan] PII/API key check completed. Found ${findings.length} issues.`);
-    
+
+    console.log(`[security-scan] PII/API key check completed. Findings so far: ${findings.length}.`);
+
     return { findings, pageContent: html, headersMap, setCookies };
   } catch (error) {
     console.error('Error checking PII and API keys:', error);
