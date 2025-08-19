@@ -13,9 +13,9 @@ Deno.serve(async (req) => {
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     
-    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const { access_token } = await req.json();
 
@@ -34,7 +34,7 @@ Deno.serve(async (req) => {
       .select('*')
       .eq('access_token', access_token)
       .gt('token_expires_at', new Date().toISOString())
-      .single();
+      .maybeSingle();
 
     if (scanError || !scanData) {
       console.log('Scan not found or expired:', scanError);
