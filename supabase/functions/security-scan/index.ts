@@ -92,24 +92,28 @@ serve(async (req) => {
       const entries = Object.entries(tasks);
       const settled = await Promise.allSettled(entries.map(([, p]) => p));
 
-      const findings: SecurityCheck[] = [];
-      let piiResults: any = { findings: [], pageContent: '', headersMap: {}, setCookies: [] };
-      const checkErrors: string[] = [];
+const findings: SecurityCheck[] = [];
+let piiResults: any = { findings: [], pageContent: '', headersMap: {}, setCookies: [] };
+const checkErrors: string[] = [];
+const probeLogs: { exposedFiles: Array<{ url: string; status: number; isSoft404: boolean; skipped: boolean; reason: string }> } = { exposedFiles: [] };
 
-      for (let i = 0; i < entries.length; i++) {
-        const [key] = entries[i];
-        const r = settled[i];
-        if (r.status === 'fulfilled') {
-          const value: any = r.value;
-          if (key === 'pii') piiResults = value;
-          if (value?.findings?.length) findings.push(...value.findings);
-        } else {
-          const reason = (r as PromiseRejectedResult).reason;
-          const msg = typeof reason?.message === 'string' ? reason.message : String(reason);
-          checkErrors.push(`${key}: ${msg}`);
-          console.warn(`[security-scan] Check failed: ${key}`, reason);
-        }
-      }
+for (let i = 0; i < entries.length; i++) {
+  const [key] = entries[i];
+  const r = settled[i];
+  if (r.status === 'fulfilled') {
+    const value: any = r.value;
+    if (key === 'pii') piiResults = value;
+    if (key === 'exposedFiles' && value?.probes?.length) {
+      probeLogs.exposedFiles.push(...value.probes);
+    }
+    if (value?.findings?.length) findings.push(...value.findings);
+  } else {
+    const reason = (r as PromiseRejectedResult).reason;
+    const msg = typeof reason?.message === 'string' ? reason.message : String(reason);
+    checkErrors.push(`${key}: ${msg}`);
+    console.warn(`[security-scan] Check failed: ${key}`, reason);
+  }
+}
 
       // Remove duplicates based on title and category and ensure CVSS vector/score
       const uniqueFindings = deduplicateFindings(findings).map(ensureCvss) as any[];
@@ -193,7 +197,8 @@ serve(async (req) => {
             bonusDetails: { siteHeader: bonuses.siteHeaderItems, apiPii: bonuses.apiPiiItems },
             recommendations: bonuses.maintainNotes,
             disclaimer,
-            errors: checkErrors
+            errors: checkErrors,
+            probes: probeLogs
           }
         })
         .eq('id', scanId);
@@ -396,9 +401,30 @@ async function checkSecurityHeaders(url: string) {
   return { findings };
 }
 
-// Exposed Files Check
+// Exposed Files Check with soft-404 detection and probe logging
+function isSoft404(body: string): boolean {
+  try {
+    const markers = [
+      /not\s+found/i,
+      /error\s*404/i,
+      /does\s+not\s+exist/i,
+      /page\s+not\s+found/i,
+      /the\s+requested\s+url/i,
+      /404\s+error/i,
+      /file\s+not\s+found/i,
+      /resource\s+not\s+found/i,
+      /no\s+such\s+file/i,
+      /status\s*:\s*404/i
+    ];
+    return markers.some((re) => re.test(body));
+  } catch (_) {
+    return false;
+  }
+}
+
 async function checkExposedFiles(url: string) {
   const findings: SecurityCheck[] = [];
+  const probes: Array<{ url: string; status: number; isSoft404: boolean; skipped: boolean; reason: string }> = [];
 
   const sensitiveFiles = [
     { path: '/.env', severity: 'critical' as const, impact: 30, description: 'Environment variables may contain database passwords, API keys, and other secrets', cvss: 9.5 },
@@ -411,45 +437,68 @@ async function checkExposedFiles(url: string) {
   ];
 
   for (const file of sensitiveFiles) {
+    const targetUrl = `${url}${file.path}`;
     try {
-      const response = await fetch(`${url}${file.path}`);
-      if (response.status === 200) {
-        const fileType = file.path.includes('.env') ? 'environment' : 
-                        file.path.includes('.git') ? 'git' :
-                        file.path.includes('wp-config') ? 'wordpress' : 'general';
-        
-        findings.push({
-          id: `exposed-${file.path.replace(/[^a-zA-Z0-9]/g, '-')}`,
-          title: `Exposed Sensitive File: ${file.path}`,
-          description: file.description,
-          severity: file.severity,
-          category: 'Exposed Files',
-          recommendation: `Immediately restrict access to ${file.path} or remove it from the web root`,
-          impact_score: file.impact,
-          evidence: `File accessible at: ${url}${file.path}`,
-          confidence: 'high',
-          cvss_score: file.cvss,
-          owasp_category: 'A6: Security Misconfiguration',
-          reference_links: fileType === 'environment' ? [
-            'https://owasp.org/www-community/vulnerabilities/Improper_Error_Handling',
-            'https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html'
-          ] : fileType === 'git' ? [
-            'https://owasp.org/www-community/attacks/Forced_browsing',
-            'https://git-scm.com/docs/git-config'
-          ] : fileType === 'wordpress' ? [
-            'https://wordpress.org/support/article/hardening-wordpress/',
-            'https://owasp.org/www-project-web-security-testing-guide/'
-          ] : [
-            'https://owasp.org/www-community/attacks/Forced_browsing'
-          ]
-        });
+      const response = await fetch(targetUrl);
+      const status = response.status;
+
+      if (status !== 200) {
+        probes.push({ url: targetUrl, status, isSoft404: false, skipped: true, reason: 'non-200 status' });
+        console.log(`[security-scan] Probe (exposedFiles) ${file.path}: status=${status} -> SKIPPED`);
+        continue;
       }
+
+      // Read body for soft-404 detection only for 200s
+      let body = '';
+      try { body = await response.text(); } catch { body = ''; }
+      const soft404 = isSoft404(body);
+      if (soft404) {
+        probes.push({ url: targetUrl, status, isSoft404: true, skipped: true, reason: 'soft-404 detected' });
+        console.log(`[security-scan] Probe (exposedFiles) ${file.path}: status=200, soft404=true -> SKIPPED`);
+        continue;
+      }
+
+      // Confirmed exposure
+      const fileType = file.path.includes('.env') ? 'environment' :
+                       file.path.includes('.git') ? 'git' :
+                       file.path.includes('wp-config') ? 'wordpress' : 'general';
+
+      findings.push({
+        id: `exposed-${file.path.replace(/[^a-zA-Z0-9]/g, '-')}`,
+        title: `Exposed Sensitive File: ${file.path}`,
+        description: file.description,
+        severity: file.severity,
+        category: 'Exposed Files',
+        recommendation: `This resource is confirmed accessible. Immediately restrict access to ${file.path} or remove it from the web root.`,
+        impact_score: file.impact,
+        evidence: `Confirmed accessible at: ${targetUrl}`,
+        confidence: 'high',
+        cvss_score: file.cvss,
+        owasp_category: 'A6: Security Misconfiguration',
+        reference_links: fileType === 'environment' ? [
+          'https://owasp.org/www-community/vulnerabilities/Improper_Error_Handling',
+          'https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html'
+        ] : fileType === 'git' ? [
+          'https://owasp.org/www-community/attacks/Forced_browsing',
+          'https://git-scm.com/docs/git-config'
+        ] : fileType === 'wordpress' ? [
+          'https://wordpress.org/support/article/hardening-wordpress/',
+          'https://owasp.org/www-project-web-security-testing-guide/'
+        ] : [
+          'https://owasp.org/www-community/attacks/Forced_browsing'
+        ]
+      });
+
+      probes.push({ url: targetUrl, status, isSoft404: false, skipped: false, reason: 'confirmed exposure' });
+      console.log(`[security-scan] Probe (exposedFiles) ${file.path}: status=200, soft404=false -> CONFIRMED`);
     } catch (error) {
-      // File not accessible, which is good
+      // Network or fetch error treated as neutral/skip
+      probes.push({ url: targetUrl, status: -1, isSoft404: false, skipped: true, reason: 'network error' });
+      console.warn(`[security-scan] Probe (exposedFiles) ${file.path} failed:`, error);
     }
   }
 
-  return { findings };
+  return { findings, probes };
 }
 
 // Platform Detection
