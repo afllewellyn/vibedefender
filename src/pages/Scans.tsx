@@ -193,24 +193,26 @@ const Scans = () => {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {filteredScans.map((scan) => (
               <Card key={scan.id} className="cursor-pointer hover:shadow-md transition-shadow">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center space-x-2">
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <div className="flex items-center space-x-2 min-w-0 flex-1">
                       {getStatusIcon(scan.status)}
-                      <CardTitle className="text-lg truncate">{scan.url}</CardTitle>
+                      <CardTitle className="text-lg truncate min-w-0">{scan.url}</CardTitle>
                     </div>
-                    <Badge variant={getStatusColor(scan.status)}>
-                      {scan.status}
-                    </Badge>
+                    <div className="flex-shrink-0">
+                      <Badge variant={getStatusColor(scan.status)}>
+                        {scan.status}
+                      </Badge>
+                    </div>
                   </div>
                   {scan.project && (
-                    <CardDescription>
+                    <CardDescription className="mt-1">
                       Project: {scan.project.name}
                     </CardDescription>
                   )}
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
+                <CardContent className="pt-3">
+                  <div className="space-y-4">
                     {scan.status === 'completed' && (
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-muted-foreground">Grade:</span>
@@ -242,7 +244,7 @@ const Scans = () => {
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      className="w-full mt-3"
+                      className="w-full mt-4"
                       onClick={() => navigate(`/scans/${scan.id}`)}
                     >
                       View Details
