@@ -146,7 +146,7 @@ We may terminate or suspend your account and access to our services immediately,
 
 ## 11. Governing Law and Jurisdiction
 
-These Terms of Service shall be governed by and construed in accordance with the laws of [Your State/Country], without regard to its conflict of law principles. Any disputes arising under these terms shall be subject to the exclusive jurisdiction of the courts located in [Your Jurisdiction].
+These Terms of Service shall be governed by and construed in accordance with the laws of South Carolina, USA, without regard to its conflict of law principles. Any disputes arising under these terms shall be subject to the exclusive jurisdiction of the courts located in South Carolina, USA.
 
 ## 12. Changes to Terms
 
