@@ -1,5 +1,5 @@
+# Security Headers for all routes
 /*
-  # Security Headers
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
   X-Content-Type-Options: nosniff
   X-Frame-Options: SAMEORIGIN
@@ -7,3 +7,25 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
   Content-Security-Policy: default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://hkpwhzhbrxbhxypyslmw.supabase.co wss://hkpwhzhbrxbhxypyslmw.supabase.co; frame-ancestors 'self' https://lovable.dev https://*.lovable.dev; base-uri 'self'; form-action 'self'
+
+# Block access to sensitive paths
+/admin
+  X-Robots-Tag: noindex, nofollow
+
+/phpmyadmin
+  X-Robots-Tag: noindex, nofollow
+
+/.git/*
+  X-Robots-Tag: noindex, nofollow
+
+/.env
+  X-Robots-Tag: noindex, nofollow
+
+/config.json
+  X-Robots-Tag: noindex, nofollow
+
+/wp-config.php
+  X-Robots-Tag: noindex, nofollow
+
+/.htaccess
+  X-Robots-Tag: noindex, nofollow

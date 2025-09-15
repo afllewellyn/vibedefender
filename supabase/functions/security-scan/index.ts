@@ -401,9 +401,10 @@ async function checkSecurityHeaders(url: string) {
   return { findings };
 }
 
-// Exposed Files Check with soft-404 detection and probe logging
-function isSoft404(body: string): boolean {
+// Enhanced soft-404 detection with SPA recognition
+function isSoft404(body: string, url?: string): boolean {
   try {
+    // Standard 404 markers
     const markers = [
       /not\s+found/i,
       /error\s*404/i,
@@ -416,8 +417,78 @@ function isSoft404(body: string): boolean {
       /no\s+such\s+file/i,
       /status\s*:\s*404/i
     ];
-    return markers.some((re) => re.test(body));
-  } catch (_) {
+
+    // React SPA detection - check for typical React app signatures
+    const reactSpaMarkers = [
+      /<div[^>]+id=["']root["']/i,
+      /<div[^>]+id=["']app["']/i,
+      /react/i,
+      /__vite__/i,
+      /src=["'][^"']*\.js["']/,
+      /<title>.*(?:react|app|vite).*<\/title>/i,
+      /window\.__INITIAL_STATE__/,
+      /ReactDOM\.render/i,
+      /<script[^>]*type=["']module["']/i
+    ];
+
+    // WordPress/CMS specific markers  
+    const cmsMarkers = [
+      /wp-content/i,
+      /wp-includes/i,
+      /wordpress/i,
+      /drupal/i,
+      /joomla/i
+    ];
+
+    // Check for standard 404 patterns first
+    const hasStandard404 = markers.some((re) => re.test(body));
+    if (hasStandard404) {
+      return true;
+    }
+
+    // If we detect React SPA signatures, it's likely a SPA fallback (soft 404)
+    const hasReactSpa = reactSpaMarkers.some((re) => re.test(body));
+    if (hasReactSpa) {
+      console.log(`[security-scan] SPA fallback detected for ${url || 'unknown'} - treating as soft 404`);
+      return true;
+    }
+
+    // For CMS, be more conservative - only flag as soft 404 if we see actual 404 content
+    const hasCmsMarkers = cmsMarkers.some((re) => re.test(body));
+    if (hasCmsMarkers) {
+      // For CMS systems, require explicit 404 patterns
+      return false;
+    }
+
+    // Additional heuristics for generic web applications
+    const bodyLength = body.length;
+    const hasHtmlStructure = /<html/i.test(body) && /<head/i.test(body) && /<body/i.test(body);
+    
+    // If it's a very short response or lacks basic HTML structure, might be a real file
+    if (bodyLength < 500 || !hasHtmlStructure) {
+      return false;
+    }
+
+    // Check for common SPA/framework indicators in longer responses
+    const spaIndicators = [
+      /single.page.application/i,
+      /bundle\.js/i,
+      /app\.js/i,
+      /main\.js/i,
+      /vendor\.js/i,
+      /chunk\.js/i,
+      /manifest\.json/i
+    ];
+
+    const hasSpaIndicators = spaIndicators.some((re) => re.test(body));
+    if (hasSpaIndicators) {
+      console.log(`[security-scan] SPA indicators detected for ${url || 'unknown'} - treating as soft 404`);
+      return true;
+    }
+
+    return false;
+  } catch (error) {
+    console.warn(`[security-scan] Error in isSoft404 detection: ${error}`);
     return false;
   }
 }
@@ -451,7 +522,7 @@ async function checkExposedFiles(url: string) {
       // Read body for soft-404 detection only for 200s
       let body = '';
       try { body = await response.text(); } catch { body = ''; }
-      const soft404 = isSoft404(body);
+      const soft404 = isSoft404(body, targetUrl);
       if (soft404) {
         probes.push({ url: targetUrl, status, isSoft404: true, skipped: true, reason: 'soft-404 detected' });
         console.log(`[security-scan] Probe (exposedFiles) ${file.path}: status=200, soft404=true -> SKIPPED`);

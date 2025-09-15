@@ -1,0 +1,11 @@
+# Security redirects - block access to sensitive paths
+/admin       /404.html    404!
+/phpmyadmin  /404.html    404!
+/.git/*      /404.html    404!
+/.env        /404.html    404!
+/config.json /404.html    404!
+/wp-config.php /404.html  404!
+/.htaccess   /404.html    404!
+
+# Catch-all for SPA routing (keep this last)
+/*           /index.html  200
