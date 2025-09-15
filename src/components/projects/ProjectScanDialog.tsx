@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,6 +13,7 @@ interface ProjectScanDialogProps {
   onOpenChange: (open: boolean) => void;
   projectId: string;
   projectName: string;
+  projectUrl: string;
   onScanCreated: () => void;
 }
 
@@ -21,12 +22,18 @@ export const ProjectScanDialog = ({
   onOpenChange, 
   projectId, 
   projectName,
+  projectUrl,
   onScanCreated 
 }: ProjectScanDialogProps) => {
-  const [url, setUrl] = useState('');
+  const [url, setUrl] = useState(projectUrl);
   const [isScanning, setIsScanning] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
+
+  // Update URL when projectUrl prop changes (different project selected)
+  useEffect(() => {
+    setUrl(projectUrl);
+  }, [projectUrl]);
 
   const validateUrl = (url: string): boolean => {
     try {
@@ -108,7 +115,7 @@ export const ProjectScanDialog = ({
         description: `Security scan initiated for ${projectName}`,
       });
 
-      setUrl('');
+      setUrl(projectUrl);
       onOpenChange(false);
       onScanCreated();
     } catch (error) {
@@ -129,7 +136,7 @@ export const ProjectScanDialog = ({
         <DialogHeader>
           <DialogTitle>New Security Scan</DialogTitle>
           <DialogDescription>
-            Start a security scan for {projectName}
+            Start a security scan for {projectName}. You can modify the URL below if needed.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">

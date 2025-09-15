@@ -344,6 +344,7 @@ const Projects = () => {
             onOpenChange={setIsScanDialogOpen}
             projectId={selectedProject.id}
             projectName={selectedProject.name}
+            projectUrl={selectedProject.url}
             onScanCreated={handleScanCreated}
           />
         )}
