@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
-import { Shield, Zap, BarChart3, ArrowRight, FileText, Lock, ShieldCheck, Activity, Layers } from 'lucide-react';
+import { Shield, Zap, BarChart3, ArrowRight, FileText, Lock, ShieldCheck, Activity, Layers, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { GuestScanForm } from '@/components/scan/GuestScanForm';
 import { Header } from '@/components/layout/Header';
@@ -276,6 +276,21 @@ const Index = () => {
               <CardContent>
                 <CardDescription>
                   Your data is stored securely - we use strict privacy policies, strong encryption and follow best data protection practices.
+                </CardDescription>
+              </CardContent>
+            </Card>
+
+            {/* Built for Vibe-Coders */}
+            <Card className="border border-border bg-card">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-primary" />
+                  Built for Vibe-Coders
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription>
+                  Whether you're using no-code platforms, AI tools, or low-code builders, Vibe Defender helps you ensure your websites follow <strong>Modern Web Security Best Practices</strong> and <strong>Reduce Vulnerability Exposure</strong>—even if you're not a security expert. Get clear, actionable guidance tailored for fast-moving product teams.
                 </CardDescription>
               </CardContent>
             </Card>
