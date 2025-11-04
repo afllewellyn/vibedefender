@@ -279,22 +279,21 @@ const Index = () => {
                 </CardDescription>
               </CardContent>
             </Card>
-
-            {/* Built for Vibe-Coders */}
-            <Card className="border border-border bg-card">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-primary" />
-                  Built for Vibe-Coders
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>
-                  Whether you're using no-code platforms, AI tools, or low-code builders, Vibe Defender helps you ensure your websites follow <strong>Modern Web Security Best Practices</strong> and <strong>Reduce Vulnerability Exposure</strong>—even if you're not a security expert. Get clear, actionable guidance tailored for fast-moving product teams.
-                </CardDescription>
-              </CardContent>
-            </Card>
           </div>
+        </div>
+      </div>
+
+      {/* Built for Vibe-Coders Section */}
+      <div className="container mx-auto px-4 py-20">
+        <div className="text-center mb-12">
+          <Badge variant="secondary" className="mb-4">For no-code & AI builders</Badge>
+          <h2 className="text-3xl font-bold mb-4 text-foreground">Built for Vibe-Coders</h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Whether you're using no-code platforms, AI tools, or low-code builders, 
+            Vibe Defender helps you ensure your websites follow <strong>Modern Web Security Best Practices</strong> and 
+            <strong> Reduce Vulnerability Exposure</strong>—even if you're not a security expert. 
+            Get clear, actionable guidance tailored for fast-moving product teams.
+          </p>
         </div>
       </div>
       
