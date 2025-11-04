@@ -42,15 +42,45 @@ serve(async (req) => {
       });
     }
 
+    // Extract client IP
+    const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0].trim() 
+      || req.headers.get('x-real-ip') 
+      || 'unknown';
+
+    console.log('[scan-public-create] Client IP:', clientIp);
+
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Insert guest scan (user_id null)
+    // Check rate limit for guest scans
+    const { data: canScan, error: limitError } = await supabase
+      .rpc('check_guest_scan_limit', { check_ip: clientIp });
+
+    if (limitError) {
+      console.error('[scan-public-create] Rate limit check failed:', limitError);
+      return new Response(JSON.stringify({ error: 'rate limit check failed' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    if (!canScan) {
+      console.log('[scan-public-create] Rate limit exceeded for IP:', clientIp);
+      return new Response(JSON.stringify({ 
+        error: 'rate limit exceeded',
+        message: 'Maximum 5 scans per 24 hours for guest users. Please sign up for unlimited scans.'
+      }), {
+        status: 429,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Insert guest scan with client IP
     const { data, error } = await supabase
       .from('scans')
-      .insert({ url: cleaned, status: 'pending', user_id: null })
+      .insert({ url: cleaned, status: 'pending', user_id: null, client_ip: clientIp })
       .select('id, access_token')
       .single();
 
@@ -61,6 +91,8 @@ serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+
+    console.log('[scan-public-create] Guest scan created:', data.id, 'for IP:', clientIp);
 
     return new Response(JSON.stringify({ id: data.id, access_token: data.access_token }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
