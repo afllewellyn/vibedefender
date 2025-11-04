@@ -3,7 +3,7 @@ export const enforceSecurityPolicies = () => {
   // Frame-busting protection
   if (window.top !== window.self) {
     try {
-      window.top.location = window.self.location;
+      window.top.location.href = window.self.location.href;
     } catch (e) {
       document.body.style.display = 'none';
     }
