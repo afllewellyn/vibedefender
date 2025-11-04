@@ -1,12 +1,28 @@
 // Runtime security enforcement utilities
 export const enforceSecurityPolicies = () => {
-  // Frame-busting protection
-  if (window.top !== window.self) {
+  // Check if we're in Lovable preview environment
+  const isLovablePreview = (() => {
+    try {
+      return window.top?.location.hostname.includes('lovable.dev') || 
+             window.top?.location.hostname.includes('lovable.app');
+    } catch (e) {
+      return false;
+    }
+  })();
+
+  // Frame-busting protection (skip for Lovable preview)
+  if (window.top !== window.self && !isLovablePreview) {
     try {
       window.top.location.href = window.self.location.href;
     } catch (e) {
-      document.body.style.display = 'none';
+      console.warn('Frame-busting prevented cross-origin iframe');
+      // Don't hide the body in development
+      if (!window.location.hostname.includes('localhost') && !window.location.hostname.includes('lovable')) {
+        document.body.style.display = 'none';
+      }
     }
+  } else if (isLovablePreview) {
+    console.log('Lovable preview detected - frame-busting skipped');
   }
 
   // XSS Protection via Content Security Policy injection
@@ -41,10 +57,7 @@ export const registerSecurityServiceWorker = async () => {
       const registration = await navigator.serviceWorker.register('/sw.js');
       console.log('Security Service Worker registered:', registration);
       
-      // Force refresh on first install to apply headers
-      if (!navigator.serviceWorker.controller) {
-        window.location.reload();
-      }
+      // Let SW activate naturally without forcing reload
     } catch (error) {
       console.warn('Security Service Worker registration failed:', error);
     }
