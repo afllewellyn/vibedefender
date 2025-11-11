@@ -163,7 +163,7 @@ export const GuestScanForm = ({ onScanCreated }: GuestScanFormProps) => {
         
         <div className="flex items-center justify-center text-sm text-muted-foreground">
           <AlertTriangle className="h-4 w-4 mr-2" />
-          <span>No registration required • Results available for 24 hours</span>
+          <span>No registration required • Results available to download.</span>
         </div>
       </form>
     </div>
