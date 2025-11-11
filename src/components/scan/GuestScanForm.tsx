@@ -17,9 +17,23 @@ export const GuestScanForm = ({ onScanCreated }: GuestScanFormProps) => {
   const { toast } = useToast();
 
   const validateUrl = (url: string): boolean => {
+    // Check length limit
+    if (!url || url.length > 2048) {
+      return false;
+    }
+    
+    // Reject protocol-relative URLs
+    if (url.startsWith('//')) {
+      return false;
+    }
+    
     try {
       const urlObj = new URL(url);
-      return ['http:', 'https:'].includes(urlObj.protocol);
+      // Only allow http and https protocols explicitly
+      if (urlObj.protocol !== 'http:' && urlObj.protocol !== 'https:') {
+        return false;
+      }
+      return true;
     } catch {
       return false;
     }

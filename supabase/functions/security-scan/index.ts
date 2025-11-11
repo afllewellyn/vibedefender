@@ -21,6 +21,52 @@ interface SecurityCheck {
   owasp_category: string;
 }
 
+function isValidHttpUrl(raw: string) {
+  // Check length limit
+  if (!raw || raw.length > 2048) {
+    return false;
+  }
+  
+  // Reject protocol-relative URLs
+  if (raw.startsWith('//')) {
+    return false;
+  }
+  
+  try {
+    const u = new URL(raw);
+    // Only allow http and https protocols explicitly
+    if (u.protocol !== 'http:' && u.protocol !== 'https:') {
+      return false;
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function isValidHttpUrl(raw: string) {
+  // Check length limit
+  if (!raw || raw.length > 2048) {
+    return false;
+  }
+  
+  // Reject protocol-relative URLs
+  if (raw.startsWith('//')) {
+    return false;
+  }
+  
+  try {
+    const u = new URL(raw);
+    // Only allow http and https protocols explicitly
+    if (u.protocol !== 'http:' && u.protocol !== 'https:') {
+      return false;
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -59,6 +105,23 @@ serve(async (req) => {
     }
 
     console.log('[security-scan] Scan fetched successfully:', scan.url);
+
+    // Validate URL from database before proceeding
+    if (!isValidHttpUrl(scan.url)) {
+      console.error('[security-scan] Invalid URL from database:', scan.url);
+      await supabase
+        .from('scans')
+        .update({
+          status: 'failed',
+          error_message: 'Invalid URL format',
+          completed_at: new Date().toISOString()
+        })
+        .eq('id', scanId);
+      return new Response(JSON.stringify({ error: 'Invalid URL format' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     // Update scan status to running
     console.log('[security-scan] Updating scan status to running...');
