@@ -44,29 +44,6 @@ function isValidHttpUrl(raw: string) {
   }
 }
 
-function isValidHttpUrl(raw: string) {
-  // Check length limit
-  if (!raw || raw.length > 2048) {
-    return false;
-  }
-  
-  // Reject protocol-relative URLs
-  if (raw.startsWith('//')) {
-    return false;
-  }
-  
-  try {
-    const u = new URL(raw);
-    // Only allow http and https protocols explicitly
-    if (u.protocol !== 'http:' && u.protocol !== 'https:') {
-      return false;
-    }
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
