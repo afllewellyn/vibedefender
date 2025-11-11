@@ -305,6 +305,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      check_guest_scan_limit: { Args: { check_ip: string }; Returns: boolean }
       get_user_roles: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"][]

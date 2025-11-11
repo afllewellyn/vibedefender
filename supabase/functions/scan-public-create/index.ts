@@ -77,10 +77,10 @@ serve(async (req) => {
       });
     }
 
-    // Insert guest scan with client IP
+    // Insert guest scan with client IP stored in metadata
     const { data, error } = await supabase
       .from('scans')
-      .insert({ url: cleaned, status: 'pending', user_id: null, client_ip: clientIp })
+      .insert({ url: cleaned, status: 'pending', user_id: null, metadata: { client_ip: clientIp } })
       .select('id, access_token')
       .single();
 
