@@ -53,6 +53,24 @@ export const enforceSecurityPolicies = () => {
 // Service Worker registration for header injection
 export const registerSecurityServiceWorker = async () => {
   if ('serviceWorker' in navigator) {
+    const hostname = window.location.hostname;
+    const isLovablePreview = hostname.startsWith('preview--');
+    
+    // Skip service worker in Lovable preview environment
+    if (isLovablePreview) {
+      try {
+        const registration = await navigator.serviceWorker.getRegistration('/sw.js');
+        if (registration) {
+          await registration.unregister();
+          console.log('Unregistered security service worker in Lovable preview environment');
+        }
+      } catch (error) {
+        console.warn('Service worker unregistration failed:', error);
+      }
+      return;
+    }
+    
+    // Register service worker for non-preview environments
     try {
       const registration = await navigator.serviceWorker.register('/sw.js');
       console.log('Security Service Worker registered:', registration);

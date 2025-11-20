@@ -28,9 +28,10 @@ self.addEventListener('fetch', event => {
         statusText: response.statusText,
         headers: newHeaders
       });
-    }).catch(() => {
-      // Fallback response
-      return new Response('Network error', { status: 503 });
+    }).catch((error) => {
+      console.error('Security Service Worker fetch failed', error);
+      // Fall back to a direct network request so the browser handles the error normally
+      return fetch(event.request);
     })
   );
 });
