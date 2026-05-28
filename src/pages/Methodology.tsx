@@ -54,10 +54,10 @@ const Methodology = () => {
         {/* Overview */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2">
               <Shield className="h-6 w-6" />
               Our Security Assessment Process
-            </CardTitle>
+            </h2>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground">
@@ -73,10 +73,10 @@ const Methodology = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2">
                 <Shield className="h-5 w-5" />
                 Security Headers
-              </CardTitle>
+              </h2>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm">
@@ -114,10 +114,10 @@ const Methodology = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5" />
                 Vulnerability Testing
-              </CardTitle>
+              </h2>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm">
@@ -143,10 +143,10 @@ const Methodology = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2">
                 <Globe className="h-5 w-5" />
                 Exposed Files & Data
-              </CardTitle>
+              </h2>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm">
@@ -184,10 +184,10 @@ const Methodology = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2">
                 <Shield className="h-5 w-5" />
                 Cookie & Platform Security
-              </CardTitle>
+              </h2>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm">
@@ -213,10 +213,10 @@ const Methodology = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2">
                 <Key className="h-5 w-5" />
                 PII & Credential Exposure
-              </CardTitle>
+              </h2>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm">
@@ -242,10 +242,10 @@ const Methodology = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2">
                 <Server className="h-5 w-5" />
                 Information Disclosure
-              </CardTitle>
+              </h2>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm">
