@@ -1,0 +1,11 @@
+# Vibe Defender
+
+> OWASP security scanner that audits websites and web applications for vulnerabilities, misconfigurations, and compliance issues.
+
+## Pages
+
+- [Home](/): Free security scanner for websites. Scan any URL for OWASP Top 10 vulnerabilities, misconfigurations, and security headers.
+- [Methodology](/methodology): How the Vibe Defender security scan works — the checks we run, the standards we follow, and how we grade risk.
+- [Contact](/contact): Get in touch with the Vibe Defender team for support, feedback, or partnership inquiries.
+- [Privacy](/privacy): Privacy policy covering data collection, scan logs, and how user information is handled.
+- [Terms](/terms): Terms of service for using the Vibe Defender security scanning platform.
