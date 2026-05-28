@@ -37,12 +37,12 @@ const Index = () => {
         <div className="text-center mb-20">
           <div className="flex items-center justify-center gap-3 mb-8">
             
-            <h1 className="text-6xl font-bold text-primary">
+            <p className="text-6xl font-bold text-primary" aria-hidden="true">
               {"{ Vibe Defender }"}
-            </h1>
+            </p>
           </div>
           
-          <h2 className="text-4xl font-bold mb-6 text-foreground">  Scan your website for OWASP security risks — in 60 seconds</h2>
+          <h1 className="text-4xl font-bold mb-6 text-foreground">Vibe Defender — Security scanning for no-code websites in 60 seconds</h1>
           
           <p className="text-xl text-muted-foreground mb-12 max-w-3xl mx-auto">Instantly check your homepage for missing security headers, exposed PII, and common website misconfigurations. Designed for modern no-code, low-code, and AI-generated web apps.  All results mapped to OWASP Top 10 and graded using the CVSS v3.1 standard.</p>
           
