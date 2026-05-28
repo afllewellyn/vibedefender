@@ -20,7 +20,7 @@ const Terms = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>1. Acceptance of Terms</CardTitle>
+              <h2 className="text-2xl font-semibold leading-none tracking-tight">1. Acceptance of Terms</h2>
             </CardHeader>
             <CardContent className="prose prose-gray max-w-none">
               <p>
@@ -34,14 +34,14 @@ const Terms = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>2. Description of Service</CardTitle>
+              <h2 className="text-2xl font-semibold leading-none tracking-tight">2. Description of Service</h2>
             </CardHeader>
             <CardContent className="prose prose-gray max-w-none">
               <p>
                 Vibe Defender provides automated website security scanning services that analyze publicly accessible websites for security vulnerabilities, configuration issues, and compliance with security best practices. Our service performs non-invasive security assessments by analyzing HTTP headers, SSL/TLS configurations, and other publicly available security indicators.
               </p>
               
-              <h4>Service Features</h4>
+              <h3 className="text-lg font-semibold mt-4 mb-2">Service Features</h3>
               <ul>
                 <li>Automated security scans of publicly accessible websites</li>
                 <li>Security reporting based on OWASP guidelines and CVSS scoring</li>
@@ -50,7 +50,7 @@ const Terms = () => {
                 <li>Recommendations for security improvements</li>
               </ul>
 
-              <h4>Service Limitations</h4>
+              <h3 className="text-lg font-semibold mt-4 mb-2">Service Limitations</h3>
               <p>
                 Our scanning service is limited to publicly accessible information and does not involve:
               </p>
@@ -65,20 +65,20 @@ const Terms = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>3. User Authorization and Responsibilities</CardTitle>
+              <h2 className="text-2xl font-semibold leading-none tracking-tight">3. User Authorization and Responsibilities</h2>
             </CardHeader>
             <CardContent className="prose prose-gray max-w-none">
-              <h4>Mandatory Authorization</h4>
+              <h3 className="text-lg font-semibold mt-4 mb-2">Mandatory Authorization</h3>
               <p>
                 <strong>You may ONLY scan websites that you own, control, or have explicit written permission to test.</strong> By submitting a URL for scanning, you represent and warrant that you have the legal right and authority to request security testing of that website.
               </p>
               
-              <h4>Legal Warning</h4>
+              <h3 className="text-lg font-semibold mt-4 mb-2">Legal Warning</h3>
               <p>
                 Unauthorized security scanning of websites may violate local, state, federal, or international laws. You are solely responsible for ensuring compliance with all applicable laws and regulations before using our service.
               </p>
               
-              <h4>Account Security</h4>
+              <h3 className="text-lg font-semibold mt-4 mb-2">Account Security</h3>
               <p>
                 You are responsible for:
               </p>
@@ -93,7 +93,7 @@ const Terms = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>3.5 Indemnification</CardTitle>
+              <h2 className="text-2xl font-semibold leading-none tracking-tight">3.5 Indemnification</h2>
             </CardHeader>
             <CardContent className="prose prose-gray max-w-none">
               <p>
@@ -110,7 +110,7 @@ const Terms = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>4. Prohibited Uses</CardTitle>
+              <h2 className="text-2xl font-semibold leading-none tracking-tight">4. Prohibited Uses</h2>
             </CardHeader>
             <CardContent className="prose prose-gray max-w-none">
               <p>You agree not to use our service to:</p>
@@ -126,7 +126,7 @@ const Terms = () => {
                 <li>Resell or redistribute our services without permission</li>
               </ul>
               
-              <h4>Consequences of Violations</h4>
+              <h3 className="text-lg font-semibold mt-4 mb-2">Consequences of Violations</h3>
               <p>
                 Violations of these prohibited uses may result in immediate termination of your account, legal action, and cooperation with law enforcement authorities as required by law.
               </p>
@@ -135,14 +135,14 @@ const Terms = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>5. Service Availability and Modifications</CardTitle>
+              <h2 className="text-2xl font-semibold leading-none tracking-tight">5. Service Availability and Modifications</h2>
             </CardHeader>
             <CardContent className="prose prose-gray max-w-none">
               <p>
                 While we strive to maintain high service availability, we do not guarantee that our services will be available 100% of the time. We may experience downtime for maintenance, updates, or unforeseen technical issues.
               </p>
               
-              <h4>Service Modifications</h4>
+              <h3 className="text-lg font-semibold mt-4 mb-2">Service Modifications</h3>
               <p>
                 We reserve the right to modify, suspend, or discontinue any part of our service at any time with or without notice. We may also impose limits on certain features or restrict access to parts of the service.
               </p>
@@ -151,25 +151,25 @@ const Terms = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>6. Service Limitations and Disclaimers</CardTitle>
+              <h2 className="text-2xl font-semibold leading-none tracking-tight">6. Service Limitations and Disclaimers</h2>
             </CardHeader>
             <CardContent className="prose prose-gray max-w-none">
-              <h4>Service "As-Is"</h4>
+              <h3 className="text-lg font-semibold mt-4 mb-2">Service "As-Is"</h3>
               <p>
                 Our security scanning services are provided "as-is" and for informational purposes only. We make no warranties about the accuracy, completeness, reliability, or timeliness of our scan results.
               </p>
               
-              <h4>No Guarantee of Security</h4>
+              <h3 className="text-lg font-semibold mt-4 mb-2">No Guarantee of Security</h3>
               <p>
                 <strong>IMPORTANT:</strong> A clean scan result does not guarantee that your website is completely secure. Our service cannot detect all possible security vulnerabilities, misconfigurations, or threats. Security is an ongoing process that requires comprehensive approaches beyond automated scanning.
               </p>
               
-              <h4>Limitation of Damages</h4>
+              <h3 className="text-lg font-semibold mt-4 mb-2">Limitation of Damages</h3>
               <p>
                 TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL VIBE DEFENDER BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING BUT NOT LIMITED TO LOSS OF PROFITS, DATA, USE, GOODWILL, OR OTHER INTANGIBLE LOSSES, ARISING OUT OF OR IN CONNECTION WITH YOUR USE OF OUR SERVICES.
               </p>
               
-              <h4>Damages Cap</h4>
+              <h3 className="text-lg font-semibold mt-4 mb-2">Damages Cap</h3>
               <p>
                 Our total liability for any claims arising from your use of our services shall not exceed the amount paid by you for our services in the twelve (12) months preceding the claim, or $100, whichever is greater.
               </p>
@@ -178,7 +178,7 @@ const Terms = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>6.5 User Legal Responsibility</CardTitle>
+              <h2 className="text-2xl font-semibold leading-none tracking-tight">6.5 User Legal Responsibility</h2>
             </CardHeader>
             <CardContent className="prose prose-gray max-w-none">
               <p>
@@ -196,7 +196,7 @@ const Terms = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>7. Privacy and Data Protection</CardTitle>
+              <h2 className="text-2xl font-semibold leading-none tracking-tight">7. Privacy and Data Protection</h2>
             </CardHeader>
             <CardContent className="prose prose-gray max-w-none">
               <p>
@@ -207,20 +207,20 @@ const Terms = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>8. Subscription and Billing</CardTitle>
+              <h2 className="text-2xl font-semibold leading-none tracking-tight">8. Subscription and Billing</h2>
             </CardHeader>
             <CardContent className="prose prose-gray max-w-none">
-              <h4>Free Tier</h4>
+              <h3 className="text-lg font-semibold mt-4 mb-2">Free Tier</h3>
               <p>
                 We offer limited free scanning services for guest users and registered users with usage restrictions as defined in our current pricing structure.
               </p>
               
-              <h4>Paid Subscriptions</h4>
+              <h3 className="text-lg font-semibold mt-4 mb-2">Paid Subscriptions</h3>
               <p>
                 Paid subscription plans provide additional features and higher usage limits. Billing is processed monthly or annually as selected during subscription signup. All fees are non-refundable except as required by law.
               </p>
               
-              <h4>Billing and Payment</h4>
+              <h3 className="text-lg font-semibold mt-4 mb-2">Billing and Payment</h3>
               <ul>
                 <li>Subscription fees are charged in advance</li>
                 <li>You authorize us to charge your payment method for all fees</li>
@@ -228,7 +228,7 @@ const Terms = () => {
                 <li>We may suspend services for non-payment</li>
               </ul>
               
-              <h4>Cancellation</h4>
+              <h3 className="text-lg font-semibold mt-4 mb-2">Cancellation</h3>
               <p>
                 You may cancel your subscription at any time through your account settings. Cancellations take effect at the end of the current billing period. No refunds are provided for partial billing periods.
               </p>
@@ -237,7 +237,7 @@ const Terms = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>9. Intellectual Property</CardTitle>
+              <h2 className="text-2xl font-semibold leading-none tracking-tight">9. Intellectual Property</h2>
             </CardHeader>
             <CardContent className="prose prose-gray max-w-none">
               <p>
@@ -248,14 +248,14 @@ const Terms = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>10. Termination</CardTitle>
+              <h2 className="text-2xl font-semibold leading-none tracking-tight">10. Termination</h2>
             </CardHeader>
             <CardContent className="prose prose-gray max-w-none">
               <p>
                 We may terminate or suspend your account and access to our services immediately, without prior notice or liability, for any reason, including but not limited to breach of these Terms of Service. Upon termination, your right to use our services will cease immediately.
               </p>
               
-              <h4>Effect of Termination</h4>
+              <h3 className="text-lg font-semibold mt-4 mb-2">Effect of Termination</h3>
               <ul>
                 <li>You will lose access to your account and scan history</li>
                 <li>We may delete your data in accordance with our data retention policies</li>
@@ -266,7 +266,7 @@ const Terms = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>11. Governing Law and Jurisdiction</CardTitle>
+              <h2 className="text-2xl font-semibold leading-none tracking-tight">11. Governing Law and Jurisdiction</h2>
             </CardHeader>
             <CardContent className="prose prose-gray max-w-none">
               <p>
@@ -277,14 +277,14 @@ const Terms = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>12. Changes to Terms</CardTitle>
+              <h2 className="text-2xl font-semibold leading-none tracking-tight">12. Changes to Terms</h2>
             </CardHeader>
             <CardContent className="prose prose-gray max-w-none">
               <p>
                 We reserve the right to modify these terms at any time in our sole discretion. We will notify users of any material changes via email or through prominent notice on our platform. Continued use of our services after changes constitutes acceptance of the new terms.
               </p>
               
-              <h4>Notification Process</h4>
+              <h3 className="text-lg font-semibold mt-4 mb-2">Notification Process</h3>
               <ul>
                 <li>Material changes will be announced 30 days before taking effect</li>
                 <li>Minor updates may be implemented immediately</li>
@@ -295,7 +295,7 @@ const Terms = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>13. Contact Information</CardTitle>
+              <h2 className="text-2xl font-semibold leading-none tracking-tight">13. Contact Information</h2>
             </CardHeader>
             <CardContent>
               <p>If you have any questions about these Terms of Service, please reach out via our <Link to="/contact" className="underline">Contact</Link> page.</p>

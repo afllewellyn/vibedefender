@@ -18,29 +18,29 @@ const Privacy = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Information We Collect</CardTitle>
+            <h2 className="text-2xl font-semibold leading-none tracking-tight">Information We Collect</h2>
           </CardHeader>
           <CardContent className="prose prose-gray max-w-none">
-            <h4>Website URLs</h4>
+            <h3 className="text-lg font-semibold mt-4 mb-2">Website URLs</h3>
             <p>When you use our scanning service, we collect and temporarily process the URLs you submit for security analysis. We do not access or store any private content from the scanned websites beyond standard HTTP headers and publicly available security configurations.</p>
             
-            <h4>Account Information</h4>
+            <h3 className="text-lg font-semibold mt-4 mb-2">Account Information</h3>
             <p>If you create an account, we collect your email address and encrypted password. We may also collect optional profile information you choose to provide, such as your name and organization details.</p>
             
-            <h4>Scan Results and Recommendations</h4>
+            <h3 className="text-lg font-semibold mt-4 mb-2">Scan Results and Recommendations</h3>
             <p>We store the results of security scans to provide you with historical data and trending analysis. This includes security findings, CVSS scores, recommendations for improvement, and timestamps of when scans were performed.</p>
             
-            <h4>Usage Data</h4>
+            <h3 className="text-lg font-semibold mt-4 mb-2">Usage Data</h3>
             <p>We collect information about how you interact with our service, including pages visited, features used, scan frequency, IP addresses (for security and rate limiting), browser information, and device characteristics.</p>
             
-            <h4>Legal Compliance Data</h4>
+            <h3 className="text-lg font-semibold mt-4 mb-2">Legal Compliance Data</h3>
             <p>For legal and security purposes, we may collect and retain logs of user activities, IP addresses, and other technical information necessary for preventing abuse, investigating security incidents, and complying with legal obligations.</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>How We Use Your Information</CardTitle>
+            <h2 className="text-2xl font-semibold leading-none tracking-tight">How We Use Your Information</h2>
           </CardHeader>
           <CardContent className="prose prose-gray max-w-none">
             <p>We use the collected information for the following purposes:</p>
@@ -59,7 +59,7 @@ const Privacy = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Legal Compliance and Data Processing</CardTitle>
+            <h2 className="text-2xl font-semibold leading-none tracking-tight">Legal Compliance and Data Processing</h2>
           </CardHeader>
           <CardContent className="prose prose-gray max-w-none">
             <p>
@@ -78,33 +78,33 @@ const Privacy = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Data Sharing and Disclosure</CardTitle>
+            <h2 className="text-2xl font-semibold leading-none tracking-tight">Data Sharing and Disclosure</h2>
           </CardHeader>
           <CardContent className="prose prose-gray max-w-none">
             <p>We do not sell, trade, or rent your personal information to third parties. We may share your information only in the following circumstances:</p>
             
-            <h4>Service Providers</h4>
+            <h3 className="text-lg font-semibold mt-4 mb-2">Service Providers</h3>
             <p>We may share data with trusted third-party service providers who assist us in operating our platform, conducting business, or serving users, as long as they agree to keep this information confidential and use it only for the purposes for which we disclosed it.</p>
             
-            <h4>Legal Enforcement and Requirements</h4>
+            <h3 className="text-lg font-semibold mt-4 mb-2">Legal Enforcement and Requirements</h3>
             <p>We may disclose your information when required by law, legal process, litigation, or requests from public and government authorities. This includes cooperation with law enforcement investigations and compliance with court orders, subpoenas, and regulatory requirements.</p>
             
-            <h4>Business Transfers</h4>
+            <h3 className="text-lg font-semibold mt-4 mb-2">Business Transfers</h3>
             <p>If we are involved in a merger, acquisition, or asset sale, your information may be transferred as part of that transaction. We will provide notice before your personal information is transferred and becomes subject to a different privacy policy.</p>
             
-            <h4>Emergency Situations</h4>
+            <h3 className="text-lg font-semibold mt-4 mb-2">Emergency Situations</h3>
             <p>We may share information if we believe it's necessary to protect the safety of users, investigate fraud, respond to a government request, or protect our rights and property.</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Data Security</CardTitle>
+            <h2 className="text-2xl font-semibold leading-none tracking-tight">Data Security</h2>
           </CardHeader>
           <CardContent className="prose prose-gray max-w-none">
             <p>We implement comprehensive technical and organizational security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. These measures include:</p>
             
-            <h4>Technical Safeguards</h4>
+            <h3 className="text-lg font-semibold mt-4 mb-2">Technical Safeguards</h3>
             <ul>
               <li>Encryption of data in transit using TLS/SSL protocols</li>
               <li>Encryption of sensitive data at rest using industry-standard algorithms</li>
@@ -113,7 +113,7 @@ const Privacy = () => {
               <li>Regular security assessments, vulnerability testing, and updates</li>
             </ul>
             
-            <h4>Administrative Safeguards</h4>
+            <h3 className="text-lg font-semibold mt-4 mb-2">Administrative Safeguards</h3>
             <ul>
               <li>Access controls and authentication requirements for our systems</li>
               <li>Regular employee training on data protection and security practices</li>
@@ -130,7 +130,7 @@ const Privacy = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>International Data Transfers</CardTitle>
+            <h2 className="text-2xl font-semibold leading-none tracking-tight">International Data Transfers</h2>
           </CardHeader>
           <CardContent className="prose prose-gray max-w-none">
             <p>
@@ -148,7 +148,7 @@ const Privacy = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Data Retention</CardTitle>
+            <h2 className="text-2xl font-semibold leading-none tracking-tight">Data Retention</h2>
           </CardHeader>
           <CardContent className="prose prose-gray max-w-none">
             <p>We retain your personal information for as long as necessary to provide our services, fulfill the purposes outlined in this privacy policy, and comply with legal obligations. Specific retention periods include:</p>
@@ -171,7 +171,7 @@ const Privacy = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Your Rights</CardTitle>
+            <h2 className="text-2xl font-semibold leading-none tracking-tight">Your Rights</h2>
           </CardHeader>
           <CardContent className="prose prose-gray max-w-none">
             <p>Depending on your location and applicable data protection laws (such as GDPR, CCPA, or other regional regulations), you may have the following rights regarding your personal information:</p>
@@ -187,12 +187,12 @@ const Privacy = () => {
               <li><strong>Lodge Complaints:</strong> File complaints with supervisory authorities in your jurisdiction</li>
             </ul>
             
-            <h4>Exercising Your Rights</h4>
+            <h3 className="text-lg font-semibold mt-4 mb-2">Exercising Your Rights</h3>
             <p>
               To exercise these rights, please contact us using our <Link to="/contact" className="underline">Contact</Link> page. We will respond to your request within the timeframe required by applicable law, typically within 30 days.
             </p>
             
-            <h4>Limitations</h4>
+            <h3 className="text-lg font-semibold mt-4 mb-2">Limitations</h3>
             <p>
               Some rights may be limited by applicable law or our legitimate interests (such as fraud prevention, security, and legal compliance). We will explain any limitations when responding to your requests.
             </p>
@@ -201,21 +201,21 @@ const Privacy = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Cookies and Tracking Technologies</CardTitle>
+            <h2 className="text-2xl font-semibold leading-none tracking-tight">Cookies and Tracking Technologies</h2>
           </CardHeader>
           <CardContent className="prose prose-gray max-w-none">
             <p>We use cookies and similar technologies to enhance your experience on our platform, provide functionality, and analyze usage. Types of cookies and tracking technologies we use include:</p>
             
-            <h4>Essential Cookies</h4>
+            <h3 className="text-lg font-semibold mt-4 mb-2">Essential Cookies</h3>
             <p>Required for basic platform functionality, including authentication, security, and core website operations. These cannot be disabled without affecting site functionality.</p>
             
-            <h4>Analytics Cookies</h4>
+            <h3 className="text-lg font-semibold mt-4 mb-2">Analytics Cookies</h3>
             <p>Help us understand how users interact with our service, which pages are most popular, and how we can improve the user experience. We use this data in aggregate form only.</p>
             
-            <h4>Preference Cookies</h4>
+            <h3 className="text-lg font-semibold mt-4 mb-2">Preference Cookies</h3>
             <p>Remember your settings, preferences, and choices to provide a more personalized experience across sessions.</p>
             
-            <h4>Managing Cookies</h4>
+            <h3 className="text-lg font-semibold mt-4 mb-2">Managing Cookies</h3>
             <p>
               You can control cookie settings through your browser preferences. However, disabling certain cookies may affect the functionality of our service. Most browsers allow you to:
             </p>
@@ -230,7 +230,7 @@ const Privacy = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Children's Privacy</CardTitle>
+            <h2 className="text-2xl font-semibold leading-none tracking-tight">Children's Privacy</h2>
           </CardHeader>
           <CardContent className="prose prose-gray max-w-none">
             <p>
@@ -245,7 +245,7 @@ const Privacy = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Changes to This Privacy Policy</CardTitle>
+            <h2 className="text-2xl font-semibold leading-none tracking-tight">Changes to This Privacy Policy</h2>
           </CardHeader>
           <CardContent className="prose prose-gray max-w-none">
             <p>
@@ -266,7 +266,7 @@ const Privacy = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Contact Us</CardTitle>
+            <h2 className="text-2xl font-semibold leading-none tracking-tight">Contact Us</h2>
           </CardHeader>
           <CardContent>
             <p>If you have any questions about this Privacy Policy, need to exercise your data rights, or have concerns about how we handle your personal information, please contact us via our <Link to="/contact" className="underline">Contact</Link> page.</p>
