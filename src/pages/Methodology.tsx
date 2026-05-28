@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Shield, CheckCircle, AlertTriangle, Globe, Eye, Key, Server } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
