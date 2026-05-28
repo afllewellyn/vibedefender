@@ -223,6 +223,7 @@ export default function PublicScanResults() {
       <Header />
       <main className="flex-1 container mx-auto px-4 py-8">
         <div className="w-full max-w-4xl mx-auto space-y-6">
+          <h1 className="sr-only">Vibe Defender security scan results</h1>
           {/* Scan Overview */}
           <Card>
             <CardHeader>
