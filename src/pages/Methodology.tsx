@@ -5,10 +5,38 @@ import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { useEffect } from 'react';
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  'headline': 'Security Scanning Methodology & Scoring',
+  'description': 'Learn about our comprehensive security scanning methodology including CVSS v3.1 scoring, OWASP mapping, and context-aware grading for modern web applications.',
+  'author': {
+    '@type': 'Organization',
+    'name': 'Vibe Defender'
+  },
+  'publisher': {
+    '@type': 'Organization',
+    'name': 'Vibe Defender'
+  }
+};
+
 const Methodology = () => {
   const navigate = useNavigate();
   useEffect(() => {
     document.title = 'Security Scanning Methodology & Scoring | Vibe Defender';
+
+    // Inject Article JSON-LD
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify(articleJsonLd);
+    script.id = 'methodology-jsonld';
+    document.head.appendChild(script);
+
+    return () => {
+      const existing = document.getElementById('methodology-jsonld');
+      if (existing) existing.remove();
+    };
   }, []);
   return <div className="min-h-screen bg-background">
       <Header />
