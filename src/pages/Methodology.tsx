@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Shield, CheckCircle, AlertTriangle, Globe, Eye, Key, Server } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -54,10 +54,10 @@ const Methodology = () => {
         {/* Overview */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2">
               <Shield className="h-6 w-6" />
               Our Security Assessment Process
-            </CardTitle>
+            </h2>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground">
@@ -73,10 +73,10 @@ const Methodology = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2">
                 <Shield className="h-5 w-5" />
                 Security Headers
-              </CardTitle>
+              </h2>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm">
@@ -114,10 +114,10 @@ const Methodology = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5" />
                 Vulnerability Testing
-              </CardTitle>
+              </h2>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm">
@@ -143,10 +143,10 @@ const Methodology = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2">
                 <Globe className="h-5 w-5" />
                 Exposed Files & Data
-              </CardTitle>
+              </h2>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm">
@@ -184,10 +184,10 @@ const Methodology = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2">
                 <Shield className="h-5 w-5" />
                 Cookie & Platform Security
-              </CardTitle>
+              </h2>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm">
@@ -213,10 +213,10 @@ const Methodology = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2">
                 <Key className="h-5 w-5" />
                 PII & Credential Exposure
-              </CardTitle>
+              </h2>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm">
@@ -242,10 +242,10 @@ const Methodology = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2">
                 <Server className="h-5 w-5" />
                 Information Disclosure
-              </CardTitle>
+              </h2>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm">
@@ -273,7 +273,7 @@ const Methodology = () => {
         {/* CVSS Methodology */}
         <Card>
           <CardHeader>
-            <CardTitle>Context-Aware Scoring (Two-Tier + Bonuses)</CardTitle>
+            <h2 className="text-2xl font-semibold leading-none tracking-tight">Context-Aware Scoring (Two-Tier + Bonuses)</h2>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground mb-4">
@@ -317,7 +317,7 @@ const Methodology = () => {
         {/* Positive Bonuses */}
         <Card>
           <CardHeader>
-            <CardTitle>Positive Bonuses &amp; API &amp; PII Hygiene</CardTitle>
+            <h2 className="text-2xl font-semibold leading-none tracking-tight">Positive Bonuses &amp; API &amp; PII Hygiene</h2>
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-2 gap-6">
@@ -355,7 +355,7 @@ const Methodology = () => {
         {/* Grading System */}
         <Card>
           <CardHeader>
-            <CardTitle>Security Grading System</CardTitle>
+            <h2 className="text-2xl font-semibold leading-none tracking-tight">Security Grading System</h2>
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-5 gap-4">
@@ -386,7 +386,7 @@ const Methodology = () => {
               </div>
             </div>
             <div className="mt-6 p-4 bg-yellow-50 dark:bg-yellow-950 rounded-lg">
-              <h4 className="font-semibold text-yellow-800 dark:text-yellow-200 mb-2">Important Notes:</h4>
+              <h3 className="font-semibold text-yellow-800 dark:text-yellow-200 mb-2">Important Notes:</h3>
               <ul className="text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
                 <li>• Low CVSS (0.1–3.9): typically Grades A/B (configuration tweaks)</li>
                 <li>• Medium CVSS (4.0–6.9): usually Grades B/C/D (security gaps needing attention)</li>
@@ -402,7 +402,7 @@ const Methodology = () => {
         {/* Disclaimers */}
         <Card>
           <CardHeader>
-            <CardTitle>Disclaimers</CardTitle>
+            <h2 className="text-2xl font-semibold leading-none tracking-tight">Disclaimers</h2>
           </CardHeader>
           <CardContent>
             <div className="space-y-3 text-sm text-muted-foreground">

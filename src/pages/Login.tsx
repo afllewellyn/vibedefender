@@ -91,7 +91,8 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <div className="flex items-center justify-center p-4 pt-20">
+      <div className="flex flex-col items-center justify-center p-4 pt-20">
+      <h1 className="sr-only">Log in to Vibe Defender</h1>
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl text-center">Sign In</CardTitle>
