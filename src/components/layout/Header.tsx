@@ -69,8 +69,8 @@ export const Header = () => {
           {/* Mobile Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="sm">
-                <Menu className="h-4 w-4" />
+              <Button variant="ghost" size="sm" aria-label="Open navigation menu">
+                <Menu className="h-4 w-4" aria-hidden="true" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56" align="end">
