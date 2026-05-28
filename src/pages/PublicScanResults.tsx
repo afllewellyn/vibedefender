@@ -201,7 +201,7 @@ export default function PublicScanResults() {
               <div className="text-center space-y-4">
                 <AlertTriangle className="h-8 w-8 mx-auto text-muted-foreground" />
                 <div>
-                  <h3 className="font-semibold">Scan Not Found</h3>
+                  <h1 className="text-2xl font-semibold">Scan Not Found</h1>
                   <p className="text-sm text-muted-foreground">
                     This scan result has expired or the link is invalid.
                   </p>
