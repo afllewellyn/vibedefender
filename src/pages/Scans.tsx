@@ -8,9 +8,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Shield, Search, Plus, Clock, CheckCircle, XCircle, ArrowRight } from 'lucide-react';
-import { Header } from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
-
 interface Scan {
   id: string;
   url: string;
@@ -119,21 +116,21 @@ const Scans = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <Header />
+
         <div className="flex items-center justify-center p-4">
           <div className="text-center">
             <h1 className="text-2xl font-semibold mb-2">Loading...</h1>
             <p className="text-muted-foreground">Please wait while we load your scans.</p>
           </div>
         </div>
-        <Footer />
+
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+
       <div className="p-4">
         <div className="max-w-6xl mx-auto">
         {/* Header */}
@@ -258,7 +255,7 @@ const Scans = () => {
         )}
         </div>
       </div>
-      <Footer />
+
     </div>
   );
 };

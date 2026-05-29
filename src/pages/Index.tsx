@@ -6,8 +6,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { Shield, Zap, BarChart3, ArrowRight, FileText, Lock, ShieldCheck, Activity, Layers, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { GuestScanForm } from '@/components/scan/GuestScanForm';
-import { Header } from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
 const Index = () => {
   const {
     user,
@@ -31,7 +29,7 @@ const Index = () => {
       </div>;
   }
   return <div className="min-h-screen bg-background">
-      <Header />
+
       <div className="container mx-auto px-4 py-16">
         {/* Hero Section */}
         <div className="text-center mb-20">
@@ -296,8 +294,7 @@ const Index = () => {
           </p>
         </div>
       </div>
-      
-      <Footer />
+
     </div>;
 };
 export default Index;

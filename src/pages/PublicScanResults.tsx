@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Header } from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -175,8 +173,8 @@ export default function PublicScanResults() {
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-1 container mx-auto px-4 py-8">
+
+        <div className="flex-1 container mx-auto px-4 py-8">
           <Card className="w-full max-w-2xl mx-auto">
             <CardContent className="p-6">
               <div className="flex items-center justify-center space-x-2">
@@ -185,8 +183,8 @@ export default function PublicScanResults() {
               </div>
             </CardContent>
           </Card>
-        </main>
-        <Footer />
+        </div>
+
       </div>
     );
   }
@@ -194,8 +192,8 @@ export default function PublicScanResults() {
   if (error || !scan) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-1 container mx-auto px-4 py-8">
+
+        <div className="flex-1 container mx-auto px-4 py-8">
           <Card className="w-full max-w-2xl mx-auto">
             <CardContent className="p-6">
               <div className="text-center space-y-4">
@@ -212,16 +210,16 @@ export default function PublicScanResults() {
               </div>
             </CardContent>
           </Card>
-        </main>
-        <Footer />
+        </div>
+
       </div>
     );
   }
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
-      <main className="flex-1 container mx-auto px-4 py-8">
+
+      <div className="flex-1 container mx-auto px-4 py-8">
         <div className="w-full max-w-4xl mx-auto space-y-6">
           <h1 className="sr-only">Vibe Defender security scan results</h1>
           {/* Scan Overview */}
@@ -391,8 +389,8 @@ export default function PublicScanResults() {
             </Card>
           )}
         </div>
-      </main>
-      <Footer />
+      </div>
+
     </div>
   );
 }

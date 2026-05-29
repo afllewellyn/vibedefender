@@ -1,7 +1,5 @@
 
 import { useEffect, useState } from 'react';
-import { Header } from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -70,8 +68,8 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
-      <main className="container mx-auto px-4 py-12">
+
+      <div className="container mx-auto px-4 py-12">
         <article className="max-w-2xl mx-auto space-y-6">
           <div className="space-y-2">
             <h1 className="text-3xl font-bold">Contact</h1>
@@ -148,8 +146,8 @@ const Contact = () => {
             </form>
           </Form>
         </article>
-      </main>
-      <Footer />
+      </div>
+
     </div>
   );
 };

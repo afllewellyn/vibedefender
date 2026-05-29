@@ -8,8 +8,6 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useEffect } from 'react';
-import { Header } from '@/components/layout/Header';
-
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -82,7 +80,7 @@ const Login = () => {
   if (authLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <Header />
+
         <div className="flex items-center justify-center min-h-[80vh]">Loading...</div>
       </div>
     );
@@ -90,7 +88,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+
       <div className="flex flex-col items-center justify-center p-4 pt-20">
       <h1 className="sr-only">Log in to Vibe Defender</h1>
       <Card className="w-full max-w-md">

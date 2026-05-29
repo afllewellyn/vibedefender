@@ -2,8 +2,6 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Shield, CheckCircle, AlertTriangle, Globe, Eye, Key, Server } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { Header } from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
 import { useEffect } from 'react';
 
 const articleJsonLd = {
@@ -39,7 +37,7 @@ const Methodology = () => {
     };
   }, []);
   return <div className="min-h-screen bg-background">
-      <Header />
+
       <div className="container mx-auto px-4 py-8">
 
       <div className="max-w-4xl mx-auto space-y-8">
@@ -430,7 +428,7 @@ const Methodology = () => {
         </Card>
         </div>
       </div>
-      <Footer />
+
     </div>;
 };
 export default Methodology;

@@ -3,8 +3,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { FolderOpen, Scan, History, TrendingUp, TrendingDown } from 'lucide-react';
-import { Header } from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
 import { useUserStats } from '@/hooks/useUserStats';
 
 const Dashboard = () => {
@@ -14,7 +12,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+
       <div className="p-4">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
@@ -159,7 +157,7 @@ const Dashboard = () => {
         </div>
         </div>
       </div>
-      <Footer />
+
     </div>
   );
 };

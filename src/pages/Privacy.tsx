@@ -2,12 +2,10 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Header } from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
 const Privacy = () => {
   const navigate = useNavigate();
   return <div className="min-h-screen bg-background">
-      <Header />
+
       <div className="container mx-auto px-4 py-8">
 
       <div className="max-w-4xl mx-auto space-y-8">
@@ -278,7 +276,7 @@ const Privacy = () => {
         </Card>
         </div>
       </div>
-      <Footer />
+
     </div>;
 };
 export default Privacy;

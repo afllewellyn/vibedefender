@@ -7,9 +7,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, Shield, Clock, CheckCircle, XCircle, AlertTriangle, Download } from 'lucide-react';
-import { Header } from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
-
 interface ScanFinding {
   id: string;
   title: string;
@@ -204,7 +201,7 @@ const ScanDetails = () => {
   if (isLoading || loading) {
     return (
       <div className="min-h-screen bg-background">
-        <Header />
+
         <div className="flex items-center justify-center p-4">
           <div className="text-center">
             <Shield className="h-8 w-8 animate-pulse mx-auto mb-2 text-primary" />
@@ -212,7 +209,7 @@ const ScanDetails = () => {
             <p className="text-muted-foreground">Please wait while we load the scan details.</p>
           </div>
         </div>
-        <Footer />
+
       </div>
     );
   }
@@ -220,7 +217,7 @@ const ScanDetails = () => {
   if (!scan) {
     return (
       <div className="min-h-screen bg-background">
-        <Header />
+
         <div className="flex items-center justify-center p-4">
           <div className="text-center">
             <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-red-600" />
@@ -232,14 +229,14 @@ const ScanDetails = () => {
             </Button>
           </div>
         </div>
-        <Footer />
+
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+
       <div className="p-4">
         <div className="max-w-6xl mx-auto">
         {/* Header */}
@@ -441,7 +438,7 @@ const ScanDetails = () => {
         )}
         </div>
       </div>
-      <Footer />
+
     </div>
   );
 };
