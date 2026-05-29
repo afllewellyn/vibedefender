@@ -191,6 +191,7 @@ const App = () => (
                 NotFound
               )}
             />
+            </Route>
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
