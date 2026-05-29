@@ -12,9 +12,6 @@ import { useToast } from '@/hooks/use-toast';
 import { ProjectForm } from '@/components/projects/ProjectForm';
 import { DeleteProjectDialog } from '@/components/projects/DeleteProjectDialog';
 import { ProjectScanDialog } from '@/components/projects/ProjectScanDialog';
-import { Header } from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
-
 interface Project {
   id: string;
   name: string;
@@ -132,7 +129,7 @@ const Projects = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
-        <Header />
+
         <div className="flex-1 p-4">
           <div className="max-w-6xl mx-auto">
             <div className="flex items-center justify-center min-h-[400px]">
@@ -143,14 +140,14 @@ const Projects = () => {
             </div>
           </div>
         </div>
-        <Footer />
+
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <Header />
+
       <div className="flex-1 p-4 pb-12">
         <div className="max-w-6xl mx-auto">
         {/* Header */}
@@ -350,7 +347,7 @@ const Projects = () => {
         )}
         </div>
       </div>
-      <Footer />
+
     </div>
   );
 };

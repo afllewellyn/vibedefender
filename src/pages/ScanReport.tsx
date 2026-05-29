@@ -7,9 +7,6 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, Shield, Download, Share2, User, ExternalLink, BookOpen } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { Header } from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
-
 interface ScanFinding {
   id: string;
   title: string;
@@ -132,7 +129,7 @@ const ScanReport = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <Header />
+
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="text-center">
@@ -141,7 +138,7 @@ const ScanReport = () => {
             </div>
           </div>
         </div>
-        <Footer />
+
       </div>
     );
   }
@@ -149,7 +146,7 @@ const ScanReport = () => {
   if (!scan) {
     return (
       <div className="min-h-screen bg-background">
-        <Header />
+
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <h1 className="text-2xl font-bold mb-4">Report Not Found</h1>
@@ -160,14 +157,14 @@ const ScanReport = () => {
             </Button>
           </div>
         </div>
-        <Footer />
+
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+
       <div className="container mx-auto px-4 py-8">
       <div className="mb-6 flex items-center justify-between">
         <Button variant="ghost" onClick={() => navigate('/')}>
@@ -326,7 +323,7 @@ const ScanReport = () => {
         )}
       </div>
       </div>
-      <Footer />
+
     </div>
   );
 };

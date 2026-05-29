@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { SEO } from "@/components/SEO";
+import { Layout } from "@/components/layout/Layout";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Login from "./pages/Login";
@@ -44,6 +45,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
+            <Route element={<Layout />}>
             <Route
               path="/"
               element={withSEO(
@@ -189,6 +191,7 @@ const App = () => (
                 NotFound
               )}
             />
+            </Route>
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
