@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Shield, Menu } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -15,8 +15,10 @@ export const Header = () => {
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           
-          <span className="text-2xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-stone-950">
-            {"{ Vibe Defender }"}
+          <span className="font-mono font-bold text-xl tracking-tight text-foreground">
+            <span className="text-primary">{'{'}</span>
+            {' Vibe Defender '}
+            <span className="text-primary">{'}'}</span>
           </span>
         </Link>
 

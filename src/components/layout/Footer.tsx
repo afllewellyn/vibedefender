@@ -1,13 +1,15 @@
 import { Link } from 'react-router-dom';
-import { Shield } from 'lucide-react';
 const Footer = () => {
-  return <footer className="border-t bg-slate-50">
-      <div className="container mx-auto px-4 py-8 bg-slate-50">
+  return <footer className="border-t bg-background">
+      <div className="container mx-auto px-4 py-8">
         <div className="grid md:grid-cols-4 gap-8">
-          <div className="space-y-4 bg-slate-50">
-            <div className="flex items-center gap-2 text-slate-50">
-              
-              <span className="font-bold text-lg text-slate-900">{"{ Vibe Defender }"}</span>
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <span className="font-mono font-bold text-lg text-foreground">
+                <span className="text-primary">{'{'}</span>
+                {' Vibe Defender '}
+                <span className="text-primary">{'}'}</span>
+              </span>
             </div>
             <p className="text-sm text-muted-foreground">Vibe Defender scans only the homepage and select public endpoints for visible issues, scored to OWASP Top 10 and CVSS - inspired best practices. For in-depth, authenticated, or full-site testing, consult a professional security auditor. This site is in progress and may make mistakes.</p>
           </div>

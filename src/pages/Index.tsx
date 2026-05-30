@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
-import { Shield, Zap, BarChart3, ArrowRight, FileText, Lock, ShieldCheck, Activity, Layers, Sparkles } from 'lucide-react';
+import { Zap, BarChart3, ArrowRight, FileText, Lock, ShieldCheck, Activity, Layers, CheckCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { GuestScanForm } from '@/components/scan/GuestScanForm';
 const Index = () => {
@@ -34,9 +34,10 @@ const Index = () => {
         {/* Hero Section */}
         <div className="text-center mb-20">
           <div className="flex items-center justify-center gap-3 mb-8">
-            
-            <p className="text-6xl font-bold text-primary" aria-hidden="true">
-              {"{ Vibe Defender }"}
+            <p className="font-mono font-bold text-5xl tracking-tight" aria-hidden="true">
+              <span className="text-primary">{'{'}</span>
+              <span className="text-foreground">{' Vibe Defender '}</span>
+              <span className="text-primary">{'}'}</span>
             </p>
           </div>
           
@@ -50,9 +51,9 @@ const Index = () => {
           </div>
 
           {/* Trust Indicators */}
-          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground mb-12">
+          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground mb-10">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
                 <span>No signup required</span>
               </div>
               <div className="flex items-center gap-2">
@@ -60,12 +61,40 @@ const Index = () => {
                 <span>Real-time results</span>
               </div>
               <div className="flex items-center gap-2">
-                <BarChart3 className="w-4 h-4 text-foreground" />
+                <BarChart3 className="w-4 h-4 text-primary" />
                 <span>Instant security insights</span>
               </div>
             </div>
 
-          {/* Show scan results if a scan is active - this is now handled by redirect */}
+          {/* Metric-led stats strip */}
+          <div className="max-w-2xl mx-auto mb-10 text-left">
+            <p className="font-mono text-[10px] tracking-[0.1em] uppercase text-muted-foreground mb-4">
+              {'// why builders trust it'}
+            </p>
+            <div className="grid grid-cols-3 gap-0">
+              {[
+                { num: '60', unit: 's', title: 'Quick OWASP scan', desc: 'Homepage checked for headers, PII & misconfigs.', active: true },
+                { num: 'A', unit: '–F', title: 'Graded & mapped', desc: 'Every finding scored with CVSS v3.1.', active: false },
+                { num: '0', unit: '∆', title: 'Read-only', desc: 'Passive checks — nothing changes on your site.', active: false },
+              ].map(({ num, unit, title, desc, active }) => (
+                <div
+                  key={title}
+                  className="py-1 pr-4 pl-4"
+                  style={{ borderLeft: `2px solid ${active ? 'hsl(var(--primary))' : 'hsl(var(--border))'}` }}
+                >
+                  <div
+                    className="font-mono font-bold text-[38px] leading-none tracking-tight tabular-nums flex items-baseline gap-[2px]"
+                    style={{ color: active ? 'hsl(var(--primary))' : 'hsl(var(--foreground))' }}
+                  >
+                    {num}
+                    <span className="text-[18px] font-semibold text-primary">{unit}</span>
+                  </div>
+                  <div className="font-bold text-sm mt-3 mb-1 tracking-tight">{title}</div>
+                  <p className="text-xs leading-relaxed text-muted-foreground">{desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
 
           {/* Secondary Call to Action Buttons */}
           <div className="flex gap-4 justify-center">
@@ -84,43 +113,53 @@ const Index = () => {
             </div>
         </div>
 
-        {/* Features Section */}
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
-          <Card className="border border-border bg-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Zap className="h-5 w-5 text-primary" />
-                Quick OWASP Scan
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription>Instantly scan your sites homepage for common vulnerabilities, misconfigurations, and exposed files — with results in under 60 seconds.</CardDescription>
-            </CardContent>
-          </Card>
-
-          <Card className="border border-border bg-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5 text-primary" />
-                   CVSS-Based Security Checks
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription>Built for modern no-code and AI-built sites but any website will do.</CardDescription>
-            </CardContent>
-          </Card>
-
-          <Card className="border border-border bg-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5 text-primary" />
-                Actionable Reports
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription>Get an easy-to-understand security score, prioritized fixes, and links to official remediation guides. All scoring follows OWASP and CVSS standards.</CardDescription>
-            </CardContent>
-          </Card>
+        {/* Features Section — spec rows */}
+        <div className="mb-16">
+          <div className="border-t border-border">
+            {[
+              {
+                idx: '01',
+                Icon: Zap,
+                title: 'Quick OWASP scan',
+                meta: '~60s',
+                desc: 'Scans your homepage for missing security headers, exposed PII, and common misconfigurations.',
+              },
+              {
+                idx: '02',
+                Icon: Layers,
+                title: 'Graded & mapped',
+                meta: 'OWASP · CVSS',
+                desc: 'Every finding mapped to the OWASP Top 10 and scored with CVSS v3.1 — prioritized, not dumped.',
+              },
+              {
+                idx: '03',
+                Icon: CheckCircle,
+                title: 'Plain-English fixes',
+                meta: 'read-only',
+                desc: "Passive, non-intrusive checks with clear remediation steps — even if you're not a security expert.",
+              },
+            ].map(({ idx, Icon, title, meta, desc }) => (
+              <div
+                key={idx}
+                className="grid gap-5 py-[18px] px-1 border-b border-border items-start"
+                style={{ gridTemplateColumns: 'auto 1fr' }}
+              >
+                <div className="font-mono font-bold text-sm text-primary tabular-nums tracking-wide pt-[3px]">
+                  {idx}
+                </div>
+                <div>
+                  <div className="flex items-center gap-[9px] font-bold text-[17px] tracking-tight mb-[3px]">
+                    <Icon className="w-4 h-4 text-primary flex-shrink-0" />
+                    {title}
+                    <span className="ml-auto font-mono text-[11px] text-muted-foreground tracking-wide font-medium">
+                      {meta}
+                    </span>
+                  </div>
+                  <p className="text-[13.5px] leading-[1.55] text-muted-foreground">{desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Scan in Three Simple Steps Section */}
