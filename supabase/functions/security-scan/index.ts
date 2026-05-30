@@ -630,12 +630,14 @@ async function checkExposedFiles(url: string) {
 }
 
 // Platform Detection
-async function detectPlatform(url: string) {
+async function detectPlatform(url: string, prefetchedHtml?: string) {
   const findings: SecurityCheck[] = [];
 
   try {
+    // Always fetch raw to read server/x-powered-by headers, but prefer
+    // prefetched (rendered) HTML for body sniffing when available.
     const response = await fetch(url);
-    const html = await response.text();
+    const html = prefetchedHtml ?? await response.text();
     const headers = response.headers;
 
     // WordPress detection
