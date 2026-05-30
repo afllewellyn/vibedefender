@@ -118,16 +118,26 @@ serve(async (req) => {
     try {
       const TIMEOUT_PER_CHECK = 10000; // 10s per check
 
+      // Pre-fetch the page with Firecrawl (JS-rendered). Falls back to null
+      // (callers will use raw fetch) when the connector is unavailable or slow.
+      console.log('[security-scan] Requesting rendered scrape via Firecrawl...');
+      const rendered: ScrapeResult | null = await firecrawlScrape(scan.url, { waitFor: 2000, timeoutMs: 15000 });
+      if (rendered) {
+        console.log(`[security-scan] Firecrawl returned ${rendered.html.length} chars of rendered HTML`);
+      } else {
+        console.log('[security-scan] Firecrawl unavailable, checks will use raw fetch');
+      }
+
       const tasks = {
         securityHeaders: withTimeout(checkSecurityHeaders(scan.url), TIMEOUT_PER_CHECK, 'securityHeaders'),
         exposedFiles: withTimeout(checkExposedFiles(scan.url), TIMEOUT_PER_CHECK, 'exposedFiles'),
-        platform: withTimeout(detectPlatform(scan.url), TIMEOUT_PER_CHECK, 'platform'),
+        platform: withTimeout(detectPlatform(scan.url, rendered?.html), TIMEOUT_PER_CHECK, 'platform'),
         xss: withTimeout(checkXSS(scan.url), TIMEOUT_PER_CHECK, 'xss'),
-        csrf: withTimeout(checkCSRF(scan.url), TIMEOUT_PER_CHECK, 'csrf'),
+        csrf: withTimeout(checkCSRF(scan.url, rendered?.html), TIMEOUT_PER_CHECK, 'csrf'),
         cookies: withTimeout(checkInsecureCookies(scan.url), TIMEOUT_PER_CHECK, 'cookies'),
         redirect: withTimeout(checkOpenRedirect(scan.url), TIMEOUT_PER_CHECK, 'openRedirect'),
         sql: withTimeout(checkBasicSQLInjection(scan.url), TIMEOUT_PER_CHECK, 'sqli'),
-        pii: withTimeout(checkPIIAndAPIKeys(scan.url), TIMEOUT_PER_CHECK, 'pii'),
+        pii: withTimeout(checkPIIAndAPIKeys(scan.url, rendered?.html), TIMEOUT_PER_CHECK, 'pii'),
       } as const;
 
       const entries = Object.entries(tasks);
