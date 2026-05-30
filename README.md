@@ -10,7 +10,7 @@ No signup required for a guest scan. Create an account to save projects, track h
 
 ## What gets scanned
 
-Vibe Defender performs passive, read-only checks against your homepage and select public endpoints. Nothing on your site is modified.
+Vibe Defender performs passive, read-only checks against your homepage and select public endpoints. Nothing on your site is modified. Where Firecrawl is configured, the target URL is rendered with a real browser before analysis — so JavaScript-heavy or React-built sites are fully visible to the scanner, not just their raw HTML.
 
 - **Security headers** — HSTS, Content-Security-Policy, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy
 - **Vulnerability testing** — XSS vectors, SQL injection patterns, CSRF exposure, open redirect detection
@@ -41,6 +41,7 @@ Scores are context-aware. Vibe Defender detects whether your site looks like a t
 | Icons | Lucide React |
 | Data fetching | TanStack React Query |
 | Backend / auth | Supabase (Postgres + Auth) |
+| Security scanning | Firecrawl (JS-rendered HTML for SPA/React target sites) |
 | Deployment | Netlify / Vercel (configs included) |
 
 ---
