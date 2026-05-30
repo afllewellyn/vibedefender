@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { firecrawlScrape, type ScrapeResult } from '../_shared/firecrawl.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -117,16 +118,26 @@ serve(async (req) => {
     try {
       const TIMEOUT_PER_CHECK = 10000; // 10s per check
 
+      // Pre-fetch the page with Firecrawl (JS-rendered). Falls back to null
+      // (callers will use raw fetch) when the connector is unavailable or slow.
+      console.log('[security-scan] Requesting rendered scrape via Firecrawl...');
+      const rendered: ScrapeResult | null = await firecrawlScrape(scan.url, { waitFor: 2000, timeoutMs: 15000 });
+      if (rendered) {
+        console.log(`[security-scan] Firecrawl returned ${rendered.html.length} chars of rendered HTML`);
+      } else {
+        console.log('[security-scan] Firecrawl unavailable, checks will use raw fetch');
+      }
+
       const tasks = {
         securityHeaders: withTimeout(checkSecurityHeaders(scan.url), TIMEOUT_PER_CHECK, 'securityHeaders'),
         exposedFiles: withTimeout(checkExposedFiles(scan.url), TIMEOUT_PER_CHECK, 'exposedFiles'),
-        platform: withTimeout(detectPlatform(scan.url), TIMEOUT_PER_CHECK, 'platform'),
+        platform: withTimeout(detectPlatform(scan.url, rendered?.html), TIMEOUT_PER_CHECK, 'platform'),
         xss: withTimeout(checkXSS(scan.url), TIMEOUT_PER_CHECK, 'xss'),
-        csrf: withTimeout(checkCSRF(scan.url), TIMEOUT_PER_CHECK, 'csrf'),
+        csrf: withTimeout(checkCSRF(scan.url, rendered?.html), TIMEOUT_PER_CHECK, 'csrf'),
         cookies: withTimeout(checkInsecureCookies(scan.url), TIMEOUT_PER_CHECK, 'cookies'),
         redirect: withTimeout(checkOpenRedirect(scan.url), TIMEOUT_PER_CHECK, 'openRedirect'),
         sql: withTimeout(checkBasicSQLInjection(scan.url), TIMEOUT_PER_CHECK, 'sqli'),
-        pii: withTimeout(checkPIIAndAPIKeys(scan.url), TIMEOUT_PER_CHECK, 'pii'),
+        pii: withTimeout(checkPIIAndAPIKeys(scan.url, rendered?.html), TIMEOUT_PER_CHECK, 'pii'),
       } as const;
 
       const entries = Object.entries(tasks);
@@ -238,7 +249,13 @@ for (let i = 0; i < entries.length; i++) {
             recommendations: bonuses.maintainNotes,
             disclaimer,
             errors: checkErrors,
-            probes: probeLogs
+            probes: probeLogs,
+            rendered: rendered ? {
+              source: 'firecrawl',
+              htmlLength: rendered.html.length,
+              title: rendered.metadata?.title,
+              description: rendered.metadata?.description,
+            } : { source: 'fetch' }
           }
         })
         .eq('id', scanId);
@@ -613,12 +630,14 @@ async function checkExposedFiles(url: string) {
 }
 
 // Platform Detection
-async function detectPlatform(url: string) {
+async function detectPlatform(url: string, prefetchedHtml?: string) {
   const findings: SecurityCheck[] = [];
 
   try {
+    // Always fetch raw to read server/x-powered-by headers, but prefer
+    // prefetched (rendered) HTML for body sniffing when available.
     const response = await fetch(url);
-    const html = await response.text();
+    const html = prefetchedHtml ?? await response.text();
     const headers = response.headers;
 
     // WordPress detection
@@ -713,12 +732,11 @@ async function checkXSS(url: string) {
 }
 
 // CSRF Check
-async function checkCSRF(url: string) {
+async function checkCSRF(url: string, prefetchedHtml?: string) {
   const findings: SecurityCheck[] = [];
 
   try {
-    const response = await fetch(url);
-    const html = await response.text();
+    const html = prefetchedHtml ?? await (await fetch(url)).text();
 
     // Look for forms without CSRF tokens
     const formMatches = html.match(/<form[^>]*>/gi);
@@ -949,13 +967,15 @@ async function checkBasicSQLInjection(url: string) {
 }
 
 // PII and API Key Detection
-async function checkPIIAndAPIKeys(url: string) {
+async function checkPIIAndAPIKeys(url: string, prefetchedHtml?: string) {
   const findings: SecurityCheck[] = [];
   
   try {
-    console.log('[security-scan] Fetching homepage HTML for PII/API key analysis...');
+    console.log('[security-scan] Fetching homepage for PII/API key analysis (rendered=' + (!!prefetchedHtml) + ')...');
+    // We always fetch raw so we can read response headers and Set-Cookie, but
+    // we analyze the rendered HTML body when available (catches SPA content).
     const response = await fetch(url);
-    const html = await response.text();
+    const html = prefetchedHtml ?? await response.text();
 
     // Build a simple lowercase headers map and capture Set-Cookie values
     const headersMap: Record<string, string> = {};
