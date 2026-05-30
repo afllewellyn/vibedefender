@@ -249,7 +249,13 @@ for (let i = 0; i < entries.length; i++) {
             recommendations: bonuses.maintainNotes,
             disclaimer,
             errors: checkErrors,
-            probes: probeLogs
+            probes: probeLogs,
+            rendered: rendered ? {
+              source: 'firecrawl',
+              htmlLength: rendered.html.length,
+              title: rendered.metadata?.title,
+              description: rendered.metadata?.description,
+            } : { source: 'fetch' }
           }
         })
         .eq('id', scanId);
