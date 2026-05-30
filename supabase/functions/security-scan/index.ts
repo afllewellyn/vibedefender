@@ -967,13 +967,15 @@ async function checkBasicSQLInjection(url: string) {
 }
 
 // PII and API Key Detection
-async function checkPIIAndAPIKeys(url: string) {
+async function checkPIIAndAPIKeys(url: string, prefetchedHtml?: string) {
   const findings: SecurityCheck[] = [];
   
   try {
-    console.log('[security-scan] Fetching homepage HTML for PII/API key analysis...');
+    console.log('[security-scan] Fetching homepage for PII/API key analysis (rendered=' + (!!prefetchedHtml) + ')...');
+    // We always fetch raw so we can read response headers and Set-Cookie, but
+    // we analyze the rendered HTML body when available (catches SPA content).
     const response = await fetch(url);
-    const html = await response.text();
+    const html = prefetchedHtml ?? await response.text();
 
     // Build a simple lowercase headers map and capture Set-Cookie values
     const headersMap: Record<string, string> = {};
