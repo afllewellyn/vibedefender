@@ -732,12 +732,11 @@ async function checkXSS(url: string) {
 }
 
 // CSRF Check
-async function checkCSRF(url: string) {
+async function checkCSRF(url: string, prefetchedHtml?: string) {
   const findings: SecurityCheck[] = [];
 
   try {
-    const response = await fetch(url);
-    const html = await response.text();
+    const html = prefetchedHtml ?? await (await fetch(url)).text();
 
     // Look for forms without CSRF tokens
     const formMatches = html.match(/<form[^>]*>/gi);
